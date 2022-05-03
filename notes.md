@@ -1,5 +1,42 @@
 # HPS General Notes
 
+## May 3, 2022 Recon/Analysis Workshop
+
+### SIMPs Analysis Sensitivity Calculation
+Alic Spellman and Cameron Bravo
+
+- MC? Technical how-to incoming from Alic...
+- Lots of references to Cosmological SIMP paper
+- Why not fold more of expected signal rate into MC e.g. using G4 weights?
+
+### Vertex Analysis Ideas
+Matt Solt <- not on HPS anymore
+(recorded)
+
+- Some can be implemented for 2016 data
+- Kalman filter helps reduce track multiplicity (Cameron)
+- Biasing of low-rate events _very_ necessary to reach higher lumi
+- Simple ML algorithm seems to show improvement (Matts Thesis)
+  - Used ggplot??
+  - Systematic uncertainties are more difficult and simulation must be closer matched to data
+  - Adversarial to prevent correlation with z since that is heavily depended on mixing parameter epsilon
+- Mis-tracking issues require a rough isolation cut
+  - Hit efficiency effects ==> improved pulse fitting
+  - Tracking algo issues ==> Kalman filter will fix
+- _Ignored upgraded detector corresponding to 2019+ data sets_
+- e+e- systematic is dominated by WAB uncertainties
+  - difficult (Cameron) - Natalia attempted to dig into MG and gave up
+- deeper study into analysis cut systematics (currently very conservative)
+  - dominated by target position uncertainty (+/- 0.5mm) 
+- Optimum Interval Method (OIM)
+  - conservative and penalizes number of intervals it searches
+- Method we combine L1L1 and L1L2 regions
+
+### Offline Slack Convos
+- [ ] Need JLab account to access data
+- [x] Omar gave me access to HPS SLAC area on SDF
+  - `/sdf/group/hps/`
+
 ## March 16, 2022
 Omar, Tim, Jeremy, Me
 
