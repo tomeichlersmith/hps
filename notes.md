@@ -37,6 +37,26 @@ Matt Solt <- not on HPS anymore
 - [x] Omar gave me access to HPS SLAC area on SDF
   - `/sdf/group/hps/`
 
+#### Cameron SW Notes
+In principle we have all this documented in [hps-mc](https://github.com/JeffersonLab/hps-mc)
+
+- [does the whole MC chain up to recon for main bkgd](https://github.com/JeffersonLab/hps-mc/blob/master/python/jobs/tritrig_job.py)
+```python
+from hpsmc.generators import MG5, StdHepConverter
+from hpsmc.tools import SLIC, JobManager, FilterBunches, BeamCoords, AddMother
+
+job.description = 'tritrig generation to recon'
+```
+- [an example of how to use it in the hps-ms workflow](https://github.com/JeffersonLab/hps-mc/tree/master/examples/tritrig)
+- [if you want to do data here is a good example to get you started](https://github.com/JeffersonLab/hps-mc/tree/master/examples/data_cnv)
+- [an example of ntuplizing the recon and running an analysis](https://github.com/JeffersonLab/hps-mc/tree/master/examples/hpstr)
+
+all these things can be mixed and matched however you want
+
+it is written in a pretty general way so people can pretty easily spin up jobs that run all of the stuff they want together
+
+it also has different paths to get the same jobs to run on different sorts of systems
+
 ## March 16, 2022
 Omar, Tim, Jeremy, Me
 
