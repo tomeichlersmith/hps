@@ -111,6 +111,9 @@ export HPS_HOME=/sdf/group/hps/users/eichl008/hps
 export JAVA_HOME=/sdf/group/hps/users/bravo/src/jdk-15.0.1
 export PATH=/sdf/group/hps/users/bravo/src/jdk-15.0.1/bin:/sdf/group/hps/users/bravo/src/apache-maven-3.6.3/bin:$PATH
 
+# using Cam's GSL
+export GSL_ROOT_DIR=/sdf/group/hps/users/bravo/src/gsl-2.6/install
+
 #Setup Env
 source ${HPS_HOME}/lcio/setup.sh
 #source ${HPS_HOME}/hps/mc/install/bin/hps-mc-env.sh

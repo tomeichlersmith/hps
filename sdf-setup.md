@@ -17,3 +17,26 @@ mvncbld # alias from bashrc.sh
 cd ../lcio
 mvnclbd
 ```
+
+Need a newere cmake for hps-mc
+```
+python3 -m pip install --user --upgrade cmake
+```
+
+Using Cams GSL
+```
+/sdf/group/hps/users/bravo/src/gsl-2.6/install
+```
+
+Built hps-mc with
+```
+cd mc
+source ../bashrc.sh
+cmake -B build -S . \
+  -DHPSMC_ENABLE_HPSJAVA=OFF \
+  -DHPSMC_ENABLE_MADGRAPH=OFF \
+  -DGSL_ROOT_DIR=${GSL_ROOT_DIR} \
+  -DCMAKE_INSTALL_PREFIX=install
+cd build
+make install
+```
