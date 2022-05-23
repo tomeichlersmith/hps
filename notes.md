@@ -34,6 +34,7 @@ Matt Solt <- not on HPS anymore
 
 ### Offline Slack Convos
 - [ ] Need JLab account to access data
+  - https://confluence.slac.stanford.edu/display/hpsg/JLAB+registration+and+obtaining+a+JLAB+account
 - [x] Omar gave me access to HPS SLAC area on SDF
   - `/sdf/group/hps/`
 
