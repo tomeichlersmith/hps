@@ -1,20 +1,19 @@
 
-# Setup HPS and HPS-MC
-```
+# Setup HPS SW
+```bash
 cd /sdf/group/hps/users/
 mkdir $USER
 cd $USER
 git clone git@github.com:tomeichlersmith/hps
 git clone git@github.com:jeffersonlab/hps-mc hps/mc
-wget https://github.com/JeffersonLab/hps-java/releases/download/hps-java-5.0/hps-distribution-5.0-bin.jar
+git clone git@github.com:jeffersonlab/hps-java hps/java
+git clone git@github.com:jeffersonlab/hps-lcio hps/lcio
+cd hps
+cp /sdf/group/hps/users/bravo/setup/bashrc.sh .
+# copy .hpsmc text into file called hpsmc in this directory
+source bashrc.sh # saw some errors, will need to update it
+cd java
+mvncbld # alias from bashrc.sh
+cd ../lcio
+mvnclbd
 ```
-
-# Install SLIC
-```
-git clone git@github.com:slaclab/slic
-cd slic
-source /sdf/group/hps/packages/setup_dt8.sh
-cmake -B build -S . -DCMAKE_INSTALL_PREFIX=install
-make install
-```
-
