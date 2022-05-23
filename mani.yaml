@@ -1,0 +1,18 @@
+projects:
+  hps:
+    path: .
+    url: git@github.com:tomeichlersmith/hps
+  
+  java:
+    url: git@github.com:jeffersonlab/hps-java
+  
+  lcio:
+    url: git@github.com:jeffersonlab/hps-lcio
+  
+  mc:
+    url: git@github.com:jeffersonlab/hps-mc
+  
+tasks:
+  hello:
+    desc: Print Hello World
+    cmd: echo "Hello World"
