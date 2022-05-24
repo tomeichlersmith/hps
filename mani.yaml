@@ -11,6 +11,9 @@ projects:
   
   mc:
     url: git@github.com:jeffersonlab/hps-mc
+
+  hpstr:
+    url: git@github.com:jeffersonlab/hpstr
   
 tasks:
   hello:
