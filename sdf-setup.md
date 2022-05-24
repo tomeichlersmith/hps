@@ -33,10 +33,42 @@ Built hps-mc with
 cd mc
 source ../bashrc.sh
 cmake -B build -S . \
-  -DHPSMC_ENABLE_HPSJAVA=OFF \
+  -DHPSMC_ENABLE_EGS5=ON \
   -DHPSMC_ENABLE_MADGRAPH=OFF \
+  -DHPSMC_ENABLE_STDHEP=ON \
+  -DHPSMC_ENABLE_FIELDMAPS=ON \
+  -DHPSMC_ENABLE_LCIO=ON \
+  -DHPSMC_ENABLE_HPSJAVA=ON \
+  -DHPSMC_ENABLE_CONDITIONS=OFF
   -DGSL_ROOT_DIR=${GSL_ROOT_DIR} \
   -DCMAKE_INSTALL_PREFIX=install
 cd build
 make install
+```
+
+## Test
+Run example tritrig simulation.
+```
+cd hps/mc/examples/tritrig
+hps-mc-job run -d scratch tritrig job.json
+```
+
+## hpstr
+Need LCIO and ROOT.
+```
+cd hps/lcio
+cmake -B build -S . -DCMAKE_INSTALL_PREFIX=install
+cd build
+cp ../LCIOLibDeps.cmake .
+make install
+```
+
+```
+mkdir root
+cd root
+wget https://root.cern/download/root_v6.22.06.source.tar.gz
+tar xzf root_v6.22.06.source.tar.gz
+cmake -B build -S root-v6.22.06 -DCMAKE_INSTALL_PREFIX=install -Dminimal=ON -Dpyroot=ON -Dxrootd=OFF
+cmake --build build
+cmake --build build --target install
 ```
