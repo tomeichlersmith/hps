@@ -31,7 +31,9 @@ if [ -z $ROOTSYS ]; then
   source /sdf/group/hps/users/bravo/src/root/buildV62202/bin/thisroot.sh
 fi
 
-source ${HPS_HOME}/hps/hpstr/install/bin/setup.sh
+if [ -z $HPSTR_BASE ]; then
+  source ${HPS_HOME}/hpstr/install/bin/setup.sh
+fi
 
 #Alias to make things easier
 alias mvnclbd='mvn clean install -DskipTests=true -Dcheckstyle.skip'
