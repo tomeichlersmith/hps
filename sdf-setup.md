@@ -62,13 +62,4 @@ cd build
 cp ../LCIOLibDeps.cmake .
 make install
 ```
-
-```
-mkdir root
-cd root
-wget https://root.cern/download/root_v6.22.06.source.tar.gz
-tar xzf root_v6.22.06.source.tar.gz
-cmake -B build -S root-v6.22.06 -DCMAKE_INSTALL_PREFIX=install -Dminimal=ON -Dpyroot=ON -Dxrootd=OFF
-cmake --build build
-cmake --build build --target install
-```
+Using Cams ROOT.
