@@ -1,5 +1,39 @@
 # HPS General Notes
 
+## June 1, 2022 Analysis Meeting
+Cameron Bravo
+
+_Admin_ Poke Nathan for access to GitHub and maybe help JLab account move along.
+
+- where is MC data? Gen my own? 
+- generally following matt's thesis? 
+- ntuplizer?
+
+Two Major Categories for 2016 Analysis
+1. deciding on calibration and recon upgrades to use and run reco on full dataset
+2. MC tools for simulating iDM signal
+
+### iDM MC
+- Need cards for MG for generating iDM (Philip/Natalia probably have these or close to them)
+
+### Re-Recon 2016 Data
+- Check on how updated calibrations affect reconstruction of 2016 data
+- Update tracking algorithm
+- Look at specific calibration style events
+
+### Quality Analysis of Current Calibration
+- `/sdf/group/hps/data/physrun2016/hps_007800` with reco and ntuples available
+- 2.3GeV beam at 2016
+- Looking for events with _clean_ one positron track and two electron tracks
+- Sum their momenta, get ones where total energy is close to beam energy in peak
+- Inspect these tracks and their vertices
+  - chi^2 of fit
+  - tan-lambda, phi, d0, z0, momentum 
+- `AnaVertex` Processor in hpstr
+  - Only looking for two tracks, one in each half
+  - Make a copy of this and then make a "Trident" processor
+  - WAB where one electron track, compared to energy in electron cluster in ECal 
+
 ## May 3, 2022 Recon/Analysis Workshop
 
 ### SIMPs Analysis Sensitivity Calculation
@@ -33,7 +67,7 @@ Matt Solt <- not on HPS anymore
 - Method we combine L1L1 and L1L2 regions
 
 ### Offline Slack Convos
-- [ ] Need JLab account to access data
+- [x] Need JLab account to access data
   - https://confluence.slac.stanford.edu/display/hpsg/JLAB+registration+and+obtaining+a+JLAB+account
 - [x] Omar gave me access to HPS SLAC area on SDF
   - `/sdf/group/hps/`
