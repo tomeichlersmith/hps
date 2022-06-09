@@ -4,3 +4,8 @@ mc
 lcio
 java
 # mani #
+*.root
+*.log
+2016-subsample
+__pycache__
+.ipynb_checkpoints
