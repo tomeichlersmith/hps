@@ -5,10 +5,6 @@ Cameron Bravo
 
 _Admin_ Poke Nathan for access to GitHub and maybe help JLab account move along.
 
-- where is MC data? Gen my own? 
-- generally following matt's thesis? 
-- ntuplizer?
-
 Two Major Categories for 2016 Analysis
 1. deciding on calibration and recon upgrades to use and run reco on full dataset
 2. MC tools for simulating iDM signal
@@ -33,6 +29,11 @@ Two Major Categories for 2016 Analysis
   - Only looking for two tracks, one in each half
   - Make a copy of this and then make a "Trident" processor
   - WAB where one electron track, compared to energy in electron cluster in ECal 
+- Matt G had Trident + Track Eff processors from ~2yrs ago to be updated
+- selection
+  - events with one positron and two electrons
+  - tracks matched to clusters
+  - look at E/p for these tracks
 
 ## May 3, 2022 Recon/Analysis Workshop
 
