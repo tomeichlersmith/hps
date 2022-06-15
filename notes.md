@@ -1,5 +1,46 @@
 # HPS General Notes
 
+## June 15, 2022 hps-java Chat with PF
+
+### Example run command
+```bash
+java \ # base java command
+  -DdisableSvtAlignmentConstants \ # extra parameter PF is using for hist tracking work
+  -Djna.library.path="/sdf/group/hps/users/bravo/src/GeneralBrokenLines/cpp/install/lib/" \ # allowing PF to use a C++ library within java
+  -XX:+UseSerialGC \ # java argument - define type of Garbage Collector
+  -Xmx6500m \ # java argument - set memory limit
+  -jar /sdf/group/hps/users/pbutti/sw/hps-java/distribution/target/hps-distribution-5.1-SNAPSHOT-bin.jar \ # define compilation of hps-java to use
+  \ # everything after the jar are inputs to the java "run manager"
+  -R 10104 \ # run number, should match input 
+  -d HPS_Nominal_iter19 \ # detector defining global->local conversion and conditions
+  -D outputFile=data_events_aliRecon \ # parameter passted to steering file
+  /sdf/group/hps/users/pbutti/run/alignmentDriver_gblplots_fee.lcsim \ # steering file
+  -n 10000 \ # max number of events to process 
+  -i /sdf/group/hps/data/physrun2019/hps_010104_slcio_pf/hps_010104_15.slcio # input file
+```
+
+### Vocab
+- "driver" = "processor"
+
+### Steering File
+General outline is two parts: order of drivers and then definition of drivers
+```xml
+<lcsim xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/lcsim/1.0/lcsim.xsd">
+  <execute>
+    <driver name="MyDriverInstance">
+    <!-- other drivers in execute order -->
+  </execute>
+  <drivers>
+    <driver name="MyDriverInstance" type="org.hps.full.class.spec.MyDriverClass">
+      <myParameter>value</myParameter>
+    </driver>
+  </drivers>
+</lcsim>
+```
+**Warning**: `myParameter` must have a matching `public void setMyParameter` in `MyDriverClass`
+(Notice difference in capitalization of the first letter.)
+
 ## June 1, 2022 Analysis Meeting
 Cameron Bravo
 
