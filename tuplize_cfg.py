@@ -109,7 +109,7 @@ trackgbl.parameters["bfield"] = bfield[str(options.year)]
 #ECalData
 ecal.parameters["debug"] = 0
 ecal.parameters["hitCollLcio"] = 'EcalCalHits'
-ecal.parameters["hitCollRoot"] = ''#'RecoEcalHits'
+ecal.parameters["hitCollRoot"] = 'RecoEcalHits'
 ecal.parameters["clusCollLcio"] = "EcalClustersCorr"
 ecal.parameters["clusCollRoot"] = "RecoEcalClusters"
 

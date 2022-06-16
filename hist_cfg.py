@@ -16,16 +16,22 @@ p.output_files = [ p.input_files[0].replace('tuple','hist') ]
 # Library containing processors
 p.add_library("libprocessors")
 
+beamE = 2.3 # GeV - 2016 data
+
 ###############################
 #          Processors         #
 ###############################
 
-ana = HpstrConf.Processor('ana', 'FullTridentTracksAnalyzer')
+ana = HpstrConf.Processor('ana', 'ThreeProngTridentTracksAnalyzer')
 ana.parameters["debug"] = 1
 
-ana.parameters["event_selection"] = os.environ['HPS_HOME']+"/trident-event-selection.json"
-ana.parameters["histo_cfg"] = os.environ['HPS_HOME']+"/track_histos-2.3GeV.json"
-ana.parameters["beamE"] = 2.3
+hpstr_analysis_dir=f'{os.environ["HPSTR_BASE"]}/analysis'
+selections_dir = f'{hpstr_analysis_dir}/selections/three-prong-tridents'
+
+ana.parameters["cluster_selection"] = f'{selections_dir}/three-prong-trident-cluster-selection.json'
+ana.parameters["event_selection"] = f'{selections_dir}/three-prong-trident-event-selection.json'
+ana.parameters["histo_cfg"] = f'{hpstr_analysis_dir}/plotconfigs/three-prong-tridents/three-prong-trident-histos-{beamE}GeV.json'
+ana.parameters["beamE"] = beamE
 ana.parameters["isData"] = options.isData
 
 CalTimeOffset=-999.
