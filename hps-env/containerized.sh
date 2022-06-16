@@ -54,19 +54,19 @@ fi
 #   and to integrate Windoze Subsystem for Linux: 
 #     https://wiki.ubuntu.com/WSL#Running_Graphical_Applications
 ####################################################################################################
-export HEP_CONTAINER_DISPLAY=""
+export HPS_CONTAINER_DISPLAY=""
 __hps_which_os() {
   if uname -a | grep -q microsoft; then
     # Windoze Subsystem for Linux
-    export HEP_CONTAINER_DISPLAY=$(awk '/nameserver / {print $2; exit}' /etc/resolv.conf 2>/dev/null)    
+    export HPS_CONTAINER_DISPLAY=$(awk '/nameserver / {print $2; exit}' /etc/resolv.conf 2>/dev/null)    
     return 0
   elif [[ "$OSTYPE" == "darwin"* ]]; then
     # Mac OSX
-    export HEP_CONTAINER_DISPLAY="docker.for.mac.host.internal"
+    export HPS_CONTAINER_DISPLAY="docker.for.mac.host.internal"
     return 0
   elif [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "freebsd"* ]]; then
     # Linux distribution
-    export HEP_CONTAINER_DISPLAY=""
+    export HPS_CONTAINER_DISPLAY=""
     return 0
   fi
 
@@ -81,14 +81,14 @@ fi
 ####################################################################################################
 # We have gotten here after determining that we definitely have a container runner 
 # (either docker or singularity) and we have determined how to connect the display 
-# (or warn the user that we can't) via the HEP_CONTAINER_DISPLAY variable.
+# (or warn the user that we can't) via the HPS_CONTAINER_DISPLAY variable.
 #
 #   All container-runners need to implement the following commands
 #     - __hps_list_local : list images available locally
 #     - __hps_container_clean : remove all containers and images on this machine
 #     - __hps_container_config : print configuration of container
 #     - __hps_run : give all arguments to container's entrypoint script
-#         - mounts all directories in bash array HEP_CONTAINER_MOUNTS
+#         - mounts all directories in bash array HPS_CONTAINER_MOUNTS
 #     - __hps_cache : change directory where image layers are cached
 ####################################################################################################
 
@@ -97,7 +97,7 @@ __hps_run_help() {
   USAGE:
     hps run <dir> <program> [<args>]
 
-    We launch the container, mounting all of the directories stored in the HEP_CONTAINER_MOUNTS
+    We launch the container, mounting all of the directories stored in the HPS_CONTAINER_MOUNTS
     array, and then go to <dir> to execute <program> with its (optional) arguments <args>.
 
     We do not check if <dir> is available inside of the container or even if it is actually
@@ -139,8 +139,8 @@ if hash docker &> /dev/null; then
   #   SHA retrieval taken from https://stackoverflow.com/a/33511811
   __hps_container_config() {
     echo "Docker Version: $(docker --version)"
-    echo "Docker Tag: ${HEP_IMAGE_TAG}"
-    echo "  SHA: $(docker inspect --format='{{index .RepoDigests 0}}' ${HEP_IMAGE_TAG})"
+    echo "Docker Tag: ${HPS_IMAGE_TAG}"
+    echo "  SHA: $(docker inspect --format='{{index .RepoDigests 0}}' ${HPS_IMAGE_TAG})"
     return 0
   }
 
@@ -153,16 +153,16 @@ if hash docker &> /dev/null; then
   # Run the container
   __hps_run() {
     local _mounts=""
-    for dir_to_mount in "${HEP_CONTAINER_MOUNTS[@]}"; do
+    for dir_to_mount in "${HPS_CONTAINER_MOUNTS[@]}"; do
       _mounts="$_mounts -v $dir_to_mount:$dir_to_mount"
     done
     docker run --rm -it  \
-      -e DISPLAY=${HEP_CONTAINER_DISPLAY}:0 \
+      -e DISPLAY=${HPS_CONTAINER_DISPLAY}:0 \
       -v /tmp/.X11-unix:/tmp/.X11-unix \
-      ${HEP_CONTAINER_INSTALL:+-v ${HEP_CONTAINER_INSTALL}:/externals} \
+      ${HPS_CONTAINER_INSTALL:+-v ${HPS_CONTAINER_INSTALL}:/externals} \
       $_mounts \
       -u $(id -u ${USER}):$(id -g ${USER}) \
-      $HEP_IMAGE_TAG "$@"
+      $HPS_IMAGE_TAG "$@"
     return $?
   }
 
@@ -180,7 +180,7 @@ elif hash singularity &> /dev/null; then
   # Print container configuration
   __hps_container_config() {
     echo "Singularity Version: $(singularity --version)"
-    echo "Singularity Tag: docker://${HEP_IMAGE_TAG}"
+    echo "Singularity Tag: docker://${HPS_IMAGE_TAG}"
     return 0
   }
 
@@ -191,12 +191,12 @@ elif hash singularity &> /dev/null; then
 
   # Run the container
   __hps_run() {
-    local csv_list="/tmp/.X11-unix:/tmp/.X11-unix${HEP_CONTAINER_INSTALL:+,${HEP_CONTAINER_INSTALL}:/externals}"
-    for dir_to_mount in "${HEP_CONTAINER_MOUNTS[@]}"; do
+    local csv_list="/tmp/.X11-unix:/tmp/.X11-unix${HPS_CONTAINER_INSTALL:+,${HPS_CONTAINER_INSTALL}:/externals}"
+    for dir_to_mount in "${HPS_CONTAINER_MOUNTS[@]}"; do
       csv_list="$csv_list,$dir_to_mount"
     done
     singularity run --no-home --cleanenv \
-      --bind ${csv_list} docker://${HEP_IMAGE_TAG} "$@"
+      --bind ${csv_list} docker://${HPS_IMAGE_TAG} "$@"
     return $?
   }
 
@@ -271,8 +271,8 @@ __hps_list() {
 __hps_config() {
   echo "uname: $(uname -a)"
   echo "OSTYPE: ${OSTYPE}"
-  echo "Display Port: ${HEP_CONTAINER_DISPLAY}"
-  echo "Container Mounts: ${HEP_CONTAINER_MOUNTS[@]}"
+  echo "Display Port: ${HPS_CONTAINER_DISPLAY}"
+  echo "Container Mounts: ${HPS_CONTAINER_MOUNTS[@]}"
   __hps_container_config
   return $?
 }
@@ -283,7 +283,7 @@ __hps_config() {
 ####################################################################################################
 __hps_is_mounted() {
   local full=$(cd "$1" && pwd -P)
-  for _already_mounted in ${HEP_CONTAINER_MOUNTS[@]}; do
+  for _already_mounted in ${HPS_CONTAINER_MOUNTS[@]}; do
     if [[ $full/ = $_already_mounted/* ]]; then
       return 0
     fi
@@ -310,15 +310,15 @@ __hps_use_help() {
     hps use root-v6.18
 HELP
 }
-export HEP_IMAGE_TAG="tomeichlersmith/hps-env:latest"
+export HPS_IMAGE_TAG="tomeichlersmith/hps-env:latest"
 __hps_use() {
   local _tag="$1"
   if [[ ${_tag} = *":"* ]]; then
     # full docker image tag was given
-    export HEP_IMAGE_TAG=${_tag}
+    export HPS_IMAGE_TAG=${_tag}
   else
     # only short-tag, keep repo from before
-    export HEP_IMAGE_TAG="${HEP_IMAGE_TAG%:*}:${_tag}"
+    export HPS_IMAGE_TAG="${HPS_IMAGE_TAG%:*}:${_tag}"
   fi
   return 0
 }
@@ -346,7 +346,7 @@ __hps_mount_help() {
       hps mount .
 HELP
 }
-export HEP_CONTAINER_MOUNTS=()
+export HPS_CONTAINER_MOUNTS=()
 __hps_mount() {
   local _dir_to_mount="$1"
   
@@ -361,8 +361,8 @@ __hps_mount() {
     return 0
   fi
 
-  HEP_CONTAINER_MOUNTS+=($(cd "$_dir_to_mount" && pwd -P))
-  export HEP_CONTAINER_MOUNTS
+  HPS_CONTAINER_MOUNTS+=($(cd "$_dir_to_mount" && pwd -P))
+  export HPS_CONTAINER_MOUNTS
   return 0
 }
 
@@ -398,9 +398,9 @@ __hps_install_help() {
     And then you can use that directory as your install prefix when installing software.
 HELP
 }
-export HEP_CONTAINER_INSTALL=""
+export HPS_CONTAINER_INSTALL=""
 __hps_install() {
-  export HEP_CONTAINER_INSTALL=$(cd "$1" && pwd -P)
+  export HPS_CONTAINER_INSTALL=$(cd "$1" && pwd -P)
   return 0
 }
 
@@ -438,8 +438,8 @@ __hps_clean() {
 
   # must be last so cleaning of source can look in hps base
   if [[ "$_what" = "env" ]] || [[ "$_what" = "all" ]]; then
-    unset HEP_CONTAINER_MOUNTS
-    unset HEP_CONTAINER_DISPLAY
+    unset HPS_CONTAINER_MOUNTS
+    unset HPS_CONTAINER_DISPLAY
   fi
 
   return ${rc}
@@ -515,8 +515,8 @@ __hps_help() {
     hps list tomeichlersmith/hps-env
     hps clean container
     hps config
-    hps use root-6.22
-    hps pull root-latest
+    hps use v1.0
+    hps pull latest
     hps mount $HOME
     hps install .container-install
     hps run /etc cat entry.sh
