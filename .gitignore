@@ -3,6 +3,7 @@ hpstr
 mc
 lcio
 java
+env
 # mani #
 *.root
 *.log

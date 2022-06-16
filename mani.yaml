@@ -14,6 +14,9 @@ projects:
 
   hpstr:
     url: git@github.com:jeffersonlab/hpstr
+
+  env:
+    url: git@github.com:tomeichlersmith/hps-env
   
 tasks:
   hello:
