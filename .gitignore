@@ -10,3 +10,4 @@ env
 2016-subsample
 __pycache__
 .ipynb_checkpoints
+.container-install
