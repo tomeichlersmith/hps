@@ -1,0 +1,8 @@
+# env setup file for containerized hpstr
+#   since I use relative paths for directories,
+#   this always needs to be called from this directory,
+#   i.e. source env/env.sh hpsrc
+use latest
+mount .
+install .container-install
+
