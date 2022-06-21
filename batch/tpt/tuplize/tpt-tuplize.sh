@@ -4,6 +4,8 @@
 #SBATCH --ntasks=1
 #SBATCH --output=output-%j.txt
 #
+# maximum job time of six hours
+#SBATCH --time 6:00:00
 #SBATCH --job-name=tpt-tuplize
 #
 # the 2016-subsample Cam made available for me is
