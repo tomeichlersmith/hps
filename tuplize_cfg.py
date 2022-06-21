@@ -8,8 +8,8 @@ options = base.parser.parse_args()
 
 # Use the input file to set the output file name
 lcio_file = options.inFilename[0]
-run = lcio_file.replace('.slcio','').split('_')[-1]
-out_name = f'tuple_2016_subsample_007800_run_{run}.root'
+part = int(lcio_file.replace('.slcio','').split('_')[-1])
+out_name = f'tuple_2016_subsample_run_007800_part_{part:04d}.root'
 
 p = HpstrConf.Process()
 
