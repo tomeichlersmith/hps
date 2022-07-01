@@ -6,11 +6,14 @@
 #
 # maximum job time of six hours
 #SBATCH --time 6:00:00
+# maximum job memory
+#SBATCH --mem=8G
+#
 #SBATCH --job-name=tpt-tuplize
 #
 # the 2016-subsample Cam made available for me is
 #   Run 007800 Partitions 0 - 387 (inclusive)
-#SBATCH --array=0-19
+#SBATCH --array=0-20
 
 hps_2016_subsample_data_dir=${HPS_HOME}/2016-subsample/reco/
 

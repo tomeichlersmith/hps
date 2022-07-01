@@ -8,6 +8,7 @@
 #
 # the 2016-subsample Cam made available for me is
 #   Run 007800 Partitions 0 - 387 (inclusive)
-#SBATCH --array=150-169
+#SBATCH --array=0-20
 
-srun hpstr ${HPS_HOME}/hist_cfg.py -i ${HPS_HOME}/2016-subsample/tuples/
+srun hpstr ${HPS_HOME}/hist_cfg.py -t 1 \
+  -i ${HPS_HOME}/2016-subsample/tuples/tuple_2016_subsample_run_007800_part_$(printf "%04d" ${SLURM_ARRAY_TASK_ID}).root
