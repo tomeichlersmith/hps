@@ -25,7 +25,7 @@ beamE = 2.3 # GeV - 2016 data
 ana = HpstrConf.Processor('ana', 'ThreeProngTridentTracksAnalyzer')
 ana.parameters["debug"] = 1
 
-hpstr_analysis_dir=f'hpstr/analysis'
+hpstr_analysis_dir=f'{os.environ.get("HPS_HOME",".")}/hpstr/analysis'
 selections_dir = f'{hpstr_analysis_dir}/selections/three-prong-tridents'
 
 ana.parameters["cluster_selection"] = f'{selections_dir}/three-prong-trident-cluster-selection.json'
