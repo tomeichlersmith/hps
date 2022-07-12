@@ -28,6 +28,7 @@ ana.parameters["debug"] = 1
 hpstr_analysis_dir=f'{os.environ.get("HPS_HOME",".")}/hpstr/analysis'
 selections_dir = f'{hpstr_analysis_dir}/selections/three-prong-tridents'
 
+ana.parameters['particle_coll'] = 'FinalStateParticles_KF'
 ana.parameters["cluster_selection"] = f'{selections_dir}/three-prong-trident-cluster-selection.json'
 ana.parameters["event_selection"] = f'{selections_dir}/three-prong-trident-event-selection.json'
 ana.parameters["histo_cfg"] = f'{hpstr_analysis_dir}/plotconfigs/three-prong-tridents/three-prong-trident-histos-{beamE}GeV.json'

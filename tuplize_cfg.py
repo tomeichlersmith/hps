@@ -145,8 +145,8 @@ mcpart.parameters["mcPartCollRoot"] = 'MCParticle'
 
 # FSP
 fspart.parameters['debug'] = 0
-fspart.parameters['fspartCollLcio'] = 'FinalStateParticles'
-fspart.parameters['fspartCollRoot'] = 'FinalStateParticles'
+fspart.parameters['fspCollLcio'] = 'FinalStateParticles_KF'
+fspart.parameters['fspCollRoot'] = 'FinalStateParticles_KF'
 
 # Sequence which the processors will run.
 if (not options.isData):
