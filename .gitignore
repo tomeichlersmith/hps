@@ -11,3 +11,6 @@ env
 __pycache__
 .ipynb_checkpoints
 .container-install
+# sbatch output files
+*.txt
+*.out
