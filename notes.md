@@ -1,5 +1,8 @@
 # HPS General Notes
 
+## July 19, 2022 ana/recon meeting
+- include 2D timing plot pos-ele0 and ele0-ele1 to see event grouping
+
 ## June 15, 2022 hps-java Chat with PF
 
 ### Example run command
