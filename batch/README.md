@@ -26,6 +26,9 @@ input_files=(${HPS_HOME}/2016-subsample/tuples/*)
 srun hpstr ${HPS_HOME}/hist_cfg.py -i ${input_files[$SLURM_ARRAY_TASK_ID]} -t 1
 ```
 
+Another helpfu slurm feature is job dependency `--dependency` which we could use
+to automatically run analyses after a re-tuplization.
+
 ## Table of Contents
 |- tpt        : Three Prong Tridents
    |- tuplize : tuplization from slcio files

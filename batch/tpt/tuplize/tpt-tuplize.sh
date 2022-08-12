@@ -13,7 +13,7 @@
 #
 # the 2016-subsample Cam made available for me is
 #   Run 007800 Partitions 0 - 387 (inclusive)
-#SBATCH --array=0-20
+#SBATCH --array=0-387
 
 hps_2016_subsample_data_dir=/sdf/group/hps/data/physrun2016/hps_007800/reco/hash8d32e68be1b/
 
