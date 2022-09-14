@@ -24,6 +24,7 @@ def main() :
     f.plot_1d({'electrons' : 'n_electron_candidates',
                'positrons' : 'n_positron_candidates'},
                'N Candidates', title = 'Only after cluster cuts, no event cuts',
+               file_name = 'n_cluster_candidates',
                out_dir = arg.out_dir)
 
     f.plot_bar('event_selection_cutflow', 'Events after Cut', 

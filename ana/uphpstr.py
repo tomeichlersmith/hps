@@ -63,7 +63,7 @@ class hpstrHistFile :
             return self.__copies[selections]
 
     def plot_bar(self,hist_name, ylabel, *,
-                 ticks_rotation = 15, out_dir = None, file_prefix = '',
+                 ticks_rotation = 15, out_dir = None, file_name = None,
                  include_prefix = False, ax = None, title = None) :
         if ax is None :
             fig, ax = plt.subplots()
@@ -85,10 +85,12 @@ class hpstrHistFile :
         if out_dir is None :
             plt.show()
         else :
-            plt.savefig(f'{out_dir}/{file_prefix}{hist_name}')
+            if file_name is None :
+                file_name = hist_name
+            plt.savefig(f'{out_dir}/{file_name}')
     
     def plot_1d(self,hist_name, xlabel, *, 
-                out_dir = None, file_prefix = '',
+                out_dir = None, file_name = None,
                 ax = None, selections = None, title = None) :
         if ax is None :
             fig, ax = plt.subplots()
@@ -119,10 +121,12 @@ class hpstrHistFile :
         if out_dir is None :
             plt.show()
         else :
-            plt.savefig(f'{out_dir}/{file_prefix}{hist_name}')
+            if file_name is None :
+                file_name = hist_name
+            plt.savefig(f'{out_dir}/{file_name}')
         
     def plot_2d(self,hist_name, xlabel, ylabel, *, 
-                out_dir = None, file_prefix = '',
+                out_dir = None, file_name = None, 
                 selections = None, size = None, title = None) :
         if isinstance(hist_name,dict) :
             fig, axl = plt.subplots(nrows=len(hist_name))
@@ -160,4 +164,6 @@ class hpstrHistFile :
         if out_dir is None :
             plt.show()
         else :
-            plt.savefig(f'{out_dir}/{file_prefix}{hist_name}')
+            if file_name is None :
+                file_name = hist_name
+            plt.savefig(f'{out_dir}/{file_name}')
