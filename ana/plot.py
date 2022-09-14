@@ -18,6 +18,8 @@ def main() :
         ['pre_fiducial_cut','pre_min_esum_cut','pos_tag','el0_tag','el1_tag'])
 
     f.plot_bar('cluster_selection_cutflow', 'Clusters after Cut', 
+        ['no cuts', '$E_{cluster}/E_{beam} < 0.87$', '$E_{cluster} > 0.1$ GeV', 
+          '$e^-$ (x < 0mm)', '$e^+$ (x > 100mm)'],
         title = 'TPT Cluster Cut Flow',
         out_dir = arg.out_dir)
 
@@ -28,7 +30,11 @@ def main() :
                out_dir = arg.out_dir)
 
     f.plot_bar('event_selection_cutflow', 'Events after Cut', 
+        ['no cuts', '$N_{e^+} >= 1$', '$N_{e^{-}} >= 2$', 
+          '$N_{e^+} <= 1$', '$N_{e^-} <= 2$', 'Fiducial',
+          '$E_{tot} > 2.2$ GeV'],
         title = 'TPT Event Cut Flow',
+        ticks_rotation = 25,
         out_dir = arg.out_dir)
 
     cluster_vars = [
@@ -40,5 +46,30 @@ def main() :
     for hist_name, xlabel in cluster_vars :
         f.plot_1d(hist_name, xlabel, selections  = True, out_dir = arg.out_dir)
 
+    particle = [
+        ('electron0', 'high E electron'),
+        ('electron1', 'low E electron'),
+        ('positron','positron')
+        ]
+    for part, title in particle :
+        f.plot_1d(f'{part}_track_N','Track Match Found',
+            title = title,
+            selections = True,
+            out_dir = arg.out_dir)
+
+    track_vars = [
+        ('d0','$d_0$ [mm]'),
+        ('Z0','$z_0$ [mm]'),
+        ('TanLambda','$\tan(\lambda)$'),
+        ('chi2','$\chi^2$'),
+        ('Omega','\Omega'),
+        ('Phi','\phi')
+        ]
+    for name, title in track_vars :
+        f.plot_1d({p : f'{p}_{name}_h' for p in ['positron','electron0','electron1']},
+                  f'Track {title}', title = 'Track Found, Cluster Fiducial, Min Cluster E Sum',
+                  out_dir = arg.out_dir, file_name = f'track_found_{name}')
+
 if __name__ == '__main__' :
     main()
+

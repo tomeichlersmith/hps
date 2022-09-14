@@ -62,7 +62,7 @@ class hpstrHistFile :
         else :
             return self.__copies[selections]
 
-    def plot_bar(self,hist_name, ylabel, *,
+    def plot_bar(self, hist_name, ylabel, binlabels, *,
                  ticks_rotation = 15, out_dir = None, file_name = None,
                  include_prefix = False, ax = None, title = None) :
         if ax is None :
@@ -70,12 +70,10 @@ class hpstrHistFile :
 
         h = self.get(hist_name, include_prefix = include_prefix)
         values = h.values()
-        labels = [l for l in h.axis('x').member('fLabels')]
+        if len(values) != len(binlabels) :
+            raise KeyError(f'Provided binlabels do not match the number of bins.')
 
-        if len(values) > len(labels) :
-            labels.extend(['' for i in range(len(values)-len(labels))])
-
-        plt.bar(labels, values)
+        plt.bar(binlabels, values)
         plt.xticks(rotation = ticks_rotation)
         plt.yscale('log')
         plt.ylabel(ylabel)
