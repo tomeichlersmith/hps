@@ -14,3 +14,7 @@ __pycache__
 # sbatch output files
 *.txt
 *.out
+# generated plots
+*.png
+# LaTeX generated files
+obj
