@@ -59,8 +59,10 @@ class hpstrHistFile :
             return [None]
         elif selections is True :
             return self.__copies
-        else :
+        elif isinstance(selections, slice) :
             return self.__copies[selections]
+        else :
+            return selections(self.__copies)
 
     def plot_bar(self, hist_name, ylabel, binlabels, *,
                  ticks_rotation = 15, out_dir = None, file_name = None,
@@ -88,7 +90,7 @@ class hpstrHistFile :
             plt.savefig(f'{out_dir}/{file_name}')
     
     def plot_1d(self,hist_name, xlabel, *, 
-                out_dir = None, file_name = None,
+                out_dir = None, file_name = None, ylabel = 'Event Count',
                 ax = None, selections = None, title = None) :
         if ax is None :
             fig, ax = plt.subplots()
@@ -110,7 +112,7 @@ class hpstrHistFile :
                 # just plot the single histogram
                 self.get(hist_name).to_hist().plot(ax=ax,label=hist_name)
         plt.legend()
-        plt.ylabel('Event Count')
+        plt.ylabel(ylabel)
         plt.yscale('log')
         plt.xlabel(xlabel)
         if title is not None :
