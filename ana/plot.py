@@ -14,8 +14,11 @@ def main() :
 
     arg = parser.parse_args()
 
-    f = hpstrHistFile(arg.hist_file,'tpt',
-        ['pre_fiducial_cut','pre_min_esum_cut','pos_tag','el0_tag','el1_tag'])
+    f = hpstrHistFile(arg.hist_file,'tpt',['pre_fiducial_cut',
+                   'pos_tag','pos_tag_E','pos_tag_E_time',
+                   'el0_tag','el0_tag_E','el0_tag_E_time',
+                   'el1_tag','el1_tag_E','el1_tag_E_time'
+                  ])
 
     f.plot_bar('cluster_selection_cutflow', 'Clusters after Cut', 
         ['no cuts', '$E_{cluster}/E_{beam} < 0.87$', '$E_{cluster} > 0.1$ GeV', 
@@ -29,46 +32,36 @@ def main() :
                file_name = 'n_cluster_candidates',
                out_dir = arg.out_dir)
 
+    f.plot_1d('cluster_energy','Cluster Energy [GeV]', 
+              ylabel='Clusters', title='All Clusters',
+              out_dir = arg.out_dir)
+    
+    f.plot_1d('cluster_x','X [mm]',title='Clusters Passing Energy Cuts',
+              out_dir = arg.out_dir)
+    
     f.plot_bar('event_selection_cutflow', 'Events after Cut', 
         ['no cuts', '$N_{e^+} >= 1$', '$N_{e^{-}} >= 2$', 
           '$N_{e^+} <= 1$', '$N_{e^-} <= 2$', 'Fiducial',
-          '$E_{tot} > 2.2$ GeV'],
+          'noop','noop','noop'],
         title = 'TPT Event Cut Flow',
         ticks_rotation = 25,
         out_dir = arg.out_dir)
 
     cluster_vars = [
         ('cluster_E_sum','Cluster E Sum [GeV]'),
+        ('max_time_diff', 'Max Time Diff [ns]'),
         ('electron0_cluster_E','High Energy e- Cluster [GeV]'),
         ('electron1_cluster_E','Low Energy e- Cluster [GeV]'),
         ('positron_cluster_E','e+ Cluster [GeV]'),
+        ('electron0_track_N', 'High Energy Electron Track Match'),
+        ('electron1_track_N', 'Low Energy Electron Track Match'),
+        ('positron_track_N', 'Positron Track Match'),
         ]
     for hist_name, xlabel in cluster_vars :
-        f.plot_1d(hist_name, xlabel, selections  = True, out_dir = arg.out_dir)
-
-    particle = [
-        ('electron0', 'high E electron'),
-        ('electron1', 'low E electron'),
-        ('positron','positron')
-        ]
-    for part, title in particle :
-        f.plot_1d(f'{part}_track_N','Track Match Found',
-            title = title,
-            selections = True,
-            out_dir = arg.out_dir)
-
-    track_vars = [
-        ('d0','$d_0$ [mm]'),
-        ('Z0','$z_0$ [mm]'),
-        ('TanLambda','$\tan(\lambda)$'),
-        ('chi2','$\chi^2$'),
-        ('Omega','\Omega'),
-        ('Phi','\phi')
-        ]
-    for name, title in track_vars :
-        f.plot_1d({p : f'{p}_{name}_h' for p in ['positron','electron0','electron1']},
-                  f'Track {title}', title = 'Track Found, Cluster Fiducial, Min Cluster E Sum',
-                  out_dir = arg.out_dir, file_name = f'track_found_{name}')
+        for p in ['pos','el0','el1'] :
+            f.plot_1d(hist_name, xlabel, 
+                      selections = lambda copies : [c for c in copies if p in c], 
+                      file_name = f'{p}_{hist_name}', out_dir = arg.out_dir)
 
 if __name__ == '__main__' :
     main()
