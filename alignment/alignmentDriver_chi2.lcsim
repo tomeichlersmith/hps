@@ -63,8 +63,11 @@
       <!--
         Use milli+GBL to prepare alignment data file for pede
       -->
+      <driver name="SimpleGBLTrajAliDriverKF"/>
+      <!--
+        Old GBL tracks used for preparing alignment
       <driver name="SimpleGBLTrajAliDriver"/>
-      <!--<driver name="SimpleGBLTrajAliDriverBS"/>-->
+      -->
       
       <!-- 
            TrackDataDriver needs to be run before ReconParticleDriver so the
@@ -83,9 +86,12 @@
       
       <!--<driver name="TrajFromParticles"/>-->
       
-      
-      <!--<driver name="GBLOutputDriver" />-->
-      <!--<driver name="GBLOutputDriverKF"/>-->
+      <!--
+      Write out histograms
+
+      <driver name="GBLOutputDriver" />
+      -->
+      <driver name="GBLOutputDriverKF"/>
       
       <!-- For Vtx performance plotting Still using all GBL Tracks -->
       <!--<driver name="GBLRefitterDriver_AllGBLTracks" /> -->
@@ -697,7 +703,7 @@
 
         <!-- Form trajectories for MPII using the GBL algorithm, starting from Kalman Tracks -->
         <driver name="KalmanToGBLDriver" type="org.hps.recon.tracking.gbl.KalmanToGBLDriver">
-          <!--<debug>false</debug>-->
+          <!--<debug>true</debug>-->
         </driver>
         
         

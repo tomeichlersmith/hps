@@ -25,3 +25,23 @@ These are listed in `<hps-java>/detector-data/detectors/` and should match the y
 ### Run `-R`
 This is where the run number is defined in the data files (I believe) and it should match the
 run number of the data that was taken and is being processed.
+
+### Output Files
+`<outname>_kfgblplots.root` has histograms related to the tracking infrastructre and its results.
+
+`<outname>_all_millepede_kf_PC.bin` is the prepared data file for millepede
+
+### MC
+```
+/sdf/group/hps/mc/
+  - tritrig/slic/<beam>/<run>
+```
+...need to find some more that can be helpful
+a good start
+```
+/sdf/group/hps/mc/4pt55GeV/fee/idealCond/fee_recon_20um120nA_*
+```
+
+### Job
+- Run 10k+ events for both KF and GBL, look at distributions
+- Use detector `HPS_Nominal_2019SensorSurvey_iter0`
