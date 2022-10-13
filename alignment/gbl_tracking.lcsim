@@ -30,17 +30,16 @@
       -->
       <driver name="SensorSetup"/>
       <driver name="TrackerHitDriver"/> 
-
       <!-- 
         HelicalTrackHitDriver only required by GBL tracking
-
+      -->
+      <driver name="HelicalTrackHitDriver"/> 
+      
+      <!-- 
         Track finding and fitting using seed tracker. 
         Eff has been checked in pt > 1GeV, >=6 Hits tracks
-
-        Last two where the tracks are merged and then refitted are
-        only necessary for comparing multiple GBL track strats
-
-      <driver name="HelicalTrackHitDriver"/> 
+      
+      -->
       <driver name="TrackReconSeed123Conf4Extd56"/>    
       <driver name="TrackReconSeed123Conf5Extd46"/>
       <driver name="TrackReconSeed567Conf4Extd123"/>
@@ -48,21 +47,24 @@
       <driver name="TrackReconSeed356Conf7Extd124"/>
       <driver name="TrackReconSeed235Conf6Extd147"/>
       <driver name="TrackReconSeed234Conf6Extd157"/>
+        
+      <!--
+        Only necessary for comparing multiple GBL track strats
+      -->
       <driver name="MergeTrackCollections"/> 
       <driver name="GBLRefitterDriver"/>
-      -->
       
       <!--
         Kalman tracking
-      -->
       <driver name="KalmanPatRecDriver"/>
       <driver name="KalmanKinkFitDriver"/>
       <driver name="KalmanToGBLDriver"/> 
+      -->
       
       <!--
         Use milli+GBL to prepare alignment data file for pede
-      -->
       <driver name="SimpleGBLTrajAliDriverKF"/>
+      -->
       <!--
         Old GBL tracks used for preparing alignment
       <driver name="SimpleGBLTrajAliDriver"/>
@@ -88,9 +90,9 @@
       <!--
       Write out histograms
 
-      <driver name="GBLOutputDriver" />
-      -->
       <driver name="GBLOutputDriverKF"/>
+      -->
+      <driver name="GBLOutputDriver" />
       
       <!-- For Vtx performance plotting Still using all GBL Tracks -->
       <!--<driver name="GBLRefitterDriver_AllGBLTracks" /> -->
