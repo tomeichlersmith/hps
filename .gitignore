@@ -18,3 +18,5 @@ __pycache__
 *.png
 # LaTeX generated files
 obj
+# data files
+*.slcio
