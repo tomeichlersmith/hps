@@ -32,13 +32,14 @@
       <driver name="TrackerHitDriver"/> 
       <!-- 
         HelicalTrackHitDriver only required by GBL tracking
-      <driver name="HelicalTrackHitDriver"/> 
       -->
+      <driver name="HelicalTrackHitDriver"/> 
       
       <!-- 
         Track finding and fitting using seed tracker. 
         Eff has been checked in pt > 1GeV, >=6 Hits tracks
       
+      -->
       <driver name="TrackReconSeed123Conf4Extd56"/>    
       <driver name="TrackReconSeed123Conf5Extd46"/>
       <driver name="TrackReconSeed567Conf4Extd123"/>
@@ -46,24 +47,24 @@
       <driver name="TrackReconSeed356Conf7Extd124"/>
       <driver name="TrackReconSeed235Conf6Extd147"/>
       <driver name="TrackReconSeed234Conf6Extd157"/>
-      -->
         
       <!--
         Only necessary for comparing multiple GBL track strats
-      <driver name="MergeTrackCollections"/> 
       -->
+      <driver name="MergeTrackCollections"/> 
+      <driver name="GBLRefitterDriver"/>
       
       <!--
         Kalman tracking
-      -->
       <driver name="KalmanPatRecDriver"/>
       <driver name="KalmanKinkFitDriver"/>
       <driver name="KalmanToGBLDriver"/> 
+      -->
       
       <!--
         Use milli+GBL to prepare alignment data file for pede
-      -->
       <driver name="SimpleGBLTrajAliDriverKF"/>
+      -->
       <!--
         Old GBL tracks used for preparing alignment
       <driver name="SimpleGBLTrajAliDriver"/>
@@ -89,9 +90,9 @@
       <!--
       Write out histograms
 
-      <driver name="GBLOutputDriver" />
-      -->
       <driver name="GBLOutputDriverKF"/>
+      -->
+      <driver name="GBLOutputDriver" />
       
       <!-- For Vtx performance plotting Still using all GBL Tracks -->
       <!--<driver name="GBLRefitterDriver_AllGBLTracks" /> -->
@@ -362,8 +363,10 @@
 
         <!-- Form trajectories for MPII using the GBL algorithm -->
         <driver name="SimpleGBLTrajAliDriver" type="org.hps.recon.tracking.gbl.SimpleGBLTrajAliDriver" >
-          <!--            <maxTrackChisq5hits> 60. </maxTrackChisq5hits>
-               <maxTrackChisq6hits> 84. </maxTrackChisq6hits>-->
+          <!--
+          <maxTrackChisq5hits> 60. </maxTrackChisq5hits>
+          <maxTrackChisq6hits> 84. </maxTrackChisq6hits>
+          -->
           <includeNoHitScatters>false</includeNoHitScatters>
           <gblRefitIterations>0</gblRefitIterations>
           <storeTrackStates>true</storeTrackStates>
@@ -384,76 +387,6 @@
 	    </driver> 
         
         <!-- Form trajectories for MPII using the GBL algorithm -->
-        <driver name="SimpleGBLTrajAliDriverPC" type="org.hps.recon.tracking.gbl.SimpleGBLTrajAliDriver" >
-          <!--            <maxTrackChisq5hits> 60. </maxTrackChisq5hits>
-               <maxTrackChisq6hits> 84. </maxTrackChisq6hits>-->
-          <includeNoHitScatters>false</includeNoHitScatters>
-          <gblRefitIterations>0</gblRefitIterations>
-          <storeTrackStates>true</storeTrackStates>
-          <enableAlignmentCuts>true</enableAlignmentCuts>
-          <debugAlignmentDs>false</debugAlignmentDs>
-          <compositeAlign>true</compositeAlign>
-          <constrainedFit>true</constrainedFit>
-          <momC>4.55</momC>
-          <seedPrecision>10000</seedPrecision>
-          <constrainedBSFit>false</constrainedBSFit>
-          <trackSide>-1</trackSide> <!--hole-->
-          <writeMilleBinary>true</writeMilleBinary>
-          <milleBinaryFileName>${outputFile}_all_PC_ST_millepede.bin</milleBinaryFileName>
-          <writeMilleChi2Cut>5</writeMilleChi2Cut>  <!-- Chi2/Ndf -->
-          <enableStandardCuts>false</enableStandardCuts>
-          <maxTrackChisq4hits>60.</maxTrackChisq4hits>
-          <maxTrackChisq5hits>60.</maxTrackChisq5hits>
-          <maxTrackChisq6hits>60.</maxTrackChisq6hits>
-        </driver> 
-
-        <!-- Form trajectories for MPII using the GBL algorithm -->
-        <driver name="SimpleGBLTrajAliDriverBS" type="org.hps.recon.tracking.gbl.SimpleGBLTrajAliDriver" >
-          <!--            <maxTrackChisq5hits> 60. </maxTrackChisq5hits>
-               <maxTrackChisq6hits> 84. </maxTrackChisq6hits>-->
-          <includeNoHitScatters>false</includeNoHitScatters>
-          <gblRefitIterations>0</gblRefitIterations>
-          <storeTrackStates>true</storeTrackStates>
-          <enableAlignmentCuts>true</enableAlignmentCuts>
-          <debugAlignmentDs>false</debugAlignmentDs>
-          <compositeAlign>true</compositeAlign>
-          <constrainedFit>false</constrainedFit>
-          <constrainedBSFit>true</constrainedBSFit>
-          <trackSide>-1</trackSide> <!--hole-->
-          <writeMilleBinary>true</writeMilleBinary>
-          <milleBinaryFileName>${outputFile}_all_BSC_millepede.bin</milleBinaryFileName>
-          <writeMilleChi2Cut>5</writeMilleChi2Cut>  <!-- Chi2/Ndf -->
-          <enableStandardCuts>false</enableStandardCuts>
-          <maxTrackChisq4hits>60.</maxTrackChisq4hits>
-          <maxTrackChisq5hits>60.</maxTrackChisq5hits>
-          <maxTrackChisq6hits>60.</maxTrackChisq6hits>
-          <bsZ>-7.5</bsZ>
-        </driver> 
-
-        <!-- Form trajectories for MPII using the GBL algorithm -->
-        <driver name="SimpleGBLTrajAliDriverPCBS" type="org.hps.recon.tracking.gbl.SimpleGBLTrajAliDriver" >
-          <!--            <maxTrackChisq5hits> 60. </maxTrackChisq5hits>
-               <maxTrackChisq6hits> 84. </maxTrackChisq6hits>-->
-          <includeNoHitScatters>false</includeNoHitScatters>
-          <gblRefitIterations>0</gblRefitIterations>
-          <storeTrackStates>true</storeTrackStates>
-          <enableAlignmentCuts>true</enableAlignmentCuts>
-          <debugAlignmentDs>false</debugAlignmentDs>
-          <compositeAlign>true</compositeAlign>
-          <constrainedFit>true</constrainedFit>
-          <constrainedBSFit>true</constrainedBSFit>
-          <trackSide>-1</trackSide> <!--hole-->
-          <writeMilleBinary>true</writeMilleBinary>
-          <milleBinaryFileName>${outputFile}_all_BSC_PC_millepede.bin</milleBinaryFileName>
-          <writeMilleChi2Cut>5</writeMilleChi2Cut>  <!-- Chi2/Ndf -->
-          <enableStandardCuts>false</enableStandardCuts>
-          <maxTrackChisq4hits>60.</maxTrackChisq4hits>
-          <maxTrackChisq5hits>60.</maxTrackChisq5hits>
-          <maxTrackChisq6hits>60.</maxTrackChisq6hits>
-        </driver>
-
-        
-        <!-- Form trajectories for MPII using the GBL algorithm -->
         <driver name="TrajFromParticles" type="org.hps.recon.tracking.gbl.SimpleGBLTrajAliDriver" >
           <inputCollectionName>FinalStateParticles</inputCollectionName>
           <includeNoHitScatters>false</includeNoHitScatters>
@@ -469,51 +402,6 @@
           <writeMilleBinary>true</writeMilleBinary>
           <milleBinaryFileName>${outputFile}_all_millepede_ST.bin</milleBinaryFileName>
           <writeMilleChi2Cut>5</writeMilleChi2Cut>  <!-- Chi2/Ndf -->
-          <enableStandardCuts>false</enableStandardCuts>
-          <maxTrackChisq4hits>60.</maxTrackChisq4hits>
-          <maxTrackChisq5hits>60.</maxTrackChisq5hits>
-          <maxTrackChisq6hits>60.</maxTrackChisq6hits>
-        </driver> 
-        
-        <!-- Form trajectories for MPII using the GBL algorithm -->
-        <driver name="SimpleGBLTrajAliDriverHole" type="org.hps.recon.tracking.gbl.SimpleGBLTrajAliDriver" >
-          <!--            <maxTrackChisq5hits> 60. </maxTrackChisq5hits>
-               <maxTrackChisq6hits> 84. </maxTrackChisq6hits>-->
-          <includeNoHitScatters>false</includeNoHitScatters>
-          <gblRefitIterations>0</gblRefitIterations>
-          <storeTrackStates>true</storeTrackStates>
-          <enableAlignmentCuts>true</enableAlignmentCuts>
-          <debugAlignmentDs>false</debugAlignmentDs>
-          <compositeAlign>true</compositeAlign>
-          <constrainedFit>true</constrainedFit>
-          <constrainedBSFit>true</constrainedBSFit>
-          <trackSide>1</trackSide> <!--hole-->
-          <writeMilleBinary>true</writeMilleBinary>
-          <milleBinaryFileName>${outputFile}_hole_millepede.bin</milleBinaryFileName>
-          <writeMilleChi2Cut>5</writeMilleChi2Cut> <!-- Chi2/Ndf -->
-          <enableStandardCuts>false</enableStandardCuts>
-          <maxTrackChisq4hits>60.</maxTrackChisq4hits>
-          <maxTrackChisq5hits>60.</maxTrackChisq5hits>
-          <maxTrackChisq6hits>60.</maxTrackChisq6hits>
-        </driver> 
-        
-        
-        <!-- Form trajectories for MPII using the GBL algorithm -->
-        <driver name="SimpleGBLTrajAliDriverSlot" type="org.hps.recon.tracking.gbl.SimpleGBLTrajAliDriver" >
-          <!--            <maxTrackChisq5hits> 60. </maxTrackChisq5hits>
-               <maxTrackChisq6hits> 84. </maxTrackChisq6hits>-->
-          <includeNoHitScatters>false</includeNoHitScatters>
-          <gblRefitIterations>0</gblRefitIterations>
-          <storeTrackStates>true</storeTrackStates>
-          <enableAlignmentCuts>true</enableAlignmentCuts>
-          <debugAlignmentDs>false</debugAlignmentDs>
-          <compositeAlign>true</compositeAlign>
-          <constrainedFit>true</constrainedFit>
-          <constrainedBSFit>false</constrainedBSFit>
-          <trackSide>0</trackSide> <!--slot-->
-          <writeMilleBinary>true</writeMilleBinary>
-          <milleBinaryFileName>${outputFile}_slot_millepede.bin</milleBinaryFileName>
-          <writeMilleChi2Cut>5</writeMilleChi2Cut> <!-- Chi2/Ndf -->
           <enableStandardCuts>false</enableStandardCuts>
           <maxTrackChisq4hits>60.</maxTrackChisq4hits>
           <maxTrackChisq5hits>60.</maxTrackChisq5hits>
@@ -706,11 +594,12 @@
           <!--<debug>true</debug>-->
         </driver>
         
-        
         <!-- Form trajectories for MPII using the GBL algorithm -->
         <driver name="SimpleGBLTrajAliDriverKF" type="org.hps.recon.tracking.gbl.SimpleGBLTrajAliDriver" >
-          <!--            <maxTrackChisq5hits> 60. </maxTrackChisq5hits>
-               <maxTrackChisq6hits> 84. </maxTrackChisq6hits>-->
+          <!--
+          <maxTrackChisq5hits> 60. </maxTrackChisq5hits>
+          <maxTrackChisq6hits> 84. </maxTrackChisq6hits>
+          -->
           <inputCollectionName>KalmanFullTracks</inputCollectionName>
           <includeNoHitScatters>false</includeNoHitScatters>
           <gblRefitIterations>0</gblRefitIterations>
