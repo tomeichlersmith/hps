@@ -5,4 +5,8 @@
 use latest
 mount .
 install .container-install
+java add -DdisableSvtAlignmentConstants
+java add -XX:+UseSerialGC
+java add -Xmx5000m
+java add -jar /home/tom/hps/java/distribution/target/hps-distribution-5.1-SNAPSHOT-bin.jar
 
