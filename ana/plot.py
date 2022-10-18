@@ -40,7 +40,8 @@ def main() :
               out_dir = arg.out_dir)
     
     f.plot_bar('event_selection_cutflow', 'Events after Cut', 
-        ['no cuts', '$N_{e^+} >= 1$', '$N_{e^{-}} >= 2$', 
+        ['no cuts', 'Pair Trigger',
+          '$N_{e^+} >= 1$', '$N_{e^{-}} >= 2$', 
           '$N_{e^+} <= 1$', '$N_{e^-} <= 2$', 'Fiducial',
           'noop','noop','noop'],
         title = 'TPT Event Cut Flow',
