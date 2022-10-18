@@ -1,141 +1,139 @@
 \documentclass[aspectratio=169]{beamer}
 \input{preamble-update.tex}
-\title[HPS TPT]{Three Prong Tridents}
+\usepackage[compat=1.0.0]{tikz-feynman}
+\title[HPS Analysis Workshop]{iDM and Me}
 \begin{document}
 
 \begin{frame}
   \maketitle
 \end{frame}
 
-\begin{frame}{Three Prong Tridents}
-  \begin{block}{Tridents}
-    \begin{itemize}
-      \item $e^-\to e^- e^- e^+$ process
-      \item similar topology to signal process $e^- \to V \to e^- e^+$
-      \item \boldcol{UMNSunny}{usually} only one $e^-$ and one $e^+$ with HPS acceptance
-    \end{itemize}
-  \end{block}
+\begin{frame}{Me}
+  \begin{itemize}
+    \item 5th Year Graduate Student at UMN
+    \item Deeply integrated into LDMX collaboration
+    \item Excited to learn with and about a sibling project
+  \end{itemize}
   \vfill
-  \begin{block}{Three Prong}
-    Looking for trident events where all three products are within HPS acceptance
+  \begin{block}{Expertise}
+    {\color{UMNMaroon}Software}, specifically containers, C++, Python, Geant4, and ROOT
   \end{block}
 \end{frame}
 
-\begin{frame}{Step 1: Choose Clusters}
-  \begin{block}{$E < 2~$GeV}
-    Energy less than $\sim85\%$ beam, don't want events with a Full Energy Electron (FEE)
+\begin{frame}{Me}{HPS Projects}
+  \begin{block}{Three Prong Tridents}
+    with {\color{UMNMaroon}Cam} as {\color{UMNGold}Service} \\
+    Developing analysis in \code{hpstr} to hopefully have a clean measurement of tracking efficiency
   \end{block}
-  \begin{block}{$E > 0.1~$GeV}
-    We want substantial clusters that have a hope of being tracked
+  \begin{block}{Tracker Alignment via Kalman Tracks}
+    with {\color{UMNMaroon}PF} as {\color{UMNGold}Service} \\
+    Studying why Kalman tracks refit with GBL do not behave the same as original GBL tracks
   \end{block}
-  \begin{block}{cluster position $x < 0~$mm}
-    $e^-$ candidate (assuming real electron bend in magnetic field)
-  \end{block}
-  \begin{block}{cluster position $x > 100~$mm} 
-    $e^+$ candidate (assuming real positron bend in magnetic field)
+  \begin{block}{2016 iDM}
+    with {\color{UMNMaroon}???} as {\color{UMNGold}Analysis} \\
+    Analyze 2016 physics run, similar to SIMP search but studying differences carefully
   \end{block}
 \end{frame}
 
-\begin{frame}{Step 1: Choose Clusters}
+\sectionframe{Three Prong Tridents}
+
+\begin{frame}{Status}
+  \begin{itemize}
+    \item Familiarized with \code{hpstr} \checkmark
+    \item Developed a pretty clean-cut analysis focused on finding ``clean" track events
+  \end{itemize}
   \begin{columns}
     \begin{column}{0.5\textwidth}
       \begin{figure}
         \centering
-        \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{cluster_selection_cutflow.png}
+        \includegraphics[width=0.7\textwidth]{figs/pos_cluster_E_sum.pdf}
       \end{figure}
     \end{column}
     \begin{column}{0.5\textwidth}
       \begin{figure}
         \centering
-        \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{n_cluster_candidates.png}
+        \includegraphics[width=0.7\textwidth]{figs/pos_electron1_track_N.pdf}
       \end{figure}
     \end{column}
   \end{columns}
 \end{frame}
 
-\begin{frame}{Step 2: Choose Events}
-  \begin{block}{Exactly Two $e^-$ Candidates and Exactly One $e^+$ Candidates}
-    Need enough candidates for all three prongs of the trident \emph{and} 
-    want to remove events cluttered with other stuff
-  \end{block}
-  \begin{block}{All Clusters Fiducial}
-    Make sure clusters are not located on the edge of the ECal
-  \end{block}
-  \begin{block}{Minimum Total Cluster Energy}
-    An actual trident event would have true energy the same as the beam energy,
-    so we pick events with at least $2.2~$GeV energy (beam energy is $2.3~$GeV)
-  \end{block}
-  \begin{block}{Use One of the Clusters as a Tag}
-    ``Tag" the event by requiring one of the candidate clusters to have a matched track
-  \end{block}
+\begin{frame}{Plans}
+  \begin{itemize}
+    \item Generalize analysis
+      \begin{itemize}
+        \item Show ECal crystal occupancy
+        \item Include dead/off crystals as part of ``the edge" when determining if clusters are fiducial
+        \item Check trigger clusters (for runs where that data was saved)
+      \end{itemize}
+    \item Merge processor and its configuration JSONs
+  \end{itemize}
 \end{frame}
 
-\begin{frame}{Step 2: Choose Events}
-  \centering
+\sectionframe{Tracker Alignment}
+
+\begin{frame}{Status}
+  \begin{itemize}
+    \item Met with HPS folks (PF, Norman, Robert) \checkmark
+    \item Running \code{hps-java} with PF \checkmark
+    \item Learning about alignment and tracking procedures
+      \footnote{Shoutout to PF for being a great tutor}
+  \end{itemize}
   \begin{figure}
-    \includegraphics[height=0.8\textheight]{event_selection_cutflow.png}
+    \centering
+    \includegraphics[width=0.4\textwidth]{figs/gbl_kf_chi2.png}
   \end{figure}
 \end{frame}
 
-\begin{frame}{Total Cluster Energy and Positron Cluster Energy}
-  \begin{columns}
-    \begin{column}{0.5\textwidth}
-      \begin{figure}
-        \centering
-        \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{cluster_E_sum_h.png}
-      \end{figure}
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      \begin{figure}
-        \centering
-        \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{positron_cluster_E_h.png}
-      \end{figure}
-    \end{column}
-  \end{columns}
+\begin{frame}{Plans}
+  \begin{itemize}
+    \item Introduce known misalignment and try to re-align
+    \item Search for difference between KF and GBL alignment procedures
+  \end{itemize}
 \end{frame}
 
-\begin{frame}{Electron Cluster Energies}
-  \begin{columns}
-    \begin{column}{0.5\textwidth}
-      \begin{figure}
-        \centering
-        \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{electron0_cluster_E_h.png}
-      \end{figure}
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      \begin{figure}
-        \centering
-        \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{electron1_cluster_E_h.png}
-      \end{figure}
-    \end{column}
-  \end{columns}
+\sectionframe{2016 iDM}
+
+\begin{frame}{Status}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+      \usebeamerfont{title}noop\par%
+  \end{beamercolorbox}
+  \vfill
 \end{frame}
 
-\begin{frame}{Do we find tracks?}
-  \code{pre\_*} counts are for before that event cut
+\begin{frame}{Status}
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+      \begin{feynman}
+        \vertex (a) {$e^{-}$};
+        \vertex [right= of a](d);
+        \vertex [below=of d, blob,label={below:$N$}] (e) {};
+        \vertex [above right= of d] (f);
+        %\vertex [above right= of d] (b);
+        \vertex [right= of d] (b);
+        \vertex [above right= of b] (g) {$e^{-}$};
+        \vertex [below right= of b] (h) {\aprime};
+        \diagram*[large] {
+          (a) -- [fermion] (d),
+          (d) -- [boson] (e),
+          (d) -- [fermion] (b),
+          (b) -- [fermion] (g),
+          (b) -- [boson] (h),
+        };
+      \end{feynman}
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
 
-  \code{*\_tag} counts are for requiring that particle to have a track (and pass event cuts)
-
-  \begin{columns}
-    \begin{column}{0.3\textwidth}
-      \begin{figure}
-        \centering
-        \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{positron_track_N_h.png}
-      \end{figure}
-    \end{column}
-    \begin{column}{0.3\textwidth}
-      \begin{figure}
-        \centering
-        \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{electron0_track_N_h.png}
-      \end{figure}
-    \end{column}
-    \begin{column}{0.3\textwidth}
-      \begin{figure}
-        \centering
-        \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{electron1_track_N_h.png}
-      \end{figure}
-    \end{column}
-  \end{columns}
+\begin{frame}{Plans}
+  \begin{itemize}
+    \item Develop {\sc MadGraph} model with help from theorists
+    \item Put model into HPS and see how this signal behaves differently than SIMPs
+    \item Cut-n-count analysis of 2016 physics data
+  \end{itemize}
 \end{frame}
 
 \end{document} 
