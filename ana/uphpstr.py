@@ -68,7 +68,7 @@ class hpstrHistFile :
                  ticks_rotation = 15, out_dir = None, file_name = None,
                  include_prefix = False, ax = None, title = None) :
         if ax is None :
-            fig, ax = plt.subplots()
+            fig, ax = plt.figure('hpstr').subplots()
 
         h = self.get(hist_name, include_prefix = include_prefix)
         values = h.values()
@@ -87,13 +87,13 @@ class hpstrHistFile :
         else :
             if file_name is None :
                 file_name = hist_name
-            plt.savefig(f'{out_dir}/{file_name}')
+            plt.savefig(f'{out_dir}/{file_name}.pdf', bbox_inches='tight')
     
     def plot_1d(self,hist_name, xlabel, *, 
                 out_dir = None, file_name = None, ylabel = 'Event Count',
                 ax = None, selections = None, title = None) :
         if ax is None :
-            fig, ax = plt.subplots()
+            fig, ax = plt.figure('hpstr').subplots()
         if isinstance(hist_name,dict) :
             # plotting multiple histograms 
             #  instead of following one through selections
@@ -123,13 +123,13 @@ class hpstrHistFile :
         else :
             if file_name is None :
                 file_name = hist_name
-            plt.savefig(f'{out_dir}/{file_name}')
+            plt.savefig(f'{out_dir}/{file_name}.pdf', bbox_inches='tight')
         
     def plot_2d(self,hist_name, xlabel, ylabel, *, 
                 out_dir = None, file_name = None, 
                 selections = None, size = None, title = None) :
         if isinstance(hist_name,dict) :
-            fig, axl = plt.subplots(nrows=len(hist_name))
+            fig, axl = plt.figure('hpstr').subplots(nrows=len(hist_name))
             for ax, (name, hist) in zip(axl,hist_name.items()) :
                 if not hist.endswith('_hh') :
                     hist += '_hh'
@@ -140,7 +140,7 @@ class hpstrHistFile :
             fig.tight_layout()
         elif selections is not None :
             sels = self.__deduce_selections(selections)
-            fig, axl = plt.subplots(nrows=len(sels))
+            fig, axl = plt.figure('hpstr').subplots(nrows=len(sels))
             if size is not None :
                 fig.set_size_inches(*size)
             if not hist_name.endswith('_hh') :
@@ -152,7 +152,7 @@ class hpstrHistFile :
                 ax.set_title(name)
             fig.tight_layout()
         else :
-            fig, ax = plt.subplots()
+            fig, ax = plt.figure('hpstr').subplots()
             if size is not None :
                 fig.set_size_inches(*size)
             self.get(hist_name).to_hist().plot(ax=ax, cmin=1)
@@ -166,4 +166,5 @@ class hpstrHistFile :
         else :
             if file_name is None :
                 file_name = hist_name
-            plt.savefig(f'{out_dir}/{file_name}')
+            plt.savefig(f'{out_dir}/{file_name}.pdf', bbox_inches = 'tight')
+
