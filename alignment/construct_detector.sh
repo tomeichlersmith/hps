@@ -1,17 +1,55 @@
-iteration=$1
-tag=$2
+__usage__() {
+  cat <<\HELP
 
-if [ "$#" -ne 2 ]; then
-    echo "Illegal number of parameters"
-    exit 1
-    fi
+  Construct a detector LCDD file from the corresponding compact.xml.
 
-java -cp distribution/target/hps-distribution-5.1-SNAPSHOT-bin.jar org.hps.detector.DetectorConverter -f lcdd -i detector-data/detectors/HPS_${tag}_$iteration/compact.xml -o detector-data/detectors/HPS_${tag}_$iteration/HPS_${tag}_$iteration.lcdd
-echo "name: HPS_${tag}_$iteration" > detector-data/detectors/HPS_${tag}_$iteration/detector.properties
+ USAGE:
+  bash /full/path/to/construct_detector.sh ITER TAG
+ 
+  You need to be within the root directory of hps-java when
+  this script is run. The directory of the detector we will
+  be constructing is
 
-cd detector-data
-mvn -T 4 -DskipTests=true
-cd ..
-cd distribution
-mvn -T 4 -DskipTests=true
-cd ..
+    detector-data/detectors/HPS_<tag>_<iter>/
+
+ ARGUMENTS:
+  ITER : iteration of the detector tag that is being developed
+  TAG  : tag for detector (usually related to year)
+ 
+HELP
+}
+
+__main__() {
+  iteration=$1
+  tag=$2
+  
+  if [ "$#" -eq 0 ]; then
+    __usage__;
+    return 0;
+  fi
+  if [ "$#" -ne 2 ]; then
+    echo "Did not provide the two (and only two) arguments: ITER TAG"
+    return 1
+  fi
+
+  if ! java \
+    -Dorg.lcsim.cacheDir=/externals \
+    -cp distribution/target/hps-distribution-5.1-SNAPSHOT-bin.jar \
+    org.hps.detector.DetectorConverter \
+    -f lcdd \
+    -i detector-data/detectors/HPS_${tag}_$iteration/compact.xml \
+    -o detector-data/detectors/HPS_${tag}_$iteration/HPS_${tag}_$iteration.lcdd; then
+    return $?
+  fi
+  
+  echo "name: HPS_${tag}_$iteration" > detector-data/detectors/HPS_${tag}_$iteration/detector.properties
+  
+  cd detector-data
+  mvn --global-settings /etc/mvn_settings.xml -T 4 -DskipTests=true
+  cd ..
+  cd distribution
+  mvn --global-settings /etc/mvn_settings.xml -T 4 -DskipTests=true
+  cd ..
+}
+
+__main__ $@

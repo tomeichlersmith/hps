@@ -41,7 +41,3 @@ a good start
 ```
 /sdf/group/hps/mc/4pt55GeV/fee/idealCond/fee_recon_20um120nA_*
 ```
-
-### Job
-- Run 10k+ events for both KF and GBL, look at distributions
-- Use detector `HPS_Nominal_2019SensorSurvey_iter0`
