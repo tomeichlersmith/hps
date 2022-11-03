@@ -41,3 +41,33 @@ a good start
 ```
 /sdf/group/hps/mc/4pt55GeV/fee/idealCond/fee_recon_20um120nA_*
 ```
+
+## What do
+Unless otherwise noted, the commands are run in this directory and the
+container environment has already been initialized and configured.
+
+Copy down a single partition of the provided ideal FEE MC sample.
+```
+scp slac.sdf:/sdf/group/hps/mc/4pt55GeV/fee/idealCond/fee_recon_20um120nA_200.slcio .
+```
+Going to use run number 10716 for this right now since those conditions are taken
+from a pretty good real FEE run in 2019.
+
+Go to `hps-java`, create a new copy of `HPS_Nominal_2019SensorSurvey_iter0` (I just called it the same, incrementing the iter number), manually modify the `millepede_constant`s, and construct the `lcdd` file.
+```
+# in hps-java root directory
+hps bash ../alignment/construct_detector.sh iter1 Nominal_2019SensorSurvey
+```
+- Using `JeffersonLab:jna_composed_traj` branch
+- Until a java configuration issue is resolved, we need to mount the home directory
+  and symlink `~/.cache/lcsim` to `${HPS_CONTAINER_INSTALL}/.cache/lcsim` so caching
+  is still functional.
+
+Run tracking over both iterations of the detector and for both KF and GBL tracks.
+```
+hps bash run.sh
+```
+
+Check the `*log` files to make sure the four runs completed successfully.
+
+Open up the output `*root` files in the notebook for study.
