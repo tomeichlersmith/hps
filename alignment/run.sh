@@ -15,11 +15,6 @@ __run__() {
   local trk=$1
   local iter=$2
 
-  local steering=alignmentDriver_chi2.lcsim
-  if [ "${trk}" = "gbl" ]; then
-    steering=gbl_tracking.lcsim
-  fi
-
   java \
     -DdisableSvtAlignmentConstants \
     -XX:+UseSerialGC \
@@ -27,8 +22,8 @@ __run__() {
     -jar /export/scratch/users/eichl008/hps/java/distribution/target/hps-distribution-5.1-SNAPSHOT-bin.jar \
     -R 10716 \
     -d HPS_Nominal_2019SensorSurvey_${iter} \
-    -DoutputFile=${trk}_${iter} \
-    ${steering} \
+    -DoutputFile=${trk}/${iter}/ \
+    tracking_${trk}_alignment.lcsim \
     -i fee_recon_20um120nA_200.slcio
   return $?
 }
@@ -43,6 +38,7 @@ __main__() {
 
   for iter in iter{0,1}; do
     for trk in gbl kf; do
+      mkdir -p ${trk}/${iter} 
       __run__ ${trk} ${iter} &> ${trk}_${iter}_run.log &
     done
   done
