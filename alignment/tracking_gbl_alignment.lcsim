@@ -52,10 +52,10 @@
         Only necessary for comparing multiple GBL track strats
       -->
       <driver name="MergeTrackCollections"/> 
-      <driver name="GBLRefitterDriver"/>
       
       <!--
         Kalman tracking
+      <driver name="GBLRefitterDriver"/>
       <driver name="KalmanPatRecDriver"/>
       <driver name="KalmanKinkFitDriver"/>
       <driver name="KalmanToGBLDriver"/> 
@@ -67,8 +67,8 @@
       -->
       <!--
         Old GBL tracks used for preparing alignment
-      <driver name="SimpleGBLTrajAliDriver"/>
       -->
+      <driver name="SimpleGBLTrajAliDriver"/>
       
       <!-- 
            TrackDataDriver needs to be run before ReconParticleDriver so the
@@ -367,23 +367,23 @@
           <maxTrackChisq5hits> 60. </maxTrackChisq5hits>
           <maxTrackChisq6hits> 84. </maxTrackChisq6hits>
           -->
+          <correctTrack>true</correctTrack>
           <includeNoHitScatters>false</includeNoHitScatters>
           <gblRefitIterations>0</gblRefitIterations>
           <storeTrackStates>true</storeTrackStates>
-          <enableAlignmentCuts>false</enableAlignmentCuts>
+          <enableAlignmentCuts>true</enableAlignmentCuts>
           <debugAlignmentDs>false</debugAlignmentDs>
           <compositeAlign>true</compositeAlign>
-          <doCOMAlignment>true</doCOMAlignment>
-          <constrainedFit>false</constrainedFit>
-          <constrainedBSFit>true</constrainedBSFit>
-          <bsZ>-8.0</bsZ>
-          <trackSide>-1</trackSide> <!--slot-->
+          <constrainedFit>true</constrainedFit>
+          <constrainedBSFit>false</constrainedBSFit>
+          <trackSide>-1</trackSide> <!--hole-->
           <writeMilleBinary>true</writeMilleBinary>
-          <milleBinaryFileName>${outputFile}_all_millepede_ST.bin</milleBinaryFileName>
-          <writeMilleChi2Cut>10</writeMilleChi2Cut>  <!-- Chi2/Ndf -->
+          <milleBinaryFileName>${outputFile}_all_millepede_gbl_PC.bin</milleBinaryFileName>
+          <writeMilleChi2Cut>5</writeMilleChi2Cut>  <!-- Chi2/Ndf -->
           <enableStandardCuts>false</enableStandardCuts>
-          <minMom>0.5</minMom>
-	      <maxMom>5.0</maxMom>
+          <maxTrackChisq4hits>60.</maxTrackChisq4hits>
+          <maxTrackChisq5hits>60.</maxTrackChisq5hits>
+          <maxTrackChisq6hits>60.</maxTrackChisq6hits>
 	    </driver> 
         
         <!-- Form trajectories for MPII using the GBL algorithm -->
