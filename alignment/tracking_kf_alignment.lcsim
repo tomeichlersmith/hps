@@ -131,29 +131,26 @@
         <!-- Form trajectories for MPII using the GBL algorithm -->
         <driver name="SimpleGBLTrajAliDriverKF" 
                 type="org.hps.recon.tracking.gbl.SimpleGBLTrajAliDriver" >
-
-          <!-- apply the track quality cuts -->
-          <enableAlignmentCuts>true</enableAlignmentCuts> 
           <!--
           <doCOMAlignment>true</doCOMAlignment>
-          <minMom>0.5</minMom> 
-          <maxMom>5.0</maxMom> 
           -->
+          <minMom>0.5</minMom> <!-- minimum momentum [GeV] to be included -->
+          <maxMom>5.0</maxMom> <!-- maximum momentum [GeV] to beincluded -->
           <nHitsCut>6</nHitsCut> <!-- minimum number of hits to be included -->
-
-          <debugAlignmentDs>false</debugAlignmentDs>
 
           <correctTrack>true</correctTrack> <!-- refit with GBL before doing Mille -->
           <includeNoHitScatters>false</includeNoHitScatters>
           <gblRefitIterations>0</gblRefitIterations>
           <storeTrackStates>true</storeTrackStates>
+          <enableAlignmentCuts>false</enableAlignmentCuts> 
+          <debugAlignmentDs>false</debugAlignmentDs>
           <compositeAlign>true</compositeAlign>
 
-          <!-- <momC>4.55</momC> momentum constraint [GeV] -->
+          <momC>4.55</momC> <!-- momentum constraint [GeV] -->
           <constrainedFit>false</constrainedFit> <!-- apply momentum constraint -->
 
-          <constrainedBSFit>false</constrainedBSFit> <!-- apply beam spot constraint -->
-          <!-- <bsZ>-7.7</bsZ> beam spot z-coordinate, used to calculate beam spot -->
+          <constrainedBSFit>true</constrainedBSFit> <!-- apply beam spot constraint -->
+          <bsZ>-8.0</bsZ> <!-- beam spot z-coordinate, used to calculate beam spot -->
 
           <trackSide>-1</trackSide> <!--hole-->
 
