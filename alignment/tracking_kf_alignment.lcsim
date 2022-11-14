@@ -131,6 +131,14 @@
         <driver name="MultEvtVtx" type="org.hps.recon.vertexing.MultipleEventsVertexingDriver">
           <ntrks>100</ntrks>
         </driver>
+
+        <driver name="KalmanPatRecDriver" type="org.hps.recon.tracking.kalman.KalmanPatRecDriver">
+          <!--<doDebugPlots>false</doDebugPlots>-->
+          <!-- <siHitsLimit>50</siHitsLimit> -->
+          <seedCompThr>0.05</seedCompThr>
+          <addResiduals>true</addResiduals>
+          <verbose>false</verbose>
+        </driver>
         
         <!-- do front-back kink plots -->
         <driver name="KalmanKinkFitDriver" type="org.hps.recon.tracking.kalman.KalmanKinkFitDriver">
