@@ -32,23 +32,23 @@ __main__() {
     return 1
   fi
 
+  cd detector-data
   if ! java \
     -Dorg.lcsim.cacheDir=/externals \
-    -cp distribution/target/hps-distribution-5.1-SNAPSHOT-bin.jar \
+    -cp ../distribution/target/hps-distribution-5.1-SNAPSHOT-bin.jar \
     org.hps.detector.DetectorConverter \
     -f lcdd \
-    -i detector-data/detectors/HPS_${tag}_$iteration/compact.xml \
-    -o detector-data/detectors/HPS_${tag}_$iteration/HPS_${tag}_$iteration.lcdd; then
+    -i detectors/HPS_${tag}_$iteration/compact.xml \
+    -o detectors/HPS_${tag}_$iteration/HPS_${tag}_$iteration.lcdd; then
     return $?
   fi
   
   echo "name: HPS_${tag}_$iteration" > detector-data/detectors/HPS_${tag}_$iteration/detector.properties
   
-  cd detector-data
-  mvn --global-settings /etc/mvn_settings.xml -T 4 -DskipTests=true
+  mvn -T 4 -DskipTests=true
   cd ..
   cd distribution
-  mvn --global-settings /etc/mvn_settings.xml -T 4 -DskipTests=true
+  mvn -T 4 -DskipTests=true
   cd ..
 }
 
