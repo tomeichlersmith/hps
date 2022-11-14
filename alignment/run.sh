@@ -13,7 +13,7 @@ HELP
 
 __run__() {
   local trk=$1
-  local iter=$2
+  local det=$2
 
   java \
     -DdisableSvtAlignmentConstants \
@@ -21,8 +21,8 @@ __run__() {
     -Xmx5000m \
     -jar /export/scratch/users/eichl008/hps/java/distribution/target/hps-distribution-5.1-SNAPSHOT-bin.jar \
     -R 10716 \
-    -d HPS_Nominal_2019SensorSurvey_${iter} \
-    -DoutputFile=${trk}/${iter}/ \
+    -d ${det} \
+    -DoutputFile=${trk}/${det}/${trk}_${det} \
     tracking_${trk}_alignment.lcsim \
     -i fee_recon_20um120nA_200.slcio
   return $?
@@ -36,13 +36,14 @@ __main__() {
       ;;
   esac
 
-  for iter in iter{0,1}; do
+  for det in HPS_Nominal_2019SensorSurvey_iter0 HPS_2019_L1ty100um_iter0; do
     for trk in gbl kf; do
-      mkdir -p ${trk}/${iter} 
-      __run__ ${trk} ${iter} &> ${trk}_${iter}_run.log &
+      echo -n "${trk} ${det} ..."
+      mkdir -p ${trk}/${det} 
+      __run__ ${trk} ${det} &> ${trk}/${det}/${trk}_${det}_run.log
+      echo "done"
     done
   done
-  wait
 }
 
 __main__ $@
