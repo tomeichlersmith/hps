@@ -71,3 +71,9 @@ hps bash run.sh
 Check the `*log` files to make sure the four runs completed successfully.
 
 Open up the output `*root` files in the notebook for study.
+
+Run `pede` to do the alignment on the output `*bin` files.
+```
+# needs to be Python2 right now
+python mille/scripts/runMP.py
+```
