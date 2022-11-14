@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lcsim xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/lcsim/1.0/lcsim.xsd">
     <!-- 
-      Steering file for running 2019 Reconstruction on readout data (LCIO or EVIO)
-      created:  9/24/19
-      @author Norman Graf <Norman.Graf@slac.stanford.edu>
+      Steering file for running GBL tracking and mille alignment
+      created:  Nov 2022
+      @author Tom Eichlersmith <eichl008@umn.edu>
       @author PF <pbutti@slac.stanford.edu>
     -->
     <execute>
@@ -11,16 +11,12 @@
       <!-- Enable the following if re-processing lcio files -->
       <driver name="PreCleanupDriver"/>      
       
-      
       <driver name="RfFitter"/>
       <driver name="EcalRunningPedestal"/> 
       <driver name="EcalRawConverter" />
       <driver name="EcalTimeCorrection"/> 
       <driver name="ReconClusterer" /> 
       <driver name="CopyCluster" /> 
-      
-      
-      <!--<driver name="PrintGeometryDriver"/>-->
       
       <!-- 
         SVT reconstruction drivers 
@@ -38,7 +34,6 @@
       <!-- 
         Track finding and fitting using seed tracker. 
         Eff has been checked in pt > 1GeV, >=6 Hits tracks
-      
       -->
       <driver name="TrackReconSeed123Conf4Extd56"/>    
       <driver name="TrackReconSeed123Conf5Extd46"/>
@@ -54,75 +49,27 @@
       <driver name="MergeTrackCollections"/> 
       
       <!--
-        Kalman tracking
-      <driver name="GBLRefitterDriver"/>
-      <driver name="KalmanPatRecDriver"/>
-      <driver name="KalmanKinkFitDriver"/>
-      <driver name="KalmanToGBLDriver"/> 
-      -->
-      
-      <!--
-        Use milli+GBL to prepare alignment data file for pede
-      <driver name="SimpleGBLTrajAliDriverKF"/>
-      -->
-      <!--
         Old GBL tracks used for preparing alignment
       -->
       <driver name="SimpleGBLTrajAliDriver"/>
       
-      <!-- 
-           TrackDataDriver needs to be run before ReconParticleDriver so the
-           ReconstructedParticle types are properly set.
-      <driver name="TrackDataDriver" />
-      -->
-
       <!-- it has to be before GBLOutputDriver -->
       <driver name="MultEvtVtx" />
       
-      <!--<driver name="ReconParticleDriver" />-->
-      
-      <!--<driver name="MultEvtVtx_5hits" />
-          <driver name="MultEvtVtx_6hits" />
-          <driver name="MultEvtVtx_7hits" />-->
-      
-      <!--<driver name="TrajFromParticles"/>-->
-      
       <!--
       Write out histograms
-
-      <driver name="GBLOutputDriverKF"/>
       -->
       <driver name="GBLOutputDriver" />
-      
-      <!-- For Vtx performance plotting Still using all GBL Tracks -->
-      <!--<driver name="GBLRefitterDriver_AllGBLTracks" /> -->
-      <!--<driver name="TrackDataDriver_AllGBLTracks" />-->
-      <!--<driver name="ReconParticleDriver" />-->
-      <!--<driver name="ReconParticleDriver" />-->
       
       <driver name="CleanupDriver"/>
     </execute>    
     <drivers>    
-        
-      <driver name="PrintGeometryDriver" type="org.hps.analysis.examples.PrintGeometryDriver">
-      </driver>
-      
         <driver name="PreCleanupDriver" type="org.hps.analysis.dataquality.ReadoutCleanupDriver">
           <!--Clean collections-->
           
           <collectionNames>EcalCalHits EcalClusters EcalClustersCorr FinalStateParticles UnconstrainedV0Candidates UnconstrainedV0Vertices TargetConstrainedV0Candidates TargetConstrainedV0Vertices BeamspotConstrainedV0Candidates BeamspotConstrainedV0Vertices GBLKinkData GBLKinkDataRelations MatchedToGBLTrackRelations HelicalTrackHits HelicalTrackHitRelations MatchedTracks GBLTracks MatchedToGBLTrackRelations RotatedHelicalTrackHits RotatedHelicalTrackHitRelations TrackData TrackDataRelations TrackResiduals TrackResidualsRelations RotatedHelicalTrackHits RotatedHelicalTrackHitRelations StripClusterer_SiTrackerHitStrip1D </collectionNames>
 
         </driver>
-        
-        <driver name="HodoRunningPedestal" type="org.hps.recon.ecal.HodoRunningPedestalDriver"/>
-        <driver name="HodoRawConverter" type="org.hps.recon.ecal.HodoRawConverterDriver"/>
-  
-        <!-- Driver to reject "bad" events -->
-        <!-- Not yet implemented for 2019
-             <driver name="EventFlagFilter" type="org.hps.recon.filtering.EventFlagFilter"> 
-            <flagNames>svt_bias_good svt_position_good svt_burstmode_noise_good svt_event_header_good</flagNames> 
-        </driver> 
-        -->
         
         <driver name="RfFitter" type="org.hps.evio.RfFitterDriver"/>       
 
@@ -172,13 +119,11 @@
         <!--   Confirm that track with a hit in layer D -->
         <!--   Extend that track to hits in layers EFG -->
 
-
-
         <driver name="TrackReconSeed123Conf4Extd56" type="org.hps.recon.tracking.TrackerReconDriver">
             <trackCollectionName>Tracks_s123_c4_e56</trackCollectionName>
             <strategyResource>HPS_s123_c4_e56_4hit.xml</strategyResource>
             <debug>false</debug>
-	        <rmsTimeCut>1000.0</rmsTimeCut>
+          <rmsTimeCut>1000.0</rmsTimeCut>
             <maxTrackerHits>250</maxTrackerHits>
             <iterativeFits>3</iterativeFits>
         </driver>
@@ -187,7 +132,7 @@
             <trackCollectionName>Tracks_s123_c5_e46</trackCollectionName>
             <strategyResource>HPS_s123_c5_e46_4hit.xml</strategyResource>
             <debug>false</debug>
-	        <rmsTimeCut>1000.0</rmsTimeCut>
+          <rmsTimeCut>1000.0</rmsTimeCut>
             <maxTrackerHits>250</maxTrackerHits>
             <iterativeFits>3</iterativeFits>
         </driver>
@@ -340,26 +285,6 @@
        <!-- Resolve duplicate tracks found with different strategies -->
         <driver name="MergeTrackCollections" type="org.hps.recon.tracking.MergeTrackCollections" />
         
-        <!-- Refit tracks using the GBL algorithm -->
-        <driver name="GBLRefitterDriver" type="org.hps.recon.tracking.gbl.GBLRefitterDriver" >
-          <!--            <maxTrackChisq5hits> 60. </maxTrackChisq5hits>
-               <maxTrackChisq6hits> 84. </maxTrackChisq6hits>-->
-          <includeNoHitScatters>false</includeNoHitScatters>
-          <gblRefitIterations>0</gblRefitIterations>
-          <storeTrackStates>true</storeTrackStates>
-          <enableAlignmentCuts>true</enableAlignmentCuts>
-          <!--<debugAlignmentDs>false</debugAlignmentDs>-->
-          <!--<compositeAlign>false</compositeAlign>-->
-          <computeGBLResiduals>true</computeGBLResiduals>
-          <writeMilleBinary>false</writeMilleBinary>
-          <milleBinaryFileName>${outputFile}_gblrefitter_millepede.bin</milleBinaryFileName>
-          <writeMilleChi2Cut>50</writeMilleChi2Cut>  <!-- Chi2 / Ndf cut-->
-          <enableStandardCuts>false</enableStandardCuts>
-          <maxTrackChisq4hits>60.</maxTrackChisq4hits>
-          <maxTrackChisq5hits>60.</maxTrackChisq5hits>
-          <maxTrackChisq6hits>60.</maxTrackChisq6hits>
-        </driver> 
-
 
         <!-- Form trajectories for MPII using the GBL algorithm -->
         <driver name="SimpleGBLTrajAliDriver" type="org.hps.recon.tracking.gbl.SimpleGBLTrajAliDriver" >
@@ -367,6 +292,7 @@
           <maxTrackChisq5hits> 60. </maxTrackChisq5hits>
           <maxTrackChisq6hits> 84. </maxTrackChisq6hits>
           -->
+          <nHitsCut>6</nHitsCut>
           <correctTrack>true</correctTrack>
           <includeNoHitScatters>false</includeNoHitScatters>
           <gblRefitIterations>0</gblRefitIterations>
@@ -384,248 +310,20 @@
           <maxTrackChisq4hits>60.</maxTrackChisq4hits>
           <maxTrackChisq5hits>60.</maxTrackChisq5hits>
           <maxTrackChisq6hits>60.</maxTrackChisq6hits>
-	    </driver> 
-        
-        <!-- Form trajectories for MPII using the GBL algorithm -->
-        <driver name="TrajFromParticles" type="org.hps.recon.tracking.gbl.SimpleGBLTrajAliDriver" >
-          <inputCollectionName>FinalStateParticles</inputCollectionName>
-          <includeNoHitScatters>false</includeNoHitScatters>
-          <gblRefitIterations>0</gblRefitIterations>
-          <storeTrackStates>true</storeTrackStates>
-          <enableAlignmentCuts>true</enableAlignmentCuts>
-          <debugAlignmentDs>false</debugAlignmentDs>
-          <useParticles>true</useParticles>
-          <compositeAlign>true</compositeAlign>
-          <constrainedFit>false</constrainedFit>
-          <constrainedBSFit>false</constrainedBSFit>
-          <trackSide>-1</trackSide> <!--hole-->
-          <writeMilleBinary>true</writeMilleBinary>
-          <milleBinaryFileName>${outputFile}_all_millepede_ST.bin</milleBinaryFileName>
-          <writeMilleChi2Cut>5</writeMilleChi2Cut>  <!-- Chi2/Ndf -->
-          <enableStandardCuts>false</enableStandardCuts>
-          <maxTrackChisq4hits>60.</maxTrackChisq4hits>
-          <maxTrackChisq5hits>60.</maxTrackChisq5hits>
-          <maxTrackChisq6hits>60.</maxTrackChisq6hits>
-        </driver> 
-                
-        <driver name="GBLRefitterDriver_AllGBLTracks" type="org.hps.recon.tracking.gbl.GBLRefitterDriver" >
-          <!--            <maxTrackChisq5hits> 60. </maxTrackChisq5hits>
-               <maxTrackChisq6hits> 84. </maxTrackChisq6hits>-->
-          <outputCollectionName>AllGBLTracks</outputCollectionName>
-          <trackResidualsColName>AllGBLTracksResiduals</trackResidualsColName>
-          <trackResidualsRelColName>AllGBLTracksResidualsRelations</trackResidualsRelColName>
-          <includeNoHitScatters>true</includeNoHitScatters>
-          <gblRefitIterations>5</gblRefitIterations>
-          <storeTrackStates>true</storeTrackStates>
-          <enableAlignmentCuts>false</enableAlignmentCuts>
-          <writeMilleBinary>false</writeMilleBinary>
-          <!--<compositeAlign>false</compositeAlign>-->
-          <!--<debugAlignmentDs>false</debugAlignmentDs>-->
-          <milleBinaryFileName>${outputFile}_millepede.bin</milleBinaryFileName>
-          <maxTrackChisq4hits>1000.</maxTrackChisq4hits>
-          <maxTrackChisq5hits>1000.</maxTrackChisq5hits>
-          <maxTrackChisq6hits>1000.</maxTrackChisq6hits> 
         </driver> 
         
-        
-        <driver name="KalmanPatRecDriver" type="org.hps.recon.tracking.kalman.KalmanPatRecDriver">
-            <!--<doDebugPlots>false</doDebugPlots>-->
-            <!-- <siHitsLimit>50</siHitsLimit> -->
-            <seedCompThr>0.05</seedCompThr>
-            <addResiduals>true</addResiduals>
-            <verbose>false</verbose>
-        </driver>
-          
         <driver name="GBLOutputDriver" type="org.hps.recon.tracking.gbl.GBLOutputDriver">
+          <nHits>0</nHits> <!-- minimum hits -->
           <outputPlotsFilename>${outputFile}_gblplots.root</outputPlotsFilename>
           <bsZ>-7.5</bsZ>
           <trackCollectionName>GBLTracks</trackCollectionName>
           <chi2Cut>9999</chi2Cut>
         </driver>
 
-        <driver name="GBLOutputDriverKalman" type="org.hps.recon.tracking.gbl.GBLOutputDriver">
-          <outputPlotsFilename>${outputFile}_Kalman.root</outputPlotsFilename>
-          <bsZ>-7.5</bsZ>
-          <trackCollectionName>KalmanFullTracks</trackCollectionName>
-          <chi2Cut>9999</chi2Cut>
-          <doGBLresiduals>false</doGBLresiduals>
-          <doGBLkinks>false</doGBLkinks>
-        </driver>
-        
-                
-        <driver name="TrackDataDriver" type="org.hps.recon.tracking.TrackDataDriver" />
-
-        <driver name="TrackDataDriver_AllGBLTracks" type="org.hps.recon.tracking.TrackDataDriver" >
-          <trackCollectionName>AllGBLTracks</trackCollectionName>
-        </driver>
-
-
-        <driver name="ReconParticleDriver" type="org.hps.recon.particle.HpsReconParticleDriver" > 
-          <ecalClusterCollectionName>EcalClustersCorr</ecalClusterCollectionName>
-          <trackCollectionNames>GBLTracks</trackCollectionNames>  
-          <matcherTrackCollectionName>GBLTracks</matcherTrackCollectionName>
-          <trackClusterMatcherAlgo>TrackClusterMatcherMinDistance</trackClusterMatcherAlgo>        
-          <unconstrainedV0CandidatesColName>UnconstrainedV0Candidates</unconstrainedV0CandidatesColName>
-          <unconstrainedV0VerticesColName>UnconstrainedV0Vertices</unconstrainedV0VerticesColName>
-          <beamConV0CandidatesColName>BeamspotConstrainedV0Candidates</beamConV0CandidatesColName>
-          <beamConV0VerticesColName>BeamspotConstrainedV0Vertices</beamConV0VerticesColName>
-          <targetConV0CandidatesColName>TargetConstrainedV0Candidates</targetConV0CandidatesColName>
-          <targetConV0VerticesColName>TargetConstrainedV0Vertices</targetConV0VerticesColName>
-          <finalStateParticlesColName>FinalStateParticles</finalStateParticlesColName>
-          <includeUnmatchedTracksInFSP>true</includeUnmatchedTracksInFSP>
-          <useInternalVertexXYPositions>false</useInternalVertexXYPositions>
-          <requireClustersForV0>false</requireClustersForV0>
-          <beamPositionX>0.180</beamPositionX>
-          <beamSigmaX>0.05</beamSigmaX>
-          <beamPositionY>0.04</beamPositionY>
-          <beamSigmaY>0.020</beamSigmaY>
-          <beamPositionZ>-7.5</beamPositionZ>
-          <maxElectronP>10.0</maxElectronP>
-          <maxVertexP>7.0</maxVertexP>
-          <minVertexChisqProb>0.0</minVertexChisqProb>
-          <maxVertexClusterDt>40.0</maxVertexClusterDt>           
-          <maxMatchDt>40</maxMatchDt>
-          <trackClusterTimeOffset>40</trackClusterTimeOffset>
-          <useCorrectedClusterPositionsForMatching>false</useCorrectedClusterPositionsForMatching>
-          <applyClusterCorrections>true</applyClusterCorrections>
-          <useTrackPositionForClusterCorrection>true</useTrackPositionForClusterCorrection>
-          <debug>false</debug>
-	      <makeMollerCols>false</makeMollerCols>
-        </driver>  
-        
-        
-        <!-- Create Reconstructed Particles by pairing up tracks and clusters when possible - Beamspot location and size valid for 10031 -->
-        <driver name="ReconParticleDriver_AllGBLTracks" type="org.hps.recon.particle.HpsReconParticleDriver" > 
-            <ecalClusterCollectionName>EcalClustersCorr</ecalClusterCollectionName>
-            <trackCollectionNames>AllGBLTracks</trackCollectionNames>          
-            <includeUnmatchedTracksInFSP>true</includeUnmatchedTracksInFSP>
-            <useInternalVertexXYPositions>false</useInternalVertexXYPositions>
-            <requireClustersForV0>false</requireClustersForV0>
-            <beamPositionX>0.180</beamPositionX>
-            <beamSigmaX>0.05</beamSigmaX>
-            <beamPositionY>0.04</beamPositionY>
-            <beamSigmaY>0.020</beamSigmaY>
-            <beamPositionZ>-7.5</beamPositionZ>
-            <maxElectronP>7.0</maxElectronP>
-            <maxVertexP>7.0</maxVertexP>
-            <minVertexChisqProb> 0.0 </minVertexChisqProb>
-            <maxVertexClusterDt> 40.0 </maxVertexClusterDt>           
-            <maxMatchDt>40</maxMatchDt>
-            <trackClusterTimeOffset>40</trackClusterTimeOffset>
-            <useCorrectedClusterPositionsForMatching>false</useCorrectedClusterPositionsForMatching>
-            <applyClusterCorrections>false</applyClusterCorrections>
-            <useTrackPositionForClusterCorrection>false</useTrackPositionForClusterCorrection>
-            <debug>false</debug>
-            <makeMollerCols>false</makeMollerCols>
-            <disablePID>true</disablePID>
-        </driver>  
-
-        <driver name="ReconParticleDriver_Kalman" type="org.hps.recon.particle.HpsReconParticleDriver" > 
-            <ecalClusterCollectionName>EcalClustersCorr</ecalClusterCollectionName>
-            <trackCollectionNames>KalmanFullTracks</trackCollectionNames>          
-            <unconstrainedV0CandidatesColName>UnconstrainedV0Candidates_KF</unconstrainedV0CandidatesColName>
-            <unconstrainedV0VerticesColName>UnconstrainedV0Vertices_KF</unconstrainedV0VerticesColName>
-            <beamConV0CandidatesColName>BeamspotConstrainedV0Candidates_KF</beamConV0CandidatesColName>
-            <beamConV0VerticesColName>BeamspotConstrainedV0Vertices_KF</beamConV0VerticesColName>
-            <targetConV0CandidatesColName>TargetConstrainedV0Candidates_KF</targetConV0CandidatesColName>
-            <targetConV0VerticesColName>TargetConstrainedV0Vertices_KF</targetConV0VerticesColName>
-            <includeUnmatchedTracksInFSP>true</includeUnmatchedTracksInFSP>
-            <useInternalVertexXYPositions>false</useInternalVertexXYPositions>
-            <requireClustersForV0>false</requireClustersForV0>
-            <beamPositionX>0.180</beamPositionX>
-            <beamSigmaX>0.05</beamSigmaX>
-            <beamPositionY>0.04</beamPositionY>
-            <beamSigmaY>0.020</beamSigmaY>
-            <beamPositionZ>-7.5</beamPositionZ>
-            <maxElectronP>7.0</maxElectronP>
-            <maxVertexP>7.0</maxVertexP>
-            <minVertexChisqProb>0.0</minVertexChisqProb>
-            <maxVertexClusterDt>40.0</maxVertexClusterDt>           
-            <maxMatchDt>40</maxMatchDt>
-            <trackClusterTimeOffset>40</trackClusterTimeOffset>
-            <useCorrectedClusterPositionsForMatching>false</useCorrectedClusterPositionsForMatching>
-            <applyClusterCorrections>false</applyClusterCorrections>
-            <useTrackPositionForClusterCorrection>false</useTrackPositionForClusterCorrection>
-            <debug>false</debug>
-	        <makeMollerCols>false</makeMollerCols>
-            <disablePID>true</disablePID>
-        </driver>  
-        
         <driver name="CleanupDriver" type="org.lcsim.recon.tracking.digitization.sisim.config.ReadoutCleanupDriver"/>
-
-        <driver name="LCIOWriter" type="org.lcsim.util.loop.LCIODriver">
-            <outputFilePath>${outputFile}.slcio</outputFilePath>
-        </driver>       
-        <driver name="AidaSaveDriver" type="org.lcsim.job.AidaSaveDriver">
-            <outputFileName>${outputFile}.root</outputFileName>
-        </driver>
-        <driver name="AidaToRootSaveDriver" type="org.lcsim.job.AidaSaveDriver">
-            <outputFileName>${outputFile}.root</outputFileName>
-        </driver>
 
         <driver name="MultEvtVtx" type="org.hps.recon.vertexing.MultipleEventsVertexingDriver">
           <ntrks>100</ntrks>
-        </driver>
-        
-        <driver name="MultEvtVtx_5hits" type="org.hps.recon.vertexing.MultipleEventsVertexingDriver">
-          <ntrks>100</ntrks>
-          <nhits>5</nhits>
-          <vtxFold>MultiEventVtx_5hits/</vtxFold>
-        </driver>
-        
-        <driver name="MultEvtVtx_6hits" type="org.hps.recon.vertexing.MultipleEventsVertexingDriver">
-          <ntrks>100</ntrks>
-          <nhits>6</nhits>
-          <vtxFold>MultiEventVtx_6hits/</vtxFold>
-        </driver>
-
-        <driver name="MultEvtVtx_7hits" type="org.hps.recon.vertexing.MultipleEventsVertexingDriver">
-          <ntrks>100</ntrks>
-          <nhits>7</nhits>
-          <vtxFold>MultiEventVtx_7hits/</vtxFold>
-        </driver>
-
-        <!-- do front-back kink plots -->
-        <driver name="KalmanKinkFitDriver" type="org.hps.recon.tracking.kalman.KalmanKinkFitDriver">
-        </driver>
-
-        <!-- Form trajectories for MPII using the GBL algorithm, starting from Kalman Tracks -->
-        <driver name="KalmanToGBLDriver" type="org.hps.recon.tracking.gbl.KalmanToGBLDriver">
-          <!--<debug>true</debug>-->
-        </driver>
-        
-        <!-- Form trajectories for MPII using the GBL algorithm -->
-        <driver name="SimpleGBLTrajAliDriverKF" type="org.hps.recon.tracking.gbl.SimpleGBLTrajAliDriver" >
-          <!--
-          <maxTrackChisq5hits> 60. </maxTrackChisq5hits>
-          <maxTrackChisq6hits> 84. </maxTrackChisq6hits>
-          -->
-          <inputCollectionName>KalmanFullTracks</inputCollectionName>
-          <includeNoHitScatters>false</includeNoHitScatters>
-          <gblRefitIterations>0</gblRefitIterations>
-          <storeTrackStates>true</storeTrackStates>
-          <enableAlignmentCuts>true</enableAlignmentCuts>
-          <debugAlignmentDs>false</debugAlignmentDs>
-          <compositeAlign>true</compositeAlign>
-          <constrainedFit>true</constrainedFit>
-          <constrainedBSFit>false</constrainedBSFit>
-          <trackSide>-1</trackSide> <!--hole-->
-          <writeMilleBinary>true</writeMilleBinary>
-          <milleBinaryFileName>${outputFile}_all_millepede_kf_PC.bin</milleBinaryFileName>
-          <writeMilleChi2Cut>5</writeMilleChi2Cut>  <!-- Chi2/Ndf -->
-          <enableStandardCuts>false</enableStandardCuts>
-          <maxTrackChisq4hits>60.</maxTrackChisq4hits>
-          <maxTrackChisq5hits>60.</maxTrackChisq5hits>
-          <maxTrackChisq6hits>60.</maxTrackChisq6hits>
-        </driver> 
-        
-        <driver name="GBLOutputDriverKF" type="org.hps.recon.tracking.gbl.GBLOutputDriver">
-          <outputPlotsFilename>${outputFile}_kfgblplots.root</outputPlotsFilename>
-          <bsZ>-7.5</bsZ>
-          <trackCollectionName>KalmanFullTracks</trackCollectionName>
-          <trackResidualsRelColName>TrackResidualsKFtoGBLRelations</trackResidualsRelColName>
-          <doGBLkinks>true</doGBLkinks>
-          <chi2Cut>9999</chi2Cut>
         </driver>
         
     </drivers>
