@@ -123,6 +123,7 @@
           <outputPlotsFilename>${outputFile}_gblplots.root</outputPlotsFilename>
           <bsZ>-7.5</bsZ>
           <trackCollectionName>GBLTracks</trackCollectionName>
+          <doGBLkinks>false</doGBLkinks> <!--the KF tracks refitted as GBL don't have kinks?? -->
           <chi2Cut>9999</chi2Cut>
         </driver>
 
@@ -187,7 +188,7 @@
           <bsZ>-7.5</bsZ>
           <trackCollectionName>KalmanFullTracks</trackCollectionName>
           <trackResidualsRelColName>TrackResidualsKFtoGBLRelations</trackResidualsRelColName>
-          <doGBLkinks>true</doGBLkinks>
+          <doGBLkinks>false</doGBLkinks>
           <chi2Cut>9999</chi2Cut>
         </driver>
         
