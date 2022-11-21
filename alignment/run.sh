@@ -2,7 +2,7 @@
 __usage__() {
   cat <<\HELP
     
-    Run the tracking (both KF and GBL) over both iterations of the 2019SensorSurvey detector
+    Run the tracking (both KF and ST) over the nominal and intentionally misaligned 2019 detectors.
 
   USAGE:
     
@@ -36,7 +36,7 @@ __run__() {
 }
 
 __main__() {
-  local _tag=""
+  local tag=""
   case $1 in
     -h|--help|help|-?)
       __usage__
@@ -47,12 +47,18 @@ __main__() {
       return 1
       ;;
     *)
-      _tag="$1"
+      tag="$1"
+      ;;
   esac
+
+  if [ -z ${tag} ]; then
+    echo "ERROR: Need to provide tag to distinguish this run."
+    return 1
+  fi
 
   for det in HPS_Nominal_2019SensorSurvey_iter0 HPS_2019_L1ty100um_iter0; do
     for trk in st kf; do
-      echo -n "${trk} ${det} ..."
+      echo -n "$(date) ${trk} ${det} ..."
       mkdir -p ${trk}/${det} 
       __run__ ${trk} ${det} ${tag} &> ${trk}/${det}/${tag}_run.log
       echo "done"
