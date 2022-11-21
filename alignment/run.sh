@@ -6,7 +6,7 @@ __usage__() {
 
   USAGE:
     
-    ./run.sh [-h|--help|help|-?] TAG
+    bash run.sh [-h|--help|help|-?] TAG
 
   ARGUMENTS:
     TAG : short string to identify this run of tracking and mille
