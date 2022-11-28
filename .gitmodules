@@ -1,0 +1,3 @@
+[submodule "alignment/mille"]
+	path = alignment/mille
+	url = git@github.com:tomeichlersmith/hps-mille
