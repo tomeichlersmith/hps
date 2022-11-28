@@ -22,3 +22,13 @@ __pycache__
 obj
 # data files
 *.slcio
+
+# home-like stuff from using this directory as distrobox home
+.JAS3
+.bash_logout
+.bashrc
+.cache
+.m2
+.profile
+.python_history
+.viminfo
