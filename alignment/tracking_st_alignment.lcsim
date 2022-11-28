@@ -297,14 +297,16 @@
           <includeNoHitScatters>false</includeNoHitScatters>
           <gblRefitIterations>0</gblRefitIterations>
           <storeTrackStates>true</storeTrackStates>
+          <!-- track quality cuts -->
           <enableAlignmentCuts>true</enableAlignmentCuts>
           <debugAlignmentDs>false</debugAlignmentDs>
+          <!-- include derivatives of global structure for mille -->
           <compositeAlign>true</compositeAlign>
-          <constrainedFit>true</constrainedFit>
+          <constrainedFit>false</constrainedFit>
           <constrainedBSFit>false</constrainedBSFit>
           <trackSide>-1</trackSide> <!--hole-->
           <writeMilleBinary>true</writeMilleBinary>
-          <milleBinaryFileName>${outputFile}_all_millepede_gbl_PC.bin</milleBinaryFileName>
+          <milleBinaryFileName>${outputFile}_millepede.bin</milleBinaryFileName>
           <writeMilleChi2Cut>5</writeMilleChi2Cut>  <!-- Chi2/Ndf -->
           <enableStandardCuts>false</enableStandardCuts>
           <maxTrackChisq4hits>60.</maxTrackChisq4hits>
@@ -313,7 +315,7 @@
         </driver> 
         
         <driver name="GBLOutputDriver" type="org.hps.recon.tracking.gbl.GBLOutputDriver">
-          <nHits>0</nHits> <!-- minimum hits -->
+          <nHits>6</nHits> <!-- minimum hits -->
           <outputPlotsFilename>${outputFile}_gblplots.root</outputPlotsFilename>
           <bsZ>-7.5</bsZ>
           <trackCollectionName>GBLTracks</trackCollectionName>
