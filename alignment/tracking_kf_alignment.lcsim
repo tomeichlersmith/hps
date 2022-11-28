@@ -44,9 +44,9 @@
       
       <!--
       Write out histograms
+      <driver name="GBLOutputDriverKF"/>
       -->
       <driver name="GBLOutputDriver" />
-      <driver name="GBLOutputDriverKF"/>
       
       <driver name="CleanupDriver"/>
     </execute>    
@@ -91,39 +91,17 @@
             <thresholdMonsterEvents>200</thresholdMonsterEvents>
             <debug>false</debug>
         </driver>
-      
-        <!-- Form trajectories for MPII using the GBL algorithm -->
-        <driver name="SimpleGBLTrajAliDriver" type="org.hps.recon.tracking.gbl.SimpleGBLTrajAliDriver" >
-          <!--
-          <maxTrackChisq5hits> 60. </maxTrackChisq5hits>
-          <maxTrackChisq6hits> 84. </maxTrackChisq6hits>
-          -->
-          <nHitsCut>6</nHitsCut>
-          <includeNoHitScatters>false</includeNoHitScatters>
-          <gblRefitIterations>0</gblRefitIterations>
-          <storeTrackStates>true</storeTrackStates>
-          <enableAlignmentCuts>false</enableAlignmentCuts>
-          <debugAlignmentDs>false</debugAlignmentDs>
-          <compositeAlign>true</compositeAlign>
-          <doCOMAlignment>true</doCOMAlignment>
-          <constrainedFit>false</constrainedFit>
-          <constrainedBSFit>true</constrainedBSFit>
-          <bsZ>-8.0</bsZ>
-          <trackSide>-1</trackSide> <!--slot-->
-          <writeMilleBinary>true</writeMilleBinary>
-          <milleBinaryFileName>${outputFile}_all_millepede_ST.bin</milleBinaryFileName>
-          <writeMilleChi2Cut>10</writeMilleChi2Cut>  <!-- Chi2/Ndf -->
-          <enableStandardCuts>false</enableStandardCuts>
-          <minMom>0.5</minMom>
-	      <maxMom>5.0</maxMom>
-	    </driver> 
 
         <driver name="GBLOutputDriver" type="org.hps.recon.tracking.gbl.GBLOutputDriver">
-          <nHits>0</nHits> <!-- minimum hits -->
+          <nHits>6</nHits> <!-- minimum hits -->
           <outputPlotsFilename>${outputFile}_gblplots.root</outputPlotsFilename>
           <bsZ>-7.5</bsZ>
           <trackCollectionName>GBLTracks</trackCollectionName>
-          <doGBLkinks>false</doGBLkinks> <!--the KF tracks refitted as GBL don't have kinks?? -->
+
+          <!--the KF tracks refitted as GBL don't have kinks?? -->
+          <doGBLkinks>false</doGBLkinks> 
+          <dataRelationCollection>""</dataRelationCollection>
+
           <chi2Cut>9999</chi2Cut>
         </driver>
 
@@ -151,29 +129,38 @@
         </driver>
         
         <!-- Form trajectories for MPII using the GBL algorithm -->
-        <driver name="SimpleGBLTrajAliDriverKF" type="org.hps.recon.tracking.gbl.SimpleGBLTrajAliDriver" >
+        <driver name="SimpleGBLTrajAliDriverKF" 
+                type="org.hps.recon.tracking.gbl.SimpleGBLTrajAliDriver" >
+
+          <!-- apply the track quality cuts -->
+          <enableAlignmentCuts>true</enableAlignmentCuts> 
           <!--
-          <maxTrackChisq5hits> 60. </maxTrackChisq5hits>
-          <maxTrackChisq6hits> 84. </maxTrackChisq6hits>
           <doCOMAlignment>true</doCOMAlignment>
-          <bsZ>-8.0</bsZ>
-          <minMom>0.5</minMom>
-	        <maxMom>5.0</maxMom>
+          <minMom>0.5</minMom> 
+          <maxMom>5.0</maxMom> 
           -->
-          <nHitsCut>6</nHitsCut>
-          <correctTrack>true</correctTrack>
+          <nHitsCut>6</nHitsCut> <!-- minimum number of hits to be included -->
+
+          <debugAlignmentDs>false</debugAlignmentDs>
+
+          <correctTrack>true</correctTrack> <!-- refit with GBL before doing Mille -->
           <includeNoHitScatters>false</includeNoHitScatters>
           <gblRefitIterations>0</gblRefitIterations>
           <storeTrackStates>true</storeTrackStates>
-          <enableAlignmentCuts>true</enableAlignmentCuts> 
-          <debugAlignmentDs>false</debugAlignmentDs>
           <compositeAlign>true</compositeAlign>
-          <constrainedFit>false</constrainedFit> <!-- diff: GBL uses false -->
-          <constrainedBSFit>true</constrainedBSFit> <!-- diff: GBL uses true -->
+
+          <!-- <momC>4.55</momC> momentum constraint [GeV] -->
+          <constrainedFit>false</constrainedFit> <!-- apply momentum constraint -->
+
+          <constrainedBSFit>false</constrainedBSFit> <!-- apply beam spot constraint -->
+          <!-- <bsZ>-7.7</bsZ> beam spot z-coordinate, used to calculate beam spot -->
+
           <trackSide>-1</trackSide> <!--hole-->
+
           <writeMilleBinary>true</writeMilleBinary>
-          <milleBinaryFileName>${outputFile}_all_millepede.bin</milleBinaryFileName>
-          <writeMilleChi2Cut>5</writeMilleChi2Cut>  <!-- Chi2/Ndf : diff GBL uses 10 -->
+          <milleBinaryFileName>${outputFile}_millepede.bin</milleBinaryFileName>
+          <writeMilleChi2Cut>5</writeMilleChi2Cut>  <!-- max Chi2/Ndf to be included -->
+
           <enableStandardCuts>false</enableStandardCuts>
           <maxTrackChisq4hits>60.</maxTrackChisq4hits>
           <maxTrackChisq5hits>60.</maxTrackChisq5hits>
@@ -188,7 +175,11 @@
           <bsZ>-7.5</bsZ>
           <trackCollectionName>KalmanFullTracks</trackCollectionName>
           <trackResidualsRelColName>TrackResidualsKFtoGBLRelations</trackResidualsRelColName>
+
+          <!-- need to find relation collection for Kalma -->
           <doGBLkinks>false</doGBLkinks>
+          <dataRelationCollection>""</dataRelationCollection>
+
           <chi2Cut>9999</chi2Cut>
         </driver>
         
