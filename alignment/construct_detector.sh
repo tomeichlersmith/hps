@@ -43,7 +43,7 @@ __main__() {
     return $?
   fi
   
-  echo "name: HPS_${tag}_$iteration" > detector-data/detectors/HPS_${tag}_$iteration/detector.properties
+  echo "name: HPS_${tag}_$iteration" > detectors/HPS_${tag}_$iteration/detector.properties
   
   mvn -T 4 -DskipTests=true
   cd ..
