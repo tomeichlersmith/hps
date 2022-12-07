@@ -42,11 +42,17 @@ class Differ :
                  'Energy Dep [MeV]')
     """
 
+    
     def __init__(self, grp_name, *args) :
         self.grp_name = grp_name
         self.files = [
                 (uproot.open(pack[0]), pack[1], pack[2] if len(pack)>2 else dict()) for pack in args
                 ]
+        
+        self.__mean_calculators = {
+            'simple' : Differ.__calc_mean,
+            'iterative' : Differ.__core_mean,
+        }
 
     def __plt_hist(ax, uproot_obj, **kwargs) :
         """Plot the input uproot object as a histogram on the input axes
@@ -74,6 +80,28 @@ class Differ :
         mean = (weights*values).sum()/(weights.sum())
         stdd = math.sqrt((weights*(values-mean)**2).sum()/(weights.sum()))
         return mean, stdd
+    
+    def __core_mean(vals, weights, sigma_cut = 2.7) :
+        """Iteratively remove bins outside a few standard deviations of the mean until we converge to a core gaussian"""
+        from scipy.optimize import curve_fit as fit
+        from scipy.stats import norm
+        import numpy as np
+    
+        num_included = len(weights)+1 # just to get loop started
+        selection = (weights > 0) # first selection is all non-zero bins
+        while np.count_nonzero(selection) < num_included :
+            # update number included in this fit
+            num_included = np.count_nonzero(selection)
+            # calculate mean and std dev for starting fit
+            mu, sigma = Differ.__calc_mean(vals[selection], weights[selection])
+            optim, cov = fit(norm.pdf,
+                             vals[selection], weights[selection], 
+                             sigma=np.sqrt(weights[selection]), p0 = [mu, sigma])
+            # determine new selection
+            selection = (vals > (optim[0] - sigma_cut*optim[1])) & (vals < (optim[0] + sigma_cut*optim[1])) & (weights > 0)
+        
+        return Differ.__calc_mean(vals[selection], weights[selection])
+    
         
     def keys(self, *args, **kwargs) :
         """Call keys on the first file provided
@@ -99,20 +127,33 @@ class Differ :
         if 'linewidth' not in hist_kwargs :
             hist_kwargs['linewidth'] = 2
 
-        legend_labels = []
         for f, name, style in self.files :
-            weights, bins, p = Differ.__plt_hist(ax, f[column], **style, **hist_kwargs)
+            weights, bins, drawing_bars = Differ.__plt_hist(ax, f[column], label = name, **style, **hist_kwargs)
             if include_mean is not None :
                 values = (bins[1:]+bins[:-1])/2
                 if callable(include_mean) :
                     mean, stdd = include_mean(values, weights)
+                elif isinstance(include_mean,str) :
+                    if include_mean in self.__mean_calculators :
+                        mean, stdd = self.__mean_calculators[include_mean](values, weights)
+                    else :
+                        raise ValueError(f'{include_mean} not a listed mean calculator. Options: {self.__mean_calculators.keys()}')
                 else :
                     mean, stdd = Differ.__calc_mean(values, weights)
-                legend_labels.append(f'{name} $\mu = {mean*1000:.1f}\mu m$\n$\sigma = {stdd*1000:.1f}\mu m$')
+                mean_label = f'$\mu = {mean*1000:.1f}\mu m$\n$\sigma = {stdd*1000:.1f}\mu m$'
                 if draw_mean :
-                    plt.plot(values, norm.pdf(values, mean, stdd), **style, label='_nolegend_')
-            else :
-                legend_labels.append(name)
+                    # in MPL, bar plots are simply a set of rectangles that are all drawn with
+                    # the same style. we reach into the first of these bars to get the style
+                    ec = drawing_bars[0].get_edgecolor()
+                    lw = drawing_bars[0].get_linewidth()
+                    ls = drawing_bars[0].get_linestyle()
+                    plt.plot(values, norm.pdf(values, mean, stdd), label = mean_label, 
+                             linewidth = lw, color = ec, linestyle = ls)
+                else :
+                    # in MPL, the first bar drawn is given the label so that the label
+                    # only appears once in the legend, we reach in and append the mean
+                    # to this label
+                    drawing_bars[0].set_label(drawing_bars[0].get_label()+'\n'+mean_label)
 
         ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel)
@@ -120,7 +161,7 @@ class Differ :
         ax.set_ylim(*ylim)
         if 'title' not in legend_kw :
             legend_kw['title'] = self.grp_name
-        ax.legend(labels = legend_labels, **legend_kw)
+        ax.legend(**legend_kw)
 
         if out_dir is None :
             plt.show()
