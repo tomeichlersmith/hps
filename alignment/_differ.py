@@ -140,7 +140,7 @@ class Differ :
                         raise ValueError(f'{include_mean} not a listed mean calculator. Options: {self.__mean_calculators.keys()}')
                 else :
                     mean, stdd = Differ.__calc_mean(values, weights)
-                mean_label = f'$\mu = {mean*1000:.1f}\mu m$\n$\sigma = {stdd*1000:.1f}\mu m$'
+                mean_label = f'${mean*1000:.1f} \pm {stdd*1000:.1f} \mu m$'
                 if draw_mean :
                     # in MPL, bar plots are simply a set of rectangles that are all drawn with
                     # the same style. we reach into the first of these bars to get the style
