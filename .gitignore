@@ -37,3 +37,6 @@ obj
 .ipython
 .local
 hps-align-scratch
+.git-completion.bash
+.gitconfig
+.gitignore_global
