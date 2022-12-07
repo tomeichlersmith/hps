@@ -232,16 +232,16 @@ class Differ :
                         fmt='o',
                         label=name,
                         **style)
-            
+        
+        if pre_plot is not None :
+            pre_plot(fig, ax)
+        
         ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel)
         if 'title' not in legend_kw :
             legend_kw['title'] = self.grp_name
         ax.legend(**legend_kw)
         
-        if pre_plot is not None :
-            pre_plot(fig, ax)
-            
         if out_dir is None :
             plt.show()
         else :
