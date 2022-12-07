@@ -2,6 +2,7 @@
 
 import uproot
 import matplotlib.pyplot as plt
+import numpy as np
 import os
 import math
 from scipy.stats import norm
@@ -163,10 +164,88 @@ class Differ :
             legend_kw['title'] = self.grp_name
         ax.legend(**legend_kw)
 
+            
         if out_dir is None :
             plt.show()
         else :
             fn = column
+            if file_name is not None :
+                fn = file_name
+            full_name = os.path.join(out_dir, fn)
+            os.makedirs(os.path.dirname(full_name), exist_ok=True)
+            fig.savefig(full_name+'.pdf', bbox_inches='tight')
+            fig.clf()
+
+        return
+    
+    def plot2d_separate(self, hist, *,
+                        title = None, xlabel = None, ylabel = None,
+                        pre_plot = None,
+                        out_dir = None, file_name = None) :
+        
+        for f, name, style in self.files :
+            fig = plt.figure('differ',figsize=(11,8))
+            ax = fig.subplots()
+            
+            h = f[hist].to_hist()
+            if xlabel is not None :
+                h.axes[0].label = xlabel
+            if ylabel is not None :
+                h.axes[1].label = ylabel
+            h.plot(ax=ax,cmin=1)
+            t = self.grp_name + ' ' + name
+            if title is not None :
+                t += ' ' + title
+            ax.set_title(t)
+            
+            if pre_plot is not None :
+                if not callable(pre_plot) :
+                    raise ValueError('The pre_plot value should be a callable.')
+                pre_plot(fig, ax)
+            
+            if out_dir is None :
+                plt.show()
+            else :
+                fn = hist
+                if file_name is not None :
+                    fn = file_name
+                full_name = os.path.join(out_dir, name, fn)
+                os.makedirs(os.path.dirname(full_name), exist_ok = True)
+                fig.savefig(full_name+'.pdf', bbox_inches='tight')
+                fig.clf()
+        return
+    
+    def plot2d_profile_overlay(self, hist, *,
+                               xlabel = None, ylabel = None,
+                               pre_plot = None, legend_kw = dict(),
+                               out_dir = None, file_name = None) :
+        
+        fig = plt.figure('differ',figsize=(11,8))
+        ax = fig.subplots()
+        
+        for f, name, style in self.files :
+            h = f[hist].to_hist()
+            p = h.profile(1) # get profile of y axis
+            ax.errorbar(h.axes[0].centers,
+                        p.values(),
+                        yerr = np.sqrt(p.variances()),
+                        fmt='o',
+                        label=name,
+                        **style)
+            
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
+        if 'title' not in legend_kw :
+            legend_kw['title'] = self.grp_name
+        ax.legend(**legend_kw)
+        
+        if pre_plot is not None :
+            pre_plot(fig, ax)
+            
+        if out_dir is None :
+            plt.show()
+        else :
+            fn = hist
             if file_name is not None :
                 fn = file_name
             full_name = os.path.join(out_dir, fn)
