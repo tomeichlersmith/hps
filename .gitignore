@@ -12,6 +12,7 @@ __pycache__
 .ipynb_checkpoints
 .container-install
 .apptainer
+*.sif
 # sbatch output files
 *.txt
 *.out
@@ -32,3 +33,7 @@ obj
 .profile
 .python_history
 .viminfo
+.bash_history
+.ipython
+.local
+hps-align-scratch
