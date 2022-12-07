@@ -218,7 +218,8 @@ class Differ :
     def plot2d_profile_overlay(self, hist, *,
                                xlabel = None, ylabel = None,
                                pre_plot = None, legend_kw = dict(),
-                               out_dir = None, file_name = None) :
+                               out_dir = None, file_name = None,
+                               line_fit = False, draw_line = False) :
         
         fig = plt.figure('differ',figsize=(11,8))
         ax = fig.subplots()
@@ -226,12 +227,38 @@ class Differ :
         for f, name, style in self.files :
             h = f[hist].to_hist()
             p = h.profile(1) # get profile of y axis
-            ax.errorbar(h.axes[0].centers,
-                        p.values(),
-                        yerr = np.sqrt(p.variances()),
-                        fmt='o',
-                        label=name,
-                        **style)
+            x = h.axes[0].centers
+            y = p.values()
+            yerr = p.variances()
+            
+            # make sure the y-point exists and that the variance
+            #  is non-zero
+            # i.e. requires at least two different bins to have entries
+            #     in a column of bins with one x value
+            selection = (~np.isnan(y))&(yerr > 0)
+            
+            x = x[selection]
+            y = y[selection]
+            yerr = np.sqrt(yerr[selection])
+            
+            art = ax.errorbar(x, y, yerr = yerr,
+                              fmt='o', label=name,
+                              **style)
+            if line_fit :
+                from scipy.optimize import curve_fit
+                
+                def line(x, slope) :
+                    return x*slope
+                
+                slope, cov = curve_fit(line, x, y, sigma=yerr)
+                
+                line_label=f'{(-1000*slope[0]):.4f} mrad'
+                if draw_line :
+                    ax.axline((0,0),slope=slope,label=line_label,
+                             color=art[0].get_color())
+                else :
+                    art[0].set_label(art[0].get_label()+'\n'+line_label)
+                
         
         if pre_plot is not None :
             pre_plot(fig, ax)
