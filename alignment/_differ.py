@@ -111,7 +111,7 @@ class Differ :
         """
         return self.files[0][0].keys(*args, **kwargs)
 
-    def plot1d(self, column, xlabel, 
+    def plot1d(self, column, xlabel, *,
                ylabel = None,
                 yscale = 'log',
                 ylim = (None,None),
