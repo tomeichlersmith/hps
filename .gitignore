@@ -40,3 +40,5 @@ hps-align-scratch
 .git-completion.bash
 .gitconfig
 .gitignore_global
+.vim
+.mg5
