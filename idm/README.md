@@ -12,7 +12,7 @@ Playing with this model requires a local copy of MadGraph5.
     - The name of the model to use with the `import model` command in MG5
       is the same as the name of the directory in `models`, for this README,
       I will assume that this model has been linked without changing its name.
-4. Import the model into MG5 `MG5_aMC>import model --modelname idm`
+4. Import the model into MG5 `MG5_aMC>import model idm --modelname`
     - Using the `--modelname` option informs MG5 to use the names for particles
       from the model
 
@@ -77,3 +77,13 @@ aval | frblock | . | form factor constant
 dval | frblock | . | form factor constant
 apval | frblock | . | form factor constant
 
+## Generate MadEvent Workspace
+```
+./bin/mg5_aMC
+import model idm --modelname
+generate e- N > e- N zp, (zp > chi2 chi1, chi2 > l+ l- chi1)
+output eN-iDM
+```
+Now the directory `eN-iDM` is a "stand-alone" MadEvent "program"
+where we can tune the model parameters in `Cards/param_card.dat`
+and change the run parameters in `Cards/run_card.dat`.
