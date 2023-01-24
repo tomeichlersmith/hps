@@ -2,12 +2,11 @@
 # Mathematica version: 8.0 for Mac OS X x86 (64-bit) (October 5, 2011)
 # Date: Wed 22 Jul 2015 00:41:10
 
+import form_factors as ForFac
 
 from object_library import all_lorentz, Lorentz
 
 from function_library import complexconjugate, re, im, csc, sec, acsc, asec
-
-
 
 UUV1 = Lorentz(name = 'UUV1',
                spins = [ -1, -1, 3 ],
@@ -24,6 +23,12 @@ FFS1 = Lorentz(name = 'FFS1',
 FFV1 = Lorentz(name = 'FFV1',
                spins = [ 2, 2, 3 ],
                structure = 'Gamma(3,2,1)')
+
+#new coupling with form factors
+FF1 = Lorentz(name = 'FF1',
+              spins = [ 2, 2, 3 ],
+              structure = 'AAA*Gamma(3,2,1)',
+              formfactors = [ForFac.AAA])
 
 FFV2 = Lorentz(name = 'FFV2',
                spins = [ 2, 2, 3 ],

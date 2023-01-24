@@ -213,6 +213,21 @@ chi2 = Particle(pdg_code = 1000023,
                 GhostNumber = 0,
                 LeptonNumber = 0)
 
+N = Particle(pdg_code = 9000002,
+             name = 'N',
+             antiname = 'N~',
+             spin = 2,
+             color = 1,
+             mass = Param.MNul,
+             width = Param.ZERO,
+             texname = 'N',
+             antitexname = 'N~',
+             charge = 0,
+             GhostNumber = 0,
+             LeptonNumber = 0)
+
+N__tilde__ = N.anti()
+
 ghG = Particle(pdg_code = 9000001,
                name = 'ghG',
                antiname = 'ghG~',

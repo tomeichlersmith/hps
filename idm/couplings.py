@@ -353,3 +353,11 @@ GC_86 = Coupling(name = 'GC_86',
                  value = '(ee*complex(0,1)*complexconjugate(CKM22))/(sw*cmath.sqrt(2))',
                  order = {'QED':1})
 
+# new nuclear couplings added by hand
+GC_87 = Coupling(name = 'GC_87',
+                 value = '-(complex(0,1)*GAN)',
+                 order = {'QND':1})
+
+GC_88 = Coupling(name = 'GC_88',
+                 value = '-(complex(0,1)*GZPN)',
+                 order = {'DQND':1})

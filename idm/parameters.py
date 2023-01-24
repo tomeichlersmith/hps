@@ -41,6 +41,87 @@ dMchi = Parameter(name = 'dMchi',
                   lhablock = 'DM',
                   lhacode = [ 2 ])
 
+
+GAN = Parameter(name = 'GAN',
+                nature = 'external',
+                type = 'real',
+                value = 0.3028177,
+                texname = '\\text{GAN}',
+                lhablock = 'FRBlock',
+                lhacode = [ 3 ])
+
+GZPN = Parameter(name = 'GZPN',
+                 nature = 'external',
+                 type = 'real',
+                 value = 0.3028177,
+                 texname = '\\text{GAPN}',
+                 lhablock = 'FRBlock',
+                 lhacode = [ 4 ])
+
+Anuc = Parameter(name = 'Anuc',
+        nature = 'external',
+        type = 'real',
+        value = 184.,
+        texname = '\\text{Anuc}',
+        lhablock = 'FRBlock',
+        lhacode = [ 5 ])
+
+Znuc = Parameter(name = 'Znuc',
+        nature = 'external',
+        type = 'real',
+        value = 74.,
+        texname = '\\text{Znuc}',
+        lhablock = 'FRBlock',
+        lhacode = [ 6 ])
+
+inelastic1 = Parameter(name = 'inelastic1',
+        nature = 'external',
+        type = 'real',
+        value = 1.9276,
+        texname = '\\text{inelastic1}',
+        lhablock = 'FRBlock',
+        lhacode = [ 7 ])
+
+inelastic2 = Parameter(name = 'inelastic2',
+        nature = 'external',
+        type = 'real',
+        value = 1.40845,
+        texname = '\\text{inelastic2}',
+        lhablock = 'FRBlock',
+        lhacode = [ 8 ])
+
+aval = Parameter(name = 'aval',
+        nature = 'external',
+        type = 'real',
+        value = 51729.7,
+        texname = '\\text{aval}',
+        lhablock = 'FRBlock',
+        lhacode = [ 9 ])
+
+dval = Parameter(name = 'dval',
+        nature = 'external',
+        type = 'real',
+        value = 0.0050695,
+        texname = '\\text{dval}',
+        lhablock = 'FRBlock',
+        lhacode = [ 10 ])
+
+apval = Parameter(name = 'apval',
+        nature = 'external',
+        type = 'real',
+        value = 85806.3,
+        texname = '\\text{apval}',
+        lhablock = 'FRBlock',
+        lhacode = [ 11 ])
+
+MNul = Parameter(name = 'MNul',
+                 nature = 'external',
+                 type = 'real',
+                 value = 174,
+                 texname = '\\text{MNul}',
+                 lhablock = 'MASS',
+                 lhacode = [ 9000002 ])
+
 mZinput = Parameter(name = 'mZinput',
                     nature = 'external',
                     type = 'real',
