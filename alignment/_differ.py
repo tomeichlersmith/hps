@@ -165,17 +165,14 @@ class Differ :
         ax.legend(**legend_kw)
 
             
-        if out_dir is None :
-            plt.show()
-        else :
+        if out_dir is not None :
             fn = column
             if file_name is not None :
                 fn = file_name
             full_name = os.path.join(out_dir, fn)
             os.makedirs(os.path.dirname(full_name), exist_ok=True)
             fig.savefig(full_name+'.pdf', bbox_inches='tight')
-            fig.clf()
-
+        plt.show()
         return
     
     def plot2d_separate(self, hist, *,
@@ -203,16 +200,14 @@ class Differ :
                     raise ValueError('The pre_plot value should be a callable.')
                 pre_plot(fig, ax)
             
-            if out_dir is None :
-                plt.show()
-            else :
+            if out_dir is not None :
                 fn = hist
                 if file_name is not None :
                     fn = file_name
                 full_name = os.path.join(out_dir, name, fn)
                 os.makedirs(os.path.dirname(full_name), exist_ok = True)
                 fig.savefig(full_name+'.pdf', bbox_inches='tight')
-                fig.clf()
+            plt.show()
         return
     
     def plot2d_profile_overlay(self, hist, *,
@@ -230,12 +225,11 @@ class Differ :
             x = h.axes[0].centers
             y = p.values()
             yerr = p.variances()
-            
             # make sure the y-point exists and that the variance
-            #  is non-zero
+            #  is non-zero (including floating-point errors)
             # i.e. requires at least two different bins to have entries
             #     in a column of bins with one x value
-            selection = (~np.isnan(y))&(yerr > 0)
+            selection = (~np.isnan(y))&(~np.isnan(yerr))&(yerr > 1e-18)
             
             x = x[selection]
             y = y[selection]
@@ -247,14 +241,14 @@ class Differ :
             if line_fit :
                 from scipy.optimize import curve_fit
                 
-                def line(x, slope) :
-                    return x*slope
+                def line(x, slope, intercept) :
+                    return x*slope + intercept
                 
-                slope, cov = curve_fit(line, x, y, sigma=yerr)
+                opt_params, cov = curve_fit(line, x, y, sigma=yerr, p0=[0,y.mean()])
                 
-                line_label=f'{(-1000*slope[0]):.4f} mrad'
+                line_label=f'rW {(-1000*opt_params[0]):.4f} mrad + tU {(1000*opt_params[1]):.4f} um'
                 if draw_line :
-                    ax.axline((0,0),slope=slope,label=line_label,
+                    ax.axline((0,opt_params[1]),slope=opt_params[0],label=line_label,
                              color=art[0].get_color())
                 else :
                     art[0].set_label(art[0].get_label()+'\n'+line_label)
@@ -269,13 +263,11 @@ class Differ :
             legend_kw['title'] = self.grp_name
         ax.legend(**legend_kw)
         
-        if out_dir is None :
-            plt.show()
-        else :
+        if out_dir is not None :
             fn = hist
             if file_name is not None :
                 fn = file_name
             full_name = os.path.join(out_dir, fn)
             os.makedirs(os.path.dirname(full_name), exist_ok=True)
             fig.savefig(full_name+'.pdf', bbox_inches='tight')
-            fig.clf()
+        plt.show()
