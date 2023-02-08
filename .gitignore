@@ -24,8 +24,6 @@ obj
 # data files
 *.slcio
 
-MG5_aMC_v3_4_2
-
 # home-like stuff from using this directory as distrobox home
 .JAS3
 .bash_logout
@@ -45,3 +43,5 @@ hps-align-scratch
 .vim
 .mg5
 .lesshst
+.venv
+MG5_aMC*
