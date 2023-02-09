@@ -22,3 +22,11 @@ The general flow is
 4. Run ME code to generate events and compute cross sections: 
    `launch` command or `./bin/generate_events` directly
 
+## Notes on Model
+I've added in a restriction file following the instructions from
+[an MG5 Launchpad post](https://answers.launchpad.net/mg5amcnlo/+faq/2312)
+which is used by default (since it is called `restrict_default.dat`).
+You can still use the model without this restriction by asking for 
+`MODELNAME-full` rather than just `MODELNAME` when calling `import model`.
+
+
