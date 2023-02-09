@@ -13,6 +13,8 @@ Playing with this model requires a local copy of MadGraph5.
       is the same as the name of the directory in `models`, for this README,
       I will assume that this model has been linked without changing its name.
 4. Import the model into MG5 `MG5_aMC>import model --modelname idm`
+    - Using the `--modelname` option informs MG5 to use the names for particles
+      from the model
 
 ## Brief MG/ME Primer
 The general flow is
@@ -22,11 +24,56 @@ The general flow is
 4. Run ME code to generate events and compute cross sections: 
    `launch` command or `./bin/generate_events` directly
 
-## Notes on Model
+# Notes on Model
+
+### Generate Events and Widths
+Full iDM cascade
+```
+generate e- n > e- n zp, (zp > chi2 chi1, chi2 > e+ e- chi1)
+```
+Heavier DM Width
+```
+generate chi2 > chi1 e+ e-
+```
+
+### Restriction
 I've added in a restriction file following the instructions from
 [an MG5 Launchpad post](https://answers.launchpad.net/mg5amcnlo/+faq/2312)
 which is used by default (since it is called `restrict_default.dat`).
 You can still use the model without this restriction by asking for 
 `MODELNAME-full` rather than just `MODELNAME` when calling `import model`.
 
+### New Particles
+Particle | ID      | Description
+---------|---------|---------------
+n        | 9000002 | target nucleus
+zp       | 1023    | dark photon
+chi1     | 1000022 | lighter DM
+chi2     | 1000023 | heavier DM
+
+### Parameters
+Listed here are the relevent entries in the param card.
+Each entry in the param card is in a certain block and has
+a short name after it in a comment.
+
+Short Name | Block | Value | Description
+-----------|---|-------|-------------
+Mchi | dm | 1 | Avg DM Mass (M2+M1)/2
+dMchi | dm |1e-2 | DM Mass Splitting (M2-M1)/2
+mZDinput | hidden | 60 | dark photon mass
+MHSinput | hidden | 200 | dark higgs mass (can ignore)
+epsilon | hidden | 1e-2 | kinetic mixing
+kap | hidden | 1e-9 | dark higgs quartic (can ignore)
+aXM1 | hidden | 1.279e2 | inverse alpha\_D
+WZp | decay | 8.252e-4 | dark photon decay width
+Wchi2 | decay | 1e-3 | heavier DM decay width
+GAN | frblock | 3.028177e-1 | nucleus and standard photon coupling
+GZPN | frblock | 3.028177e-1 | nucleus and dark photon coupling
+Anuc | frblock | 184 | atomic weight of nucleus
+Znuc | frblock | 74 | atomic number of nuclenus
+inelastic1 | frblock | . | form factor constant
+inelastic2 | frblock | . | form factor constant
+aval | frblock | . | form factor constant
+dval | frblock | . | form factor constant
+apval | frblock | . | form factor constant
 
