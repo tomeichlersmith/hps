@@ -1,0 +1,19 @@
+!Constraint 0.
+!11103 1.
+!11104 -1.
+
+!Measurement 0. 2.
+!11301 1.
+!11307 -1.
+
+printrecord -1 -1
+
+!chiscut 1000. 200.
+chiscut 30. 6.
+outlierdownweighting 4
+method inversion 20 0.10E-01
+!method diagonalization 6 1.
+
+histprint
+
+end
