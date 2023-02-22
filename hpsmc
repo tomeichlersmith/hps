@@ -50,5 +50,5 @@ java_dir = /sdf/group/hps/users/eichl008/hps/java
 
 [ConstructDetector]
 hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
-detector_dir = /sdf/group/hps/users/eichl008/hps/java/detector-data/detectors
+java_dir = /sdf/group/hps/users/eichl008/hps/java
 
