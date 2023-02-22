@@ -18,7 +18,8 @@ detector_dir = /sdf/group/hps/users/eichl008/hps/java/detector-data/detectors
 
 [JobManager]
 hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
-java_args = -Xmx3g -XX:+UseSerialGC
+hps_fieldmaps_dir = /sdf/group/hps/users/bravo/src/hps-fieldmaps
+java_args = -Xmx3g -XX:+UseSerialGC -Djna.library.path=/sdf/group/hps/users/pbutti/sw/GeneralBrokenLines/cpp/install/lib/
 
 [FilterBunches]
 hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
@@ -39,3 +40,15 @@ lcio_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/lcsim/lcio/2.7.4-SNAPSHOT
 [EvioToLcio]
 hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
 java_args = -Xmx3g -XX:+UseSerialGC
+
+[PEDE]
+param_map = /sdf/group/hps/users/eichl008/hps/alignment/hpsSvtParamMap_2019.txt
+pede_minimization = /sdf/group/hps/users/eichl008/hps/alignment/pede_steer_minimization_template.txt
+
+[ApplyPedeRes]
+java_dir = /sdf/group/hps/users/eichl008/hps/java
+
+[ConstructDetector]
+hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
+detector_dir = /sdf/group/hps/users/eichl008/hps/java/detector-data/detectors
+
