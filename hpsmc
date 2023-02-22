@@ -11,19 +11,20 @@ egs5_dir = /sdf/group/hps/users/eichl008/hps/mc/generators/egs5
 egs5_dir = /sdf/group/hps/users/eichl008/hps/mc/generators/egs5
 
 [SLIC]
+# using Cam's SLIC but my detectors
 slic_dir = /sdf/group/hps/users/bravo/src/slic/install
 hps_fieldmaps_dir = /sdf/group/hps/users/bravo/src/hps-fieldmaps
 detector_dir = /sdf/group/hps/users/eichl008/hps/java/detector-data/detectors
 
 [JobManager]
-hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.1-SNAPSHOT/hps-distribution-5.1-SNAPSHOT-bin.jar
+hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
 java_args = -Xmx3g -XX:+UseSerialGC
 
 [FilterBunches]
-hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.1-SNAPSHOT/hps-distribution-5.1-SNAPSHOT-bin.jar
+hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
 
 [ExtractEventsWithHitAtHodoEcal]
-hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.1-SNAPSHOT/hps-distribution-5.1-SNAPSHOT-bin.jar
+hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
 
 [HPSTR]
 hpstr_install_dir = /sdf/group/hps/users/bravo/src/hpstr/install
@@ -36,5 +37,5 @@ lcio_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/lcsim/lcio/2.7.4-SNAPSHOT
 lcio_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/lcsim/lcio/2.7.4-SNAPSHOT/lcio-2.7.4-SNAPSHOT-bin.jar
 
 [EvioToLcio]
-hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.1-SNAPSHOT/hps-distribution-5.1-SNAPSHOT-bin.jar
+hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
 java_args = -Xmx3g -XX:+UseSerialGC
