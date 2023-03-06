@@ -4,6 +4,7 @@ mc
 lcio
 java
 env
+slic
 # mani #
 *.root
 *.log
@@ -27,7 +28,10 @@ obj
 # home-like stuff from using this directory as distrobox home
 .JAS3
 .bash_logout
+.vimrc
 .bashrc
+.bash_profile
+.zshrc
 .cache
 .m2
 .profile
