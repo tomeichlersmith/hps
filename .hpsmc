@@ -22,7 +22,7 @@ detector_dir = /export/scratch/users/eichl008/hps/java/detector-data/detectors
 #conditions_url = jdbc:sqlite:/export/scratch/users/eichl008/db/hps_conditions_test.db
 hps_java_bin_jar = /export/scratch/users/eichl008/hps/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
 # 1g memory led to a OOM java error, so I lowered it to 5000m
-java_args = -Xmx5000m -XX:+UseSerialGC
+java_args = -Xmx5000m -XX:+UseSerialGC -Djna.library.path=/export/scratch/users/eichl008/hps/alignment/general-broken-lines/cpp/build/lib/
 hps_fieldmaps_dir = /export/scratch/users/eichl008/hps/.local/share/fieldmap
 
 [FilterBunches]
@@ -47,8 +47,8 @@ conditions_url = jdbc:sqlite:/export/scratch/users/eichl008/db/hps_conditions_te
 
 [PEDE]
 #command = /full/path/not/in/PATH/pede
-param_map = /export/scratch/users/eichl008/hps/alignment/mille/align/data/param_maps/hpsSvtParamMap_2019.txt
-pede_minimization = /export/scratch/users/eichl008/hps/alignment/mille/align/data/pede_steer/steer_minimization_template.txt
+param_map = /export/scratch/users/eichl008/hps/alignment/hpsSvtParamMap_2019.txt
+pede_minimization = /export/scratch/users/eichl008/hps/alignment/pede_steer_minimization_template.txt
 
 [ApplyPedeRes]
 java_dir = /export/scratch/users/eichl008/hps/java
