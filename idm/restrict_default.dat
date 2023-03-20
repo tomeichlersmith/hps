@@ -31,11 +31,6 @@ Block frblock
     4 3.028177e-01 # GZPN 
     5 1.840000e+02 # Anuc 
     6 7.400000e+01 # Znuc 
-    7 1.927600e+00 # inelastic1 
-    8 1.408450e+00 # inelastic2 
-    9 5.172970e+04 # aval 
-   10 5.069500e-03 # dval 
-   11 8.580630e+04 # apval 
 
 ###################################
 ## INFORMATION FOR GAUGEMASS

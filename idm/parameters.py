@@ -74,45 +74,53 @@ Znuc = Parameter(name = 'Znuc',
         lhablock = 'FRBlock',
         lhacode = [ 6 ])
 
-inelastic1 = Parameter(name = 'inelastic1',
-        nature = 'external',
+protonmu = Parameter(name = 'protonmu',
+        nature = 'internal',
         type = 'real',
-        value = 1.9276,
-        texname = '\\text{inelastic1}',
-        lhablock = 'FRBlock',
-        lhacode = [ 7 ])
+        value = '2.79',
+        texname = '\\mu_p')
 
-inelastic2 = Parameter(name = 'inelastic2',
-        nature = 'external',
+Mproton = Parameter(name = 'Mproton',
+        nature = 'internal',
         type = 'real',
-        value = 1.40845,
-        texname = '\\text{inelastic2}',
-        lhablock = 'FRBlock',
-        lhacode = [ 8 ])
+        value = '0.938',
+        texname = 'm_p')
+
+# inelastic1 is another factor multiplying t
+#  in a (1+F*t)^2 factor
+inelastic1 = Parameter(name = 'inelastic1',
+        nature = 'internal',
+        type = 'real',
+        value = '(protonmu**2 - 1)/(4*Mproton**2)',
+        texname = '\\text{inelastic1}')
+
+# inelastic2 is another factor multiplying t
+#  but it is in the (1+F*t)^-8 factor
+# I (Tom E) think of this as dpval since it
+#  is similar to apval (in some respects)
+inelastic2 = Parameter(name = 'inelastic2',
+        nature = 'internal',
+        type = 'real',
+        value = '1/0.71',
+        texname = '\\text{inelastic2}')
 
 aval = Parameter(name = 'aval',
-        nature = 'external',
+        nature = 'internal',
         type = 'real',
-        value = 51729.7,
-        texname = '\\text{aval}',
-        lhablock = 'FRBlock',
-        lhacode = [ 9 ])
+        value = '111.0*Znuc**(-1/3)/ymel',
+        texname = '\\text{aval}')
 
 dval = Parameter(name = 'dval',
-        nature = 'external',
+        nature = 'internal',
         type = 'real',
-        value = 0.0050695,
-        texname = '\\text{dval}',
-        lhablock = 'FRBlock',
-        lhacode = [ 10 ])
+        value = '0.164*Anuc**(-2/3)',
+        texname = '\\text{dval}')
 
 apval = Parameter(name = 'apval',
-        nature = 'external',
+        nature = 'internal',
         type = 'real',
-        value = 85806.3,
-        texname = '\\text{apval}',
-        lhablock = 'FRBlock',
-        lhacode = [ 11 ])
+        value = '773.0*Znuc**(-2/3)/ymel',
+        texname = '\\text{apval}')
 
 MNul = Parameter(name = 'MNul',
                  nature = 'external',
