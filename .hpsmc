@@ -1,58 +1,66 @@
 # ~/.hpsmc for containers at UMN
 
+[DEFAULT]
+hps_home = /export/scratch/users/eichl008/hps
+
 [MG4]
-madgraph_dir = /export/scratch/users/eichl008/hps/mc/generators/madgraph4/src
+madgraph_dir = %(hps_home)s/mc/generators/madgraph4/src
 
 [MG5]
-madgraph_dir = /export/scratch/users/eichl008/hps/mc/generators/madgraph5/src
+madgraph_dir = %(hps_home)s/mc/generators/madgraph5/src
 
 [EGS5]
-egs5_dir = /export/scratch/users/eichl008/hps/mc/generators/egs5
+egs5_dir = %(hps_home)s/mc/generators/egs5
 
 [StdHepConverter]
-egs5_dir = /export/scratch/users/eichl008/hps/mc/generators/egs5
+egs5_dir = %(hps_home)s/mc/generators/egs5
 
 [SLIC]
-slic_dir = /export/scratch/users/eichl008/hps/.local
-hps_fieldmaps_dir = /export/scratch/users/eichl008/hps/fieldmaps
-detector_dir = /export/scratch/users/eichl008/hps/java/detector-data/detectors
+slic_dir = %(hps_home)s/.local
+hps_fieldmaps_dir = %(hps_home)s/fieldmaps
+detector_dir = %(hps_home)s/java/detector-data/detectors
 
 [JobManager]
 #  only change conditions_url if developing conditions, default is standard one at SLAC
 #conditions_url = jdbc:sqlite:/export/scratch/users/eichl008/db/hps_conditions_test.db
-hps_java_bin_jar = /export/scratch/users/eichl008/hps/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
+hps_java_bin_jar = %(hps_home)s/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
 # 1g memory led to a OOM java error, so I lowered it to 5000m
-java_args = -Xmx5000m -XX:+UseSerialGC -Djna.library.path=/export/scratch/users/eichl008/hps/alignment/general-broken-lines/cpp/build/lib/
-hps_fieldmaps_dir = /export/scratch/users/eichl008/hps/.local/share/fieldmap
+#java_args = -Xmx5000m -XX:+UseSerialGC -Djna.library.path=%(hps_home)s/alignment/general-broken-lines/cpp/build/lib/
+java_args = -Xmx5000m -XX:+UseSerialGC
+hps_fieldmaps_dir = %(hps_home)s/.local/share/fieldmap
 
 [FilterBunches]
-hps_java_bin_jar = /export/scratch/users/eichl008/hps/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
+hps_java_bin_jar = %(hps_home)s/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
 
 [ExtractEventsWithHitAtHodoEcal]
-hps_java_bin_jar = /export/scratch/users/eichl008/hps/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
+hps_java_bin_jar = %(hps_home)s/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
 
 [HPSTR]
-hpstr_install_dir = /export/scratch/users/eichl008/hps/.local
-hpstr_base = /export/scratch/users/eichl008/hps/hpstr
+hpstr_install_dir = %(hps_home)s/.local
+hpstr_base = %(hps_home)s/hpstr
 
 [LCIOCount]
-lcio_bin_jar = /export/scratch/users/eichl008/hps/.m2/repository/org/lcsim/lcio/2.7.4-SNAPSHOT/lcio-2.7.4-SNAPSHOT-bin.jar
+lcio_bin_jar = %(hps_home)s/.m2/repository/org/lcsim/lcio/2.7.4-SNAPSHOT/lcio-2.7.4-SNAPSHOT-bin.jar
 
 [LCIOMerge]
-lcio_bin_jar = /export/scratch/users/eichl008/hps/.m2/repository/org/lcsim/lcio/2.7.4-SNAPSHOT/lcio-2.7.4-SNAPSHOT-bin.jar
+lcio_bin_jar = %(hps_home)s/.m2/repository/org/lcsim/lcio/2.7.4-SNAPSHOT/lcio-2.7.4-SNAPSHOT-bin.jar
 
 [EvioToLcio]
-hps_java_bin_jar = /export/scratch/users/eichl008/hps/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
-conditions_url = jdbc:sqlite:/export/scratch/users/eichl008/db/hps_conditions_test.db
+hps_java_bin_jar = %(hps_home)s/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
+#conditions_url = jdbc:sqlite:/export/scratch/users/eichl008/db/hps_conditions_test.db
 
 [PEDE]
 #command = /full/path/not/in/PATH/pede
-param_map = /export/scratch/users/eichl008/hps/alignment/hpsSvtParamMap_2019.txt
-pede_minimization = /export/scratch/users/eichl008/hps/alignment/pede_steer_minimization_template.txt
+param_map = %(hps_home)s/alignment/hpsSvtParamMap_2019.txt
+pede_minimization = %(hps_home)s/alignment/pede_steer_minimization_template.txt
 
 [ApplyPedeRes]
-java_dir = /export/scratch/users/eichl008/hps/java
+java_dir = %(hps_home)s/java
 
 [ConstructDetector]
-hps_java_bin_jar = /export/scratch/users/eichl008/hps/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
-java_dir = /export/scratch/users/eichl008/hps/java
+hps_java_bin_jar = %(hps_home)s/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
+java_dir = %(hps_home)s/java
+
+[WriteMisalignedDet]
+java_dir = %(hps_home)s/java
+param_map = %(hps_home)s/alignment/hpsSvtParamMap_2019.txt
