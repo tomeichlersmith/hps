@@ -1,31 +1,29 @@
+[DEFAULT]
+hps_home = /sdf/group/hps/users/eichl008/hps
+hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
+
 [MG4]
-madgraph_dir = /sdf/group/hps/users/eichl008/hps/mc/generators/madgraph4/src
+madgraph_dir = %(hps_home)s/mc/generators/madgraph4/src
 
 [MG5]
-madgraph_dir = /sdf/group/hps/users/eichl008/hps/mc/generators/madgraph5/src
+madgraph_dir = %(hps_home)s/mc/generators/madgraph5/src
 
 [EGS5]
-egs5_dir = /sdf/group/hps/users/eichl008/hps/mc/generators/egs5
+egs5_dir = %(hps_home)s/mc/generators/egs5
 
 [StdHepConverter]
-egs5_dir = /sdf/group/hps/users/eichl008/hps/mc/generators/egs5
+egs5_dir = %(hps_home)s/mc/generators/egs5
 
 [SLIC]
 # using Cam's SLIC but my detectors
 slic_dir = /sdf/group/hps/users/bravo/src/slic/install
 hps_fieldmaps_dir = /sdf/group/hps/users/bravo/src/hps-fieldmaps
-detector_dir = /sdf/group/hps/users/eichl008/hps/java/detector-data/detectors
+detector_dir = %(hps_home)s/java/detector-data/detectors
 
 [JobManager]
-hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
 hps_fieldmaps_dir = /sdf/group/hps/users/bravo/src/hps-fieldmaps
 java_args = -Xmx3g -XX:+UseSerialGC -Djna.library.path=/sdf/group/hps/users/pbutti/sw/GeneralBrokenLines/cpp/install/lib/
-
-[FilterBunches]
-hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
-
-[ExtractEventsWithHitAtHodoEcal]
-hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
+#java_args = -Xmx3g -XX:+UseSerialGC -Djna.library.path=%(hps_home)s/alignment/general-broken-lines/cpp/build/lib/
 
 [HPSTR]
 hpstr_install_dir = /sdf/group/hps/users/bravo/src/hpstr/install
@@ -38,17 +36,15 @@ lcio_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/lcsim/lcio/2.7.4-SNAPSHOT
 lcio_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/lcsim/lcio/2.7.4-SNAPSHOT/lcio-2.7.4-SNAPSHOT-bin.jar
 
 [EvioToLcio]
-hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
 java_args = -Xmx3g -XX:+UseSerialGC
 
 [PEDE]
-param_map = /sdf/group/hps/users/eichl008/hps/alignment/hpsSvtParamMap_2019.txt
-pede_minimization = /sdf/group/hps/users/eichl008/hps/alignment/pede_steer_minimization_template.txt
+param_map = %(hps_home)s/alignment/hpsSvtParamMap_2019.txt
+pede_minimization = %(hps_home)s/alignment/pede_steer_minimization_template.txt
 
 [ApplyPedeRes]
-java_dir = /sdf/group/hps/users/eichl008/hps/java
+java_dir = %(hps_home)s/java
 
 [ConstructDetector]
-hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
-java_dir = /sdf/group/hps/users/eichl008/hps/java
+java_dir = %(hps_home)s/java
 
