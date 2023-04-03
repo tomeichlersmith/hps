@@ -1,0 +1,11 @@
+# data files
+*.slcio
+# generated mille binary files
+*.bin
+mille_constraint.txt
+# symlink when testing here
+fieldmap
+# run logs
+*.log
+log
+sh
