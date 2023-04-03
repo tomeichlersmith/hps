@@ -22,6 +22,14 @@ test:
 		-Dtest=GblJNA \
 		test
 
+# run the example
+example:
+	java \
+		-Xmx5000m \
+		-XX:+useSerialGC \
+		-cp /export/scratch/users/eichl008/hps/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar \
+		org.hps.recon.tracking.gbl.GBLexampleJna1
+
 run: 
 	#hps-mc-job run track_align single-accum-job.json -i 1
 	java \
