@@ -27,3 +27,11 @@ done < files.list
 
 Ran on `hps-java:master` with `hps-mc:374-alignment-workflow`.
 
+### Intial Detector
+I created the zero'th iteration by copying the compact from the previous fully-aligned detector and setting all the millepede constants to zero.
+`HPS-PhysicsRun2016-Pass2` was the original detector and this process created `HPS-PhysicsRun2016-KF-iter0`.
+
+### General Plan
+1. tu
+2. rw
+3. ...something else?
