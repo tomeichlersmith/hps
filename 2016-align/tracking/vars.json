@@ -1,4 +1,6 @@
 {
     "steering" : ["kf"],
-    "detector": ["HPS-PhysicsRun2016-Pass2"]
+    "detector": [
+      "HPS-PhysicsRun2016-KF-iter0"
+    ]
 }
