@@ -32,6 +32,12 @@ I created the zero'th iteration by copying the compact from the previous fully-a
 `HPS-PhysicsRun2016-Pass2` was the original detector and this process created `HPS-PhysicsRun2016-KF-iter0`.
 
 ### General Plan
-1. tu
-2. rw
-3. ...something else?
+Following PF's outline from the [Spring 2023 Alignment Workshop](https://indico.slac.stanford.edu/event/7954/timetable/?view=standard) but cannot use full module parameters since those aren't available for the 2016 detector.
+
+1. tu L2-L5
+2. tu L2-L5
+3. tu L2-L5
+4  tu+rw L1-L2
+5. tu+rw L5-L6
+6. tu+rw L3-L4
+7. ...something else?
