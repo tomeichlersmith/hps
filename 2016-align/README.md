@@ -37,7 +37,7 @@ Following PF's outline from the [Spring 2023 Alignment Workshop](https://indico.
 1. tu L2-L5
 2. tu L2-L5
 3. tu L2-L5
-4  tu+rw L1-L2
+4. tu+rw L1-L2
 5. tu+rw L5-L6
 6. tu+rw L3-L4
 7. ...something else?
