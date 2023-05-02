@@ -1,0 +1,12 @@
+{
+    "to_float": [
+      "individual & tu & layer=3",
+      "individual & tu & layer=4",
+      "individual & tu & layer=5"
+    ],
+    "force" : true,
+    "detector" : "HPS-PhysicsRun2016-KF-iter0",
+    "next_detector" : "HPS-PhysicsRun2016-KF-iter1",
+    "millepede_res" : "output/HPS-PhysicsRun2016-KF-iter0",
+    "input_files":  "iter0-mille-binaries.list"
+}

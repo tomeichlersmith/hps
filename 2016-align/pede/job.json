@@ -7,7 +7,6 @@
         "merged-gblplots.root" : "HPS-PhysicsRun2016-KF-iter0-gblplots.root"
     },
     "to_float": [
-      "individual & tu & layer=2",
       "individual & tu & layer=3",
       "individual & tu & layer=4",
       "individual & tu & layer=5"

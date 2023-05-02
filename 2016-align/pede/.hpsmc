@@ -4,5 +4,4 @@ enable_file_chaining = False
 check_output_files = True
 enable_copy_output_files = True
 enable_copy_input_files = False
-delete_rundir = True
 
