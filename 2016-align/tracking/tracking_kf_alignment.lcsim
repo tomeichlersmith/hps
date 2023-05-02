@@ -95,11 +95,8 @@
           <outputPlotsFilename>${outputFile}_gblplots.root</outputPlotsFilename>
           <bsZ>-7.5</bsZ>
           <trackCollectionName>GBLTracks</trackCollectionName>
-
-          <!--the KF tracks refitted as GBL don't have kinks?? -->
-          <doGBLkinks>false</doGBLkinks> 
+          <doGBLkinks>true</doGBLkinks> 
           <dataRelationCollection>""</dataRelationCollection>
-
           <chi2Cut>9999</chi2Cut>
         </driver>
 
