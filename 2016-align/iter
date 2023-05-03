@@ -1,0 +1,91 @@
+#!/bin/bash
+
+# print the usage for this tool
+help() {
+  cat <<\HELP
+
+  Run various alignment subtasks
+
+ USAGE:
+  ./iter <cmd> [args...]
+
+ COMMANDS:
+  help           : print this help and exit
+  init DETNAME   : create a new workspace for DETNAME detector
+  submit DETNAME : submit tracking jobs already initialized for DETNAME detector
+  watch SLEEP    : watch users slurm queue, reporting totals every SLEEP seconds
+
+HELP
+}
+
+# initialize a new detector workspace
+#  1 - detector name
+init() {
+  local detname="$1"
+  if [ -d "$1" ]; then
+    echo "ERROR: '${detname}' already exists."
+    return 1
+  fi
+
+  if ! mkdir ${detname}; then
+    echo "ERROR: Unable to create '${detname}'."
+    return 1
+  fi
+
+  echo "{\"detector\": [\"${detname}\"]}" | jq . > ${detname}/tracking-vars.json
+
+  hps-mc-job-template \
+    -j 1 \
+    -a ${detname}/tracking-vars.json \
+    -i events tracking/physrun-2016-part-007800-HPS-PhysicsRun2016-Pass2.list 1 \
+    tracking/job.json.templ \
+    ${detname}/tracking-jobs.json
+  return $?
+}
+
+# submit tracking jobs to slurm
+#  1 - detector name
+submit() {
+  local detname="$1"
+  if [ ! -d "$detname" ]; then
+    echo "ERROR: '${detname}' un-initialized."
+    return 1
+  fi
+
+  
+  hps-mc-batch slurm \
+    --env $(which hps-mc-env.sh) \
+    -S ${detname}/sh \
+    -l ${detname}/log \
+    -d ${detname}/scratch \
+    --memory 3500 \
+    -c tracking/batch.cfg \
+    track_align \
+    ${detname}/tracking-jobs.json
+  return $?
+}
+
+# watch user's slurm queue and report summary counts to terminal
+watch() {
+  local sleep_time=${1:-360} 
+  while true; do
+    clear
+    echo "$(date)"
+    echo "   State  : Jobs"
+    echo " Submitted: $(squeue -u ${USER} | grep -c ${USER})"
+    echo " Running  : $(squeue -u ${USER} | grep -c " R ")"
+    echo " Pending  : $(squeue -u ${USER} | grep -c " PD ")"
+    sleep ${sleep_time}
+  done
+}
+
+case $1 in
+  init|help|submit|watch)
+    ${1} ${@:2}
+    exit $?
+    ;;
+  *)
+    echo "ERROR: Unrecognized command '$1'"
+    exit 1
+    ;;
+esac
