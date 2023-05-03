@@ -16,6 +16,7 @@ help() {
   init DETNAME   : create a new workspace for DETNAME detector
   submit DETNAME : submit tracking jobs already initialized for DETNAME detector
   watch [SLEEP]  : watch users slurm queue, reporting totals every SLEEP seconds (default 360s = 5min)
+  hadd DETNAME   : merge gblplots from output of tracking using DETNAME
   pede-init DETNAME : init a pede subdirectory for DETNAME detector
   pede-run DETNAME  : run pede for DETNAME detector and apply results
 
@@ -123,8 +124,24 @@ pede-run() {
   return $?
 }
 
+# hadd the gbl plots for input DETNAME
+#  1 - DETNAME
+hadd() {
+  local detname="${1%/}"
+  if [ ! -d "${detname}" ]; then
+    echo "ERROR: '${detname}' uninitializaed."
+    return 1
+  fi
+  if [ ! -d "${detname}/tracking" ]; then
+    echo "ERROR: '${detname}' has no tracking outputs."
+    return 1
+  fi
+  command hadd -ff ${detname}/merged-gblplots.root ${detname}/tracking/*_gblplots.root
+  return $?
+}
+
 case $1 in
-  init|help|submit|watch|pede-init|pede-run)
+  init|help|submit|watch|pede-init|pede-run|hadd)
     ${1} ${@:2}
     exit $?
     ;;

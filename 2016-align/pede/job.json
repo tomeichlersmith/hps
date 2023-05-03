@@ -3,8 +3,7 @@
         "millepede.res" : "millepede.res",
         "millepede.his" : "millepede.his",
         "millepede.log" : "millepede.log",
-        "pede-steer.txt" : "pede-steer.txt",
-        "merged-gblplots.root" : "merged-gblplots.root"
+        "pede-steer.txt" : "pede-steer.txt"
     },
     "detector" : "DETNAME",
     "force" : true,
