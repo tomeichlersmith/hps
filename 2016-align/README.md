@@ -3,6 +3,11 @@
 Studying how updated Kalman Filter (KF) track finding effects the 2016 alignment.
 Can we improve it?
 
+*Table of Contents*
+- `pede`: template directory for running pede via hps-mc
+- `tracking`: template directory for running batch tracking via hps-mc
+  - includes steering file used for hps-java
+
 #### General Directory of 2016 Data at SDF
 ```
 /sdf/group/hps/data/physrun2016/
@@ -34,9 +39,9 @@ I created the zero'th iteration by copying the compact from the previous fully-a
 ### General Plan
 Following PF's outline from the [Spring 2023 Alignment Workshop](https://indico.slac.stanford.edu/event/7954/timetable/?view=standard) but cannot use full module parameters since those aren't available for the 2016 detector.
 
-1. tu L2-L5
-2. tu L2-L5
-3. tu L2-L5
+1. tu L345
+2. tu L345
+3. tu L345
 4. tu+rw L1-L2
 5. tu+rw L5-L6
 6. tu+rw L3-L4
