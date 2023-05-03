@@ -23,8 +23,8 @@ detector_dir = %(hps_home)s/java/detector-data/detectors
 [JobManager]
 hps_fieldmaps_dir = /sdf/group/hps/users/bravo/src/hps-fieldmaps
 #java_args = -Xmx3g -XX:+UseSerialGC -Djna.library.path=/sdf/group/hps/users/pbutti/sw/GeneralBrokenLines/cpp/install/lib/
-#java_args = -Xmx3g -XX:+UseSerialGC -Djna.library.path=%(hps_home)s/alignment/general-broken-lines/cpp/build/lib/
-java_args = -Xmx3g -XX:+UseSerialGC -Dorg.hps.conditions.enableSvtAlignmentConstants -Djna.library.path=%(hps_home)s/alignment/general-broken-lines/cpp/build/lib/
+java_args = -Xmx3g -XX:+UseSerialGC -Djna.library.path=%(hps_home)s/alignment/general-broken-lines/cpp/build/lib/
+#java_args = -Xmx3g -XX:+UseSerialGC -Dorg.hps.conditions.enableSvtAlignmentConstants -Djna.library.path=%(hps_home)s/alignment/general-broken-lines/cpp/build/lib/
 
 [HPSTR]
 hpstr_install_dir = /sdf/group/hps/users/bravo/src/hpstr/install
