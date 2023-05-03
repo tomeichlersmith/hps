@@ -4,16 +4,15 @@
         "millepede.his" : "millepede.his",
         "millepede.log" : "millepede.log",
         "pede-steer.txt" : "pede-steer.txt",
-        "merged-gblplots.root" : "HPS-PhysicsRun2016-KF-iter0-gblplots.root"
+        "merged-gblplots.root" : "merged-gblplots.root"
     },
+    "detector" : "DETNAME",
+    "force" : true,
+    "output_dir": "/sdf/group/hps/users/eichl008/hps/2016-align/DETNAME/pede",
+    "input_files":  "/sdf/group/hps/users/eichl008/hps/2016-align/DETNAME/pede/mille-bin.list",
     "to_float": [
       "individual & tu & layer=3",
       "individual & tu & layer=4",
       "individual & tu & layer=5"
-    ],
-    "detector" : "HPS-PhysicsRun2016-KF-iter0",
-    "next_detector" : "HPS-PhysicsRun2016-KF-iter1",
-    "force" : true,
-    "output_dir": "/sdf/group/hps/users/eichl008/hps/2016-align/HPS-PhysicsRun2016-KF-iter0/pede",
-    "input_files":  "iter0-mille-binaries.list"
+    ]
 }
