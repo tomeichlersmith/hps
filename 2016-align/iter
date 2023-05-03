@@ -15,8 +15,9 @@ help() {
   help           : print this help and exit
   init DETNAME   : create a new workspace for DETNAME detector
   submit DETNAME : submit tracking jobs already initialized for DETNAME detector
-  watch SLEEP    : watch users slurm queue, reporting totals every SLEEP seconds
+  watch [SLEEP]  : watch users slurm queue, reporting totals every SLEEP seconds (default 360s = 5min)
   pede-init DETNAME : init a pede subdirectory for DETNAME detector
+  pede-run DETNAME  : run pede for DETNAME detector and apply results
 
 HELP
 }
@@ -91,17 +92,39 @@ pede-init() {
   fi
 
   if ! mkdir ${detname}/pede; then
-    echo "ERROR: '${detname}' already pede-initialized. rm ${detname}/pede if you wish to re-init."
+    echo "ERROR: '${detname}' already pede-initialized."
+    echo "       rm -r ${detname}/pede if you wish to re-init."
     return 2
   fi
 
   find $PWD/${detname}/tracking/ -type f -name "*.bin" > ${detname}/pede/mille-bin.list
   sed "s|DETNAME|${detname}|g" pede/job.json > ${detname}/pede/job.json
   vim ${detname}/pede/job.json
+  return $?
+}
+
+# run pede for input DETNAME
+#  1 - DETNAME
+pede-run() {
+  local detname="${1%/}"
+  if [ ! -d "${detname}" ]; then
+    echo "ERROR: '${detname}' uninitializaed."
+    return 1
+  fi
+  if [ ! -d "${detname}/pede" ]; then
+    echo "ERROR: '${detname}' not pede initialized."
+    return 1
+  fi
+
+  hps-mc-job run \
+    -d ${detname}/pede/scratch \
+    -c pede/run.cfg \
+    pede ${detname}/pede/job.json
+  return $?
 }
 
 case $1 in
-  init|help|submit|watch|pede-init)
+  init|help|submit|watch|pede-init|pede-run)
     ${1} ${@:2}
     exit $?
     ;;
