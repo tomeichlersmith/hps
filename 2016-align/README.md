@@ -8,6 +8,71 @@ Can we improve it?
 - `tracking`: template directory for running batch tracking via hps-mc
   - includes steering file used for hps-java
 
+## Iteration Instructions
+1. Make new directory for new detector iteration `mkdir HPS-PhysicsRun2016-KF-iter0`
+2. Write detector variables 
+```
+echo '{"detector" : ["HPS-PhysicsRun2016-KF-iter0"]}' |\
+  jq . > HPS-PhysicsRun2016-KF-iter0/tracking-vars.json
+```
+3. Write tracking jobs
+```
+hps-mc-job-template \
+  -j 1 \
+  -a HPS-PhysicsRun2016-KF-iter0/tracking-vars.json \
+  -i events tracking/physrun-2016-part-007800-HPS-PhysicsRun2016-Pass2.list 1 \
+  tracking/job.json.templ \
+  HPS-PhysicsRun2016-KF-iter0/tracking-jobs.json
+```
+4. Run tracking in batch
+```
+hps-mc-batch slurm \
+  track_align \
+  --env $(which hps-mc-env.sh) \
+  -S HPS-PhysicsRun2016-KF-iter0/sh \
+  -l HPS-PhysicsRun2016-KF-iter0/log \
+  -d HPS-PhysicsRun2016-KF-iter0/scratch \
+  --memory 3500 \
+  -c batch.cfg \
+  HPS-PhysicsRun2016-KF-iter0/tracking-jobs.json
+```
+5. Wait 2-3 hours (about how long it takes for all 367 files to be processed)
+6. List full paths of millepede bin files
+```
+mkdir HPS-PhysicsRun2016-KF-iter0/pede
+find $PWD/HPS-PhysicsRun2016-KF-iter0/tracking -type f -name "*.bin" > HPS-PhysicsRun2016-KF-iter0/pede/iter0-mille-bin.list
+```
+7. Write config for pede step (putting it in `HPS-PhysicsRun2016-KF-iter0/pede/job.json`). Modify the detector name and which parameters you wish to float during the pede optimization.
+```json
+{
+  "output_files": {
+    "millepede.res": "millepede.res",
+    "millepede.his": "millepede.his",
+    "millepede.log": "millepede.log",
+    "pede-steer.txt": "pede-steer.txt",
+    "merged-gblplots.root": "merged-gblplots.root"
+  },
+  "force": true,
+  "input_files": "HPS-PhysicsRun2016-KF-iter0/pede/iter0-mille-bin.list",
+  "output_dir" : "HPS-PhysicsRun2016-KF-iter0/pede",
+  "detector"   : "HPS-PhysicsRun2016-KF-iter0",
+  "to_float": [
+    "individual & tu & layer=3",
+    "individual & tu & layer=4",
+    "individual & tu & layer=5"
+  ]
+}
+```
+8. Run pede step
+```
+hps-mc-job run \
+  -d HPS-PhysicsRun2016-KF-iter0/pede/scratch \
+  -c pede/run.cfg \
+  pede HPS-PhyscisRun2016-KF-iter0/pede/job.json
+```
+
+## Notes
+
 #### General Directory of 2016 Data at SDF
 ```
 /sdf/group/hps/data/physrun2016/

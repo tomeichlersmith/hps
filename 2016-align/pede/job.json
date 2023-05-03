@@ -14,6 +14,6 @@
     "detector" : "HPS-PhysicsRun2016-KF-iter0",
     "next_detector" : "HPS-PhysicsRun2016-KF-iter1",
     "force" : true,
-    "output_dir": "/sdf/group/hps/users/eichl008/hps/2016-align/output/HPS-PhysicsRun2016-KF-iter0/pede",
+    "output_dir": "/sdf/group/hps/users/eichl008/hps/2016-align/HPS-PhysicsRun2016-KF-iter0/pede",
     "input_files":  "iter0-mille-binaries.list"
 }
