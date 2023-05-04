@@ -1,0 +1,13 @@
+!set number of threads to use
+! first number is threads to use during processing
+! second number is threads to use during reading
+!threads 4 4
+
+chiscut 30. 6.
+outlierdownweighting 4
+method inversion 20 0.10E-01
+!method diagonalization 6 1.
+
+histprint
+
+end
