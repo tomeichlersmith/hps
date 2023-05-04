@@ -6,6 +6,7 @@
         "pede-steer.txt" : "pede-steer.txt"
     },
     "detector" : "DETNAME",
+    "no_copy" : true,
     "force" : true,
     "output_dir": "/sdf/group/hps/users/eichl008/hps/2016-align/DETNAME/pede",
     "input_files":  "/sdf/group/hps/users/eichl008/hps/2016-align/DETNAME/pede/mille-bin.list",
