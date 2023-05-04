@@ -74,14 +74,16 @@ submit() {
 
 # watch user's slurm queue and report summary counts to terminal
 watch() {
+  local squeue_poll_file="${TMPDIR:-/scratch/${USER}}/squeue-poll-$$.list"
   local sleep_time=${1:-360} 
   while true; do
     clear
+    squeue -u ${USER} > ${squeue_poll_file}
     echo "$(date)"
     echo "   State  : Jobs"
-    echo " Submitted: $(squeue -u ${USER} | grep -c ${USER})"
-    echo " Running  : $(squeue -u ${USER} | grep -c " R ")"
-    echo " Pending  : $(squeue -u ${USER} | grep -c " PD ")"
+    echo " Submitted: $(grep -c ${USER} ${squeue_poll_file})"
+    echo " Running  : $(grep -c " R " ${squeue_poll_file})"
+    echo " Pending  : $(grep -c " PD " ${squeue_poll_file})"
     sleep ${sleep_time}
   done
 }
@@ -94,8 +96,9 @@ pede-init() {
     return 1
   fi
 
-  find $PWD/${detname}/tracking/ -type f -name "*.bin" > ${detname}/pede/mille-bin.list
-  sed "s|DETNAME|${detname}|g" pede/job.json > ${detname}/pede/job.json
+  mkdir ${detname}/pede
+  find $PWD/${detname}/tracking/ -type f -name "*.bin" > ${detname}/pede/mille-bin.list || return $?
+  sed "s|DETNAME|${detname}|g" pede/job.json > ${detname}/pede/job.json || return $?
   vim ${detname}/pede/job.json
   return $?
 }
