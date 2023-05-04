@@ -59,6 +59,7 @@ submit() {
 
   
   hps-mc-batch slurm \
+    --queue shared \
     --env $(which hps-mc-env.sh) \
     -S ${detname}/sh \
     -l ${detname}/log \
@@ -66,7 +67,8 @@ submit() {
     --memory 3500 \
     -c tracking/batch.cfg \
     track_align \
-    ${detname}/tracking-jobs.json
+    ${detname}/tracking-jobs.json \
+    {1..50}
   return $?
 }
 
@@ -90,12 +92,6 @@ pede-init() {
   if [ ! -d "${detname}" ]; then
     echo "ERROR: '${detname}' uninitializaed."
     return 1
-  fi
-
-  if ! mkdir ${detname}/pede; then
-    echo "ERROR: '${detname}' already pede-initialized."
-    echo "       rm -r ${detname}/pede if you wish to re-init."
-    return 2
   fi
 
   find $PWD/${detname}/tracking/ -type f -name "*.bin" > ${detname}/pede/mille-bin.list
