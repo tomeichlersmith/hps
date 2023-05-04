@@ -113,10 +113,10 @@ pede-run() {
     return 1
   fi
 
-  hps-mc-job run \
-    -d ${detname}/pede/scratch \
-    -c pede/run.cfg \
-    pede ${detname}/pede/job.json
+  sbatch \
+    --output=${detname}/pede/run.out \
+    --job-name=pede-${detname} \
+    pede/run.sh ${detname}
   return $?
 }
 
