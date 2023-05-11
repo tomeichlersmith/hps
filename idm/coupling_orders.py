@@ -26,10 +26,6 @@ DQED = CouplingOrder(name = 'DQED',
                      expansion_order = 99,
                      hierarchy = 1)
 
-DQND = CouplingOrder(name = 'DQND',
-                     expansion_order = 99,
-                     hierarchy = 1)
-
 QND = CouplingOrder(name = 'QND',
                     expansion_order = 99,
                     hierarchy = 1)

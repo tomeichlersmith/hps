@@ -36,13 +36,6 @@ Heavier DM Width
 generate chi2 > chi1 e+ e-
 ```
 
-### Restriction
-I've added in a restriction file following the instructions from
-[an MG5 Launchpad post](https://answers.launchpad.net/mg5amcnlo/+faq/2312)
-which is used by default (since it is called `restrict_default.dat`).
-You can still use the model without this restriction by asking for 
-`MODELNAME-full` rather than just `MODELNAME` when calling `import model`.
-
 ### New Particles
 Particle | ID      | Description
 ---------|---------|---------------
@@ -68,14 +61,8 @@ aXM1 | hidden | 1.279e2 | inverse alpha\_D
 WZp | decay | 8.252e-4 | dark photon decay width
 Wchi2 | decay | 1e-3 | heavier DM decay width
 GAN | frblock | 3.028177e-1 | nucleus and standard photon coupling
-GZPN | frblock | 3.028177e-1 | nucleus and dark photon coupling
 Anuc | frblock | 184 | atomic weight of nucleus
 Znuc | frblock | 74 | atomic number of nuclenus
-inelastic1 | frblock | . | form factor constant
-inelastic2 | frblock | . | form factor constant
-aval | frblock | . | form factor constant
-dval | frblock | . | form factor constant
-apval | frblock | . | form factor constant
 
 ## Generate MadEvent Workspace
 ```
@@ -87,3 +74,16 @@ output eN-iDM
 Now the directory `eN-iDM` is a "stand-alone" MadEvent "program"
 where we can tune the model parameters in `Cards/param_card.dat`
 and change the run parameters in `Cards/run_card.dat`.
+
+### param\_card
+- Lower masses by 1-2 orders of magnitude
+
+### run\_card
+*Necessary*:
+- Lower `ebeam1` (energy of incident electron) to 2.3 GeV from 500.0
+- Lower `ebeam2` (energy of target nucleus) to tungsten mass 174 GeV to have it be stationary
+- Remove `ptl`, `etal`, and `drll` cuts to open up phase space
+
+*Optional*:
+- Update run tag to something helpful
+

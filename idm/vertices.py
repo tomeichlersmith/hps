@@ -729,10 +729,3 @@ V_167 = Vertex(name = 'V_167',
                color = [ '1' ],
                lorentz = [ L.FF1 ],
                couplings = {(0,0):C.GC_87})
-
-# change to coupling with form factors FF1
-V_168 = Vertex(name = 'V_168',
-               particles = [ P.N__tilde__, P.N, P.Zp ],
-               color = [ '1' ],
-               lorentz = [ L.FF1 ],
-               couplings = {(0,0):C.GC_88})

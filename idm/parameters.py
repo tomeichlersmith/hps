@@ -50,14 +50,6 @@ GAN = Parameter(name = 'GAN',
                 lhablock = 'FRBlock',
                 lhacode = [ 3 ])
 
-GZPN = Parameter(name = 'GZPN',
-                 nature = 'external',
-                 type = 'real',
-                 value = 0.3028177,
-                 texname = '\\text{GAPN}',
-                 lhablock = 'FRBlock',
-                 lhacode = [ 4 ])
-
 Anuc = Parameter(name = 'Anuc',
         nature = 'external',
         type = 'real',
