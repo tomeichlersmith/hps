@@ -29,7 +29,7 @@ Mchi = Parameter(name = 'Mchi',
                  nature = 'external',
                  type = 'real',
                  value = 1.,
-                 texname = '\\text{Mchi}',
+                 texname = 'm_{\\chi}',
                  lhablock = 'DM',
                  lhacode = [ 1 ])
 
@@ -37,7 +37,7 @@ dMchi = Parameter(name = 'dMchi',
                   nature = 'external',
                   type = 'real',
                   value = 0.01,
-                  texname = '\\text{dMchi}',
+                  texname = '\\Delta',
                   lhablock = 'DM',
                   lhacode = [ 2 ])
 
@@ -118,41 +118,41 @@ MNul = Parameter(name = 'MNul',
                  nature = 'external',
                  type = 'real',
                  value = 174,
-                 texname = '\\text{MNul}',
+                 texname = 'm_{nucl}',
                  lhablock = 'MASS',
                  lhacode = [ 9000002 ])
 
-mZinput = Parameter(name = 'mZinput',
-                    nature = 'external',
-                    type = 'real',
-                    value = 91.188,
-                    texname = '\\text{mZinput}',
-                    lhablock = 'GAUGEMASS',
-                    lhacode = [ 1 ])
+MZ = Parameter(name = 'MZ',
+               nature = 'external',
+               type = 'real',
+               value = 91.188,
+               texname = 'm_{Z}',
+               lhablock = 'GAUGEMASS',
+               lhacode = [ 1 ])
 
-MWinput = Parameter(name = 'MWinput',
-                    nature = 'external',
-                    type = 'real',
-                    value = 80.419,
-                    texname = '\\text{MWinput}',
-                    lhablock = 'GAUGEMASS',
-                    lhacode = [ 2 ])
+MW = Parameter(name = 'MW',
+               nature = 'external',
+               type = 'real',
+               value = 80.419,
+               texname = 'm_{W}',
+               lhablock = 'GAUGEMASS',
+               lhacode = [ 2 ])
 
-mZDinput = Parameter(name = 'mZDinput',
-                     nature = 'external',
-                     type = 'real',
-                     value = 20,
-                     texname = '\\text{mZDinput}',
-                     lhablock = 'HIDDEN',
-                     lhacode = [ 1 ])
+Map = Parameter(name = 'Map',
+                nature = 'external',
+                type = 'real',
+                value = 20,
+                texname = 'm_{A\'}',
+                lhablock = 'HIDDEN',
+                lhacode = [ 1 ])
 
-MHSinput = Parameter(name = 'MHSinput',
-                     nature = 'external',
-                     type = 'real',
-                     value = 200,
-                     texname = '\\text{MHSinput}',
-                     lhablock = 'HIDDEN',
-                     lhacode = [ 2 ])
+MHS = Parameter(name = 'MHS',
+                nature = 'external',
+                type = 'real',
+                value = 200,
+                texname = 'm_{H_S}',
+                lhablock = 'HIDDEN',
+                lhacode = [ 2 ])
 
 epsilon = Parameter(name = 'epsilon',
                     nature = 'external',
@@ -178,11 +178,11 @@ aXM1 = Parameter(name = 'aXM1',
                  lhablock = 'HIDDEN',
                  lhacode = [ 5 ])
 
-MHinput = Parameter(name = 'MHinput',
+MH = Parameter(name = 'MH',
                     nature = 'external',
                     type = 'real',
                     value = 125,
-                    texname = '\\text{MHinput}',
+                    texname = 'm_H',
                     lhablock = 'HIGGS',
                     lhacode = [ 1 ])
 
@@ -415,32 +415,32 @@ MChi2 = Parameter(name = 'MChi2',
 MH = Parameter(name = 'MH',
                nature = 'internal',
                type = 'real',
-               value = 'MHinput',
+               value = 'MH',
                texname = '\\text{MH}')
 
 MHS = Parameter(name = 'MHS',
                 nature = 'internal',
                 type = 'real',
-                value = 'MHSinput',
+                value = 'MHS',
                 texname = '\\text{MHS}')
 
 MW = Parameter(name = 'MW',
                nature = 'internal',
                type = 'real',
-               value = 'MWinput',
+               value = 'MW',
                texname = 'M_W')
 
 MZ = Parameter(name = 'MZ',
                nature = 'internal',
                type = 'real',
-               value = 'mZinput',
+               value = 'mZ',
                texname = '\\text{MZ}')
 
-MZp = Parameter(name = 'MZp',
+Map = Parameter(name = 'Map',
                 nature = 'internal',
                 type = 'real',
-                value = 'mZDinput',
-                texname = '\\text{MZp}')
+                value = 'Map',
+                texname = 'm_{A\'}')
 
 aEW = Parameter(name = 'aEW',
                 nature = 'internal',
@@ -475,13 +475,13 @@ chi = Parameter(name = 'chi',
 DZ = Parameter(name = 'DZ',
                nature = 'internal',
                type = 'real',
-               value = '((1 + eta**2)*(eta**2*MW**2 + mZDinput**2 + mZinput**2 + (2*cmath.atan(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000*(mZDinput - mZinput))*cmath.sqrt(-4*(1 + eta**2)*mZDinput**2*mZinput**2 + (eta**2*MW**2 + mZDinput**2 + mZinput**2)**2))/cmath.pi))/(eta**2*MW**2 + mZDinput**2 + mZinput**2 - (2*cmath.atan(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000*(mZDinput - mZinput))*cmath.sqrt(-4*(1 + eta**2)*mZDinput**2*mZinput**2 + (eta**2*MW**2 + mZDinput**2 + mZinput**2)**2))/cmath.pi)',
+               value = '((1 + eta**2)*(eta**2*MW**2 + Map**2 + MZ**2 + (2*cmath.atan(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000*(Map - MZ))*cmath.sqrt(-4*(1 + eta**2)*Map**2*MZ**2 + (eta**2*MW**2 + Map**2 + MZ**2)**2))/cmath.pi))/(eta**2*MW**2 + Map**2 + MZ**2 - (2*cmath.atan(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000*(Map - MZ))*cmath.sqrt(-4*(1 + eta**2)*Map**2*MZ**2 + (eta**2*MW**2 + Map**2 + MZ**2)**2))/cmath.pi)',
                texname = '\\text{DZ}')
 
 MZ0 = Parameter(name = 'MZ0',
                 nature = 'internal',
                 type = 'real',
-                value = 'cmath.sqrt((eta**2*MW**2 + mZDinput**2 + mZinput**2 - (2*cmath.atan(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000*(mZDinput - mZinput))*cmath.sqrt(-4*(1 + eta**2)*mZDinput**2*mZinput**2 + (eta**2*MW**2 + mZDinput**2 + mZinput**2)**2))/cmath.pi)/(1 + eta**2))/cmath.sqrt(2)',
+                value = 'cmath.sqrt((eta**2*MW**2 + Map**2 + MZ**2 - (2*cmath.atan(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000*(Map - MZ))*cmath.sqrt(-4*(1 + eta**2)*Map**2*MZ**2 + (eta**2*MW**2 + Map**2 + MZ**2)**2))/cmath.pi)/(1 + eta**2))/cmath.sqrt(2)',
                 texname = '\\text{MZ0}')
 
 ee = Parameter(name = 'ee',
@@ -589,7 +589,7 @@ ta = Parameter(name = 'ta',
 th = Parameter(name = 'th',
                nature = 'internal',
                type = 'real',
-               value = '(-MHinput**2 + MHSinput**2 + (2*cmath.atan(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000*(MHinput - MHSinput))*cmath.sqrt((MHinput**2 - MHSinput**2)**2 - 4*kap**2*v**2*xi**2))/cmath.pi)/(2.*kap*v*xi)',
+               value = '(-MH**2 + MHS**2 + (2*cmath.atan(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000*(MH - MHS))*cmath.sqrt((MH**2 - MHS**2)**2 - 4*kap**2*v**2*xi**2))/cmath.pi)/(2.*kap*v*xi)',
                texname = 't_h')
 
 gw = Parameter(name = 'gw',
@@ -601,13 +601,13 @@ gw = Parameter(name = 'gw',
 lam = Parameter(name = 'lam',
                 nature = 'internal',
                 type = 'real',
-                value = '(MHinput**2 + MHSinput**2 + (2*cmath.atan(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000*(MHinput - MHSinput))*cmath.sqrt((MHinput**2 - MHSinput**2)**2 - 4*kap**2*v**2*xi**2))/cmath.pi)/(4.*v**2)',
+                value = '(MH**2 + MHS**2 + (2*cmath.atan(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000*(MH - MHS))*cmath.sqrt((MH**2 - MHS**2)**2 - 4*kap**2*v**2*xi**2))/cmath.pi)/(4.*v**2)',
                 texname = '\\text{lam}')
 
 rho = Parameter(name = 'rho',
                 nature = 'internal',
                 type = 'real',
-                value = '(MHinput**2 + MHSinput**2 - (2*cmath.atan(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000*(MHinput - MHSinput))*cmath.sqrt((MHinput**2 - MHSinput**2)**2 - 4*kap**2*v**2*xi**2))/cmath.pi)/(4.*xi**2)',
+                value = '(MH**2 + MHS**2 - (2*cmath.atan(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000*(MH - MHS))*cmath.sqrt((MH**2 - MHS**2)**2 - 4*kap**2*v**2*xi**2))/cmath.pi)/(4.*xi**2)',
                 texname = '\\rho')
 
 ca = Parameter(name = 'ca',

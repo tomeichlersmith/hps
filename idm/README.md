@@ -4,6 +4,13 @@
 Credit to Stefania Gori from UCSC for original development of MadGraph5 Model
 for [ArXiV:1804.00661](https://arxiv.org/abs/1804.00661).
 
+Another helpful resource is [ArXiV:1807.01730](https://arxiv.org/abs/1807.01730)
+which provides some more background on the theoretical landscape. My reading
+of this paper has led me to conclude that this model should, more accurately,
+be called "Pseudo-Dirac Inelastic Dark matter" and the mass splitting $\Delta$
+(or here `dMchi`) will need to be larger than $2m_e$ to keep the lifetime of
+the dark photon short enough for the decay to be visible by HPS.
+
 ## Set Up
 Playing with this model requires a local copy of MadGraph5.
 1. Download MG5 from [its launchpad](https://launchpad.net/mg5amcnlo).
@@ -27,13 +34,21 @@ The general flow is
 # Notes on Model
 
 ### Generate Events and Widths
-Full iDM cascade
+Full iDM cascade (requiring a real dark photon and a real heavy dark fermion)
 ```
-generate e- n > e- n zp, (zp > chi2 chi1, chi2 > e+ e- chi1)
+generate e- n > e- n zp, (zp > chi2 chi1, chi2 > chi1 e+ e-)
 ```
-Heavier DM Width
+Heavier dark fermion width
 ```
 generate chi2 > chi1 e+ e-
+```
+Dark bremsstrahlung (produce dark photon)
+```
+generate e- n > e- n zp
+```
+Dark photon width
+```
+generate zp > chi2 chi1
 ```
 
 ### New Particles
@@ -53,22 +68,22 @@ Short Name | Block | Value | Description
 -----------|---|-------|-------------
 Mchi | dm | 1 | Avg DM Mass (M2+M1)/2
 dMchi | dm |1e-2 | DM Mass Splitting (M2-M1)/2
-mZDinput | hidden | 60 | dark photon mass
-MHSinput | hidden | 200 | dark higgs mass (can ignore)
-epsilon | hidden | 1e-2 | kinetic mixing
-kap | hidden | 1e-9 | dark higgs quartic (can ignore)
-aXM1 | hidden | 1.279e2 | inverse alpha\_D
+Map | hidden | 20 | dark photon mass
 WZp | decay | 8.252e-4 | dark photon decay width
 Wchi2 | decay | 1e-3 | heavier DM decay width
+MHS | hidden | 200 | dark higgs mass (can ignore)
+epsilon | hidden | 1e-2 | kinetic mixing (can ignore / want to study independently)
+kap | hidden | 1e-9 | dark higgs quartic (can ignore)
+aXM1 | hidden | 1.279e2 | inverse alpha\_D (set to inverse alpha)
 GAN | frblock | 3.028177e-1 | nucleus and standard photon coupling
-Anuc | frblock | 184 | atomic weight of nucleus
-Znuc | frblock | 74 | atomic number of nuclenus
+Anuc | frblock | 184 | atomic weight of nucleus (set to tungsten)
+Znuc | frblock | 74 | atomic number of nucleus (set to tungsten)
 
 ## Generate MadEvent Workspace
 ```
 ./bin/mg5_aMC
 import model idm --modelname
-generate e- N > e- N zp, (zp > chi2 chi1, chi2 > l+ l- chi1)
+generate e- n > e- n zp, (zp > chi2 chi1, chi2 > chi1 e+ e-)
 output eN-iDM
 ```
 Now the directory `eN-iDM` is a "stand-alone" MadEvent "program"
@@ -76,13 +91,14 @@ where we can tune the model parameters in `Cards/param_card.dat`
 and change the run parameters in `Cards/run_card.dat`.
 
 ### param\_card
-- Lower masses by 1-2 orders of magnitude
+- Adjust `Mchi`, `dMchi`, and `mZDinput` to study model of interest
 
 ### run\_card
 *Necessary*:
 - Lower `ebeam1` (energy of incident electron) to 2.3 GeV from 500.0
 - Lower `ebeam2` (energy of target nucleus) to tungsten mass 174 GeV to have it be stationary
 - Remove `ptl`, `etal`, and `drll` cuts to open up phase space
+  - Applying fiducial cuts will be done later in the HPS simulation pipeline
 
 *Optional*:
 - Update run tag to something helpful
