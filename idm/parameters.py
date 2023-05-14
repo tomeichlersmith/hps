@@ -338,11 +338,11 @@ WZ = Parameter(name = 'WZ',
                lhablock = 'DECAY',
                lhacode = [ 23 ])
 
-WZp = Parameter(name = 'WZp',
+WAp = Parameter(name = 'WAp',
                 nature = 'external',
                 type = 'real',
                 value = 0.0008252,
-                texname = '\\text{WZp}',
+                texname = '\\text{WAp}',
                 lhablock = 'DECAY',
                 lhacode = [ 1023 ])
 

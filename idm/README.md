@@ -69,7 +69,7 @@ Short Name | Block | Value | Description
 Mchi | dm | 1 | Avg DM Mass (M2+M1)/2
 dMchi | dm |1e-2 | DM Mass Splitting (M2-M1)/2
 Map | hidden | 20 | dark photon mass
-WZp | decay | 8.252e-4 | dark photon decay width
+WAp | decay | 8.252e-4 | dark photon decay width
 Wchi2 | decay | 1e-3 | heavier DM decay width
 MHS | hidden | 200 | dark higgs mass (can ignore)
 epsilon | hidden | 1e-2 | kinetic mixing (can ignore / want to study independently)
