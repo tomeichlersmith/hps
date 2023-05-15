@@ -412,36 +412,6 @@ MChi2 = Parameter(name = 'MChi2',
                   value = 'dMchi/2. + Mchi',
                   texname = '\\text{MChi2}')
 
-MH = Parameter(name = 'MH',
-               nature = 'internal',
-               type = 'real',
-               value = 'MH',
-               texname = '\\text{MH}')
-
-MHS = Parameter(name = 'MHS',
-                nature = 'internal',
-                type = 'real',
-                value = 'MHS',
-                texname = '\\text{MHS}')
-
-MW = Parameter(name = 'MW',
-               nature = 'internal',
-               type = 'real',
-               value = 'MW',
-               texname = 'M_W')
-
-MZ = Parameter(name = 'MZ',
-               nature = 'internal',
-               type = 'real',
-               value = 'mZ',
-               texname = '\\text{MZ}')
-
-Map = Parameter(name = 'Map',
-                nature = 'internal',
-                type = 'real',
-                value = 'Map',
-                texname = 'm_{A\'}')
-
 aEW = Parameter(name = 'aEW',
                 nature = 'internal',
                 type = 'real',
