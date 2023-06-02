@@ -97,6 +97,22 @@ done < files.list
 
 Ran on `hps-java:master` with `hps-mc:374-alignment-workflow`.
 
+### Directory of FEE Skim
+These files were produced by skimming the data above for the events collected due
+to the FEE trigger[^#].
+```
+/sdf/group/hps/data/physrun2016/skim/goldenFees
+```
+There is also a file `goldenFeeSkimEvenly.slcio`
+> which is intended to provide even coverage over the face of the ECal.
+> This selects the same number of events per cluster seed crystal index. 
+> This should allow one to, for instance, disambiguate between a simple Tu 
+> and a combination of Tu+Rw by populating the edges of the sensors at large |v|.
+
+
+[^#]: Waiting on Norman to confirm the details of this skim.
+
+
 ### Intial Detector
 I created the zero'th iteration by copying the compact from the previous fully-aligned detector and setting all the millepede constants to zero.
 `HPS-PhysicsRun2016-Pass2` was the original detector and this process created `HPS-PhysicsRun2016-KF-iter0`.
@@ -108,6 +124,7 @@ Following PF's outline from the [Spring 2023 Alignment Workshop](https://indico.
 2. tu L345
 3. tu L345
 4. tu+rw L1-L2
-5. tu+rw L5-L6
-6. tu+rw L3-L4
-7. ...something else?
+    - dangerous, should probably skip
+6. tu+rw L5-L6
+7. tu+rw L3-L4
+8. ...something else?
