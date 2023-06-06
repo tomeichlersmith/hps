@@ -73,10 +73,6 @@ GC_16 = Coupling(name = 'GC_16',
                  value = '-(ca*cw**2*complex(0,1)*gw**2*sa)',
                  order = {'QED':2})
 
-GC_17 = Coupling(name = 'GC_17',
-                 value = '-((eta*gX*sa)/chi)',
-                 order = {'QED':1})
-
 GC_18 = Coupling(name = 'GC_18',
                  value = 'cw**2*complex(0,1)*gw**2*sa**2',
                  order = {'QED':2})

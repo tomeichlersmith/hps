@@ -309,12 +309,6 @@ V_50 = Vertex(name = 'V_50',
               lorentz = [ L.VVVV2 ],
               couplings = {(0,0):C.GC_18})
 
-V_51 = Vertex(name = 'V_51',
-              particles = [ P.chi2, P.chi1, P.Z ],
-              color = [ '1' ],
-              lorentz = [ L.FFV1 ],
-              couplings = {(0,0):C.GC_17})
-
 V_52 = Vertex(name = 'V_52',
               particles = [ P.chi2, P.chi1, P.Ap ],
               color = [ '1' ],
