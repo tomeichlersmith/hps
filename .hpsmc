@@ -2,6 +2,7 @@
 
 [DEFAULT]
 hps_home = /export/scratch/users/eichl008/hps
+hps_fieldmaps_dir = %(hps_home)s/.local/share/fieldmap
 
 [MG4]
 madgraph_dir = %(hps_home)s/mc/generators/madgraph4/src
@@ -16,8 +17,8 @@ egs5_dir = %(hps_home)s/mc/generators/egs5
 egs5_dir = %(hps_home)s/mc/generators/egs5
 
 [SLIC]
-slic_dir = %(hps_home)s/.local
-hps_fieldmaps_dir = %(hps_home)s/fieldmaps
+#slic_dir = %(hps_home)s/.local
+slic_dir = /usr/local
 detector_dir = %(hps_home)s/java/detector-data/detectors
 
 [JobManager]
@@ -27,7 +28,6 @@ hps_java_bin_jar = %(hps_home)s/.m2/repository/org/hps/hps-distribution/5.2-SNAP
 # 1g memory led to a OOM java error, so I lowered it to 5000m
 #java_args = -Xmx5000m -XX:+UseSerialGC -Djna.library.path=%(hps_home)s/alignment/general-broken-lines/cpp/build/lib/
 java_args = -Xmx5000m -XX:+UseSerialGC
-hps_fieldmaps_dir = %(hps_home)s/.local/share/fieldmap
 
 [FilterBunches]
 hps_java_bin_jar = %(hps_home)s/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
