@@ -1,0 +1,12 @@
+#!/bin/bash
+detname=$1
+dest=${2:-.}
+rsync \
+  -avmu \
+  --exclude tracking \
+  --exclude sh \
+  --exclude pede \
+  --exclude sh \
+  --exclude no-constraint-tracking \
+  --exclude log \
+  slac.sdf:/sdf/group/hps/users/eichl008/hps/2016-align/${detname} ${dest%/}
