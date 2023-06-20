@@ -12,7 +12,8 @@ help() {
   ./iter <cmd> [<stage>] [args...]
 
  STAGES:
-  trk  : tracking and accumulation with hps-java
+  acc  : tracking and accumulation with hps-java, with constraints
+  trk  : tracking and accumulation with hps-java, no constraints
   pede : minimization of parameters with pede
 
  COMMANDS:
@@ -21,6 +22,7 @@ help() {
   init STAGE DETNAME   : create a new workspace for DETNAME detector and STAGE
   submit STAGE DETNAME : submit jobs already initialized for DETNAME detector and STAGE
   trk DETNAME          : do both init and submit commands for the tracking stage
+  acc DETNAME          : do both init and submit commands for the accumulation stage
   pede DETNAME         : do both init and submit commands for the pede stage
   full DETNAME         : do a full iteration (both iterations) for DETNAME
                          parameters to float are chosen before plots are ready
@@ -31,6 +33,49 @@ HELP
 # initialize a new detector workspace
 #  1 - detector name
 trk-init() {
+  local detname="${1%/}"
+  if [ ! -d "$1" ]; then
+    echo "ERROR: '${detname}' does not exist. You need to './iter init acc ${detname}' first."
+    return 1
+  fi
+
+  hps-mc-job-template \
+    -j 1 \
+    -a ${detname}/tracking-vars.json \
+    -i events tracking/physrun-2016-run-007800-HPS-PhysicsRun2016-Pass2-fee-skim.list 1 \
+    tracking/no-constraint-job.json.tmpl \
+    ${detname}/no-constraint-tracking-jobs.json
+  return $?
+}
+
+# submit tracking jobs to slurm
+#  1 - detector name
+trk-submit() {
+  local detname="${1%/}"
+  if [ ! -f "${detname}/no-constraint-tracking-jobs.json" ]; then
+    echo "ERROR: '${detname}' un-initialized."
+    return 1
+  fi
+
+  mkdir -p ${detname}/{sh,log,scratch} || return 1
+  
+  hps-mc-batch slurm \
+    --queue shared \
+    --env $(which hps-mc-env.sh) \
+    -S $(realpath ${detname}/sh) \
+    -l $(realpath ${detname}/log) \
+    -d $(realpath ${detname}/scratch) \
+    --memory 3500 \
+    -c tracking/batch.cfg \
+    track_align \
+    ${detname}/no-constraint-tracking-jobs.json \
+    {1..50}
+  return $?
+}
+
+# initialize a new detector workspace
+#  1 - detector name
+acc-init() {
   local detname="${1%/}"
   if [ -d "$1" ]; then
     echo "ERROR: '${detname}' already exists."
@@ -55,9 +100,9 @@ trk-init() {
 
 # submit tracking jobs to slurm
 #  1 - detector name
-trk-submit() {
+acc-submit() {
   local detname="${1%/}"
-  if [ ! -d "$detname" ]; then
+  if [ ! -f "${detname}/tracking-jobs.json" ]; then
     echo "ERROR: '${detname}' un-initialized."
     return 1
   fi
@@ -94,18 +139,53 @@ __watch() {
   done
 }
 
-# initialize pede for input DETNAME
-pede-init() {
+# initialize a pede job for DETNAME without listing all the bin files to use
+# Arguments
+#  1 - DETNAME
+__pede_init_job() {
   local detname="${1%/}"
   if [ ! -d "${detname}" ]; then
-    echo "ERROR: '${detname}' uninitializaed."
+    echo "ERROR: '${detname}' uninitialized."
     return 1
   fi
 
-  mkdir ${detname}/pede
-  find $PWD/${detname}/tracking/ -type f -name "*.bin" > ${detname}/pede/mille-bin.list || return $?
+  # make working directory
+  mkdir ${detname}/pede || return $?
+  # copy over the pede job configuration, updating detector name
   sed "s|DETNAME|${detname}|g" pede/job.json > ${detname}/pede/job.json || return $?
+  # deduce previous detector from current detector name
+  local iter=${detname##*-iter}
+  local last_detector=${detname/iter${iter}/iter$((iter-1))}
+  if [ -d ${last_detector} ]; then
+    # if able to deduce the previous detector
+    # we can extract its float parameters with some jq
+    jq \
+      --argjson last "$(jq '.to_float' ${last_detector}/pede/job.json)" \
+      '.to_float = $last' ${detname}/pede/job.json > ${detname}/pede/job.json.up &&\
+      mv ${detname}/pede/job.json{.up,}
+  fi
+  # edit the pede job description to get user's decision on which
+  #  parameters to float
   vim ${detname}/pede/job.json
+  return $?
+}
+
+# list bin files for pede job for DETNAME to use
+# Arguments
+#  1 - DETNAME
+__pede_list_bin() {
+  local detname="${1%/}"
+  # get list of binary files to feed into pede
+  #  use ones that could have constrained applied
+  find $PWD/${detname}/tracking/ -type f -name "*.bin" > ${detname}/pede/mille-bin.list
+  return $?
+}
+
+# initialize pede for input DETNAME
+pede-init() {
+  local detname="${1%/}"
+  __pede_init_job ${detname} || return $?
+  __pede_list_bin ${detname}
   return $?
 }
 
@@ -141,7 +221,10 @@ hadd() {
     echo "ERROR: '${detname}' has no tracking outputs."
     return 1
   fi
-  command hadd -ff ${detname}/merged-gblplots.root ${detname}/tracking/*_gblplots.root
+  command hadd -ff ${detname}/merged-gblplots.root ${detname}/tracking/*_gblplots.root || return $?
+  if [ -d "${detname}/no-constraint-tracking" ]; then
+    command hadd -ff ${detname}/no-constraint-gblplots.root ${detname}/no-constraint-tracking/*_gblplots.root || return $?
+  fi
   return $?
 }
 
@@ -165,17 +248,19 @@ swait() {
 full() {
   local detname="${1%/}"
   # initialize detector for tracking
-  trk-init ${detname} || return $?
+  acc-init ${detname} || return $?
   # have user define parameters to float now so they
   # can walk away during tracking+minimization
-  mkdir ${detname}/pede || return $?
-  sed "s|DETNAME|${detname}|g" pede/job.json > ${detname}/pede/job.json || return $?
-  vim ${detname}/pede/job.json
+  __pede_init_job ${detname} || return $?
   # continue after user closes vim
+  acc-submit ${detname} || return $?
+  swait
+  trk-init ${detname} || return $?
   trk-submit ${detname} || return $?
   swait
-  find $PWD/${detname}/tracking/ -type f -name "*.bin" > ${detname}/pede/mille-bin.list || return $?
+  __pede_list_bin ${detname} || return $?
   pede-submit ${detname} || return $?
+  hadd ${detname} || return $?
   swait
   tail -50 ${detname}/pede/run.out
 }
@@ -189,12 +274,12 @@ case $1 in
     stage=$2
     detname=$3
     case $2 in
-      trk|pede)
-        ${2}-${1} ${@:3} || return $?
+      trk|acc|pede)
+        ${2}-${1} ${@:3} || exit $?
         if [ "$1" = "submit" ]; then
           watch squeue -u $USER
         fi
-        return $?
+        exit $?
         ;;
       *)
         echo "ERROR: '$2' not a valid stage: 'trk' or 'pede'"
@@ -202,15 +287,15 @@ case $1 in
         ;;
     esac
     ;;
-  trk|pede)
+  trk|acc|pede)
     if [ $# -lt 2 ]; then
       echo "ERROR: command '$1' requires a detector after it"
       exit 1
     fi
-    $1-init ${@:2} || return $?
-    $2-submit ${@:2} || return $?
+    $1-init ${@:2} || exit $?
+    $1-submit ${@:2} || exit $?
     watch squeue -u $USER
-    return $?
+    exit $?
     ;;
   help|hadd|full)
     ${1} ${@:2}
