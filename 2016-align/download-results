@@ -1,12 +1,41 @@
 #!/bin/bash
-detname=$1
-dest=${2:-.}
-rsync \
-  -avmu \
-  --exclude tracking \
-  --exclude sh \
-  --exclude pede \
-  --exclude sh \
-  --exclude no-constraint-tracking \
-  --exclude log \
-  slac.sdf:/sdf/group/hps/users/eichl008/hps/2016-align/${detname} ${dest%/}
+
+dl() {
+  local detname=$1
+  local dest=$2
+  rsync \
+    -avmu \
+    --exclude tracking \
+    --exclude scratch \
+    --exclude pede \
+    --exclude sh \
+    --exclude no-constraint-tracking \
+    --exclude log \
+    slac.sdf:/sdf/group/hps/users/eichl008/hps/2016-align/${detname} ${dest%/}
+  return $?
+}
+
+help() {
+  cat <<\HELP
+
+  Download detector alignment, tracking results to this computer.
+
+ USAGE: 
+
+    ./download-results DETNAME [DEST]
+
+ ARGUMENTS:
+  DETNAME : name of detector to download results from
+            /sdf/group/hps/users/eichl008/hps/2016-align/
+  DEST    : optional name of destination directory
+            defaults to current directory
+
+HELP
+}
+
+if [ "$#" -eq 0 ] || [ $# -gt 2 ] || [ "$1" = "help" ]; then
+  help
+  exit 0
+fi
+
+dl $1 ${2:-.}
