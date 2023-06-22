@@ -1,0 +1,16 @@
+{
+    "nevents": {{ nevents }}, 
+    "run_params": "{{ run_params }}",
+    "beam_energy": {{ beam_energy }},
+    "Map": {% set map = "%0.2f"%(rmap*mchi) %}{{map|float}},
+    "mchi": {{ mchi }},
+    "dmchi": {% set dmchi = "%0.2f"%(rdmchi*mchi) %}{{dmchi|float}},
+    "run_number": {{ run_number }},
+    "seed": {{job_id + 879482}}, 
+    {% set out_dir = "mchi_%03d_rmap_%0.2f_rdmchi_%.2f"%(mchi,rmap,rdmchi) %}
+    {% set filename = "idm_%s_%d"%(run_params, job_id) %}
+    "output_files": {
+        "idm.lhe" : "{{ out_dir }}/lhe/{{ filename }}.lhe"
+    },
+    "output_dir": "output/{{ detector }}"
+}

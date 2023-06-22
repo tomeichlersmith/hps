@@ -1,0 +1,29 @@
+#!/bin/bash 
+__mv__() {
+  local output_dir="$1"
+  local input_file=$(realpath events.slcio)
+  local input_filename=$(basename ${input_file})
+  local output_filestub="${input_filename%.*}"  
+
+  if ! mv events_kf_mille.bin ${output_dir}/${output_filestub}_mille.bin; then
+    return 1;
+  fi
+  mv events_kf_mille_gblplots.root ${output_dir}/${output_filestub}_gblplots.root
+  return $?;
+}
+
+main() {
+  local output_dir="$(realpath "$1")"
+
+  for d in *; do
+    [ -d ${d} ] || continue
+    cd $d
+    if ! __mv__ ${output_dir}; then
+      return 1;
+    fi
+    cd ..
+    rm -r $d
+  done
+}
+
+main "$1"
