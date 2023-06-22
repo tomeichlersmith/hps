@@ -1,0 +1,6 @@
+*.tar.gz
+idm
+plots
+output
+scratch
+logs
