@@ -1,0 +1,10 @@
+Some Gen-Level iDM Acceptance Studies
+
+I also used this workspace to figure out how to run the readout-recon-tuplize pipeline
+so there is some clutter leftover from that. 
+
+2023-07-05
+I have since deleted the slcio and root files since they were taking up unnecessary
+space on the export scratch disk. With all the important plots on Jira or in presentations
+on indico, I may consider deleting this workspace after transitioning successfully to
+a new one focused on a full reach calculation.
