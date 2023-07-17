@@ -50,3 +50,5 @@ hps-align-scratch
 .venv
 MG5_aMC*
 align
+.jupyter
+.root_hist
