@@ -13,14 +13,14 @@
         "recon": "{{ steering_reco }}"
     },
     "input_files": {
-      "/export/scratch/users/eichl008/hps/idm/generator-acceptance/output/{{ detector }}/{{ job.input_files['events'][0] }}" : "idm.lhe"
+      "{{ job.input_files['events'][0] }}" : "idm.lhe"
     },
     {% set out_dir = job.input_files['events'][0] | dirname | dirname %}
     {% set filename = "idm_%s_%d"%(run_params, job_id) %}
     "output_files": {
-        "idm_rot_filt.slcio" : "{{ out_dir }}/sim/{{ filename }}.slcio",
-        "idm_rot_file_readout.slcio" : "{{ out_dir }}/readout/{{ filename }}.slcio",
-        "idm_rot_filt_readout_recon.slcio" : "{{ out_dir }}/recon/{{ filename }}.slcio"
+        "idm_rot_filt.slcio" : "sim/{{ filename }}.slcio",
+        "idm_rot_filt_readout.slcio" : "readout/{{ filename }}.slcio",
+        "idm_rot_filt_readout_recon.slcio" : "recon/{{ filename }}.slcio"
     },
-    "output_dir": "output/{{ detector }}"
+    "output_dir": "{{ out_dir }}"
 }

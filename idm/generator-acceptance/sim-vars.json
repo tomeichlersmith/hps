@@ -8,5 +8,5 @@
     "run_number": [7000],
     "detector": ["HPS-PhysicsRun2016-Pass2"],
     "steering_readout": ["/org/hps/steering/readout/PhysicsRun2016TrigPairs1.lcsim"],
-    "steering_reco": ["/org/hps/steering/recon/PhysicsRun2016FullReconMC.lcsim"]
+    "steering_reco": ["/org/hps/steering/recon/PhysicsRun2016FullReconMC_KF_TrackClusterMatcher.lcsim"]
 }
