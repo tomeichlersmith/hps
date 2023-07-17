@@ -52,3 +52,6 @@ MG5_aMC*
 align
 .jupyter
 .root_hist
+.rustup
+.ssh
+prod
