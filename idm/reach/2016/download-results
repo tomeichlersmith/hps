@@ -1,0 +1,35 @@
+#!/bin/bash
+
+dl() {
+  local sample=$1
+  local dest=$2
+  rsync \
+    -avmu \
+    slac.sdf:/sdf/group/hps/users/eichl008/hps/idm/reach/2016/${sample}/output/ana/ ${dest%/}
+  return $?
+}
+
+help() {
+  cat <<\HELP
+
+  Download hpstr ana output for a given sample to this computer.
+
+ USAGE: 
+
+    ./download-results SAMPLE [DEST]
+
+ ARGUMENTS:
+  SAMPLE  : name of detector to download results from
+            /sdf/group/hps/users/eichl008/hps/idm/reach/2016/
+  DEST    : optional name of destination directory
+            defaults to directory named SAMPLE
+
+HELP
+}
+
+if [ "$#" -eq 0 ] || [ $# -gt 2 ] || [ "$1" = "help" ]; then
+  help
+  exit 0
+fi
+
+dl $1 ${2:-${1}}
