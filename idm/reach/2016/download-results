@@ -2,10 +2,11 @@
 
 dl() {
   local sample=$1
-  local dest=$2
+  local stage=$2
+  local dest=$3
   rsync \
     -avmu \
-    slac.sdf:/sdf/group/hps/users/eichl008/hps/idm/reach/2016/${sample}/output/ana/ ${dest%/}
+    slac.sdf:/sdf/group/hps/users/eichl008/hps/idm/reach/2016/${sample}/output/${stage}/ ${dest%/}
   return $?
 }
 
@@ -16,20 +17,22 @@ help() {
 
  USAGE: 
 
-    ./download-results SAMPLE [DEST]
+    ./download-results SAMPLE STAGE [DEST]
 
  ARGUMENTS:
   SAMPLE  : name of detector to download results from
             /sdf/group/hps/users/eichl008/hps/idm/reach/2016/
+  STAGE   : name of stage of output to copy down
+            e.g. 'ana', 'recon', or 'sim'
   DEST    : optional name of destination directory
             defaults to directory named SAMPLE
 
 HELP
 }
 
-if [ "$#" -eq 0 ] || [ $# -gt 2 ] || [ "$1" = "help" ]; then
+if [ "$#" -lt 2 ] || [ $# -gt 3 ] || [ "$1" = "help" ]; then
   help
   exit 0
 fi
 
-dl $1 ${2:-${1}}
+dl $1 ${2} ${3:-${1}/${2}}
