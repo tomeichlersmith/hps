@@ -24,10 +24,10 @@ class iDM_Reco(processor.ProcessorABC):
 
         histograms = {}
         
-        selection = PackedSelection()
-        selection.add(
+        event_selection = PackedSelection()
+        event_selection.add(
             'pair1trigger', 
-            events['EventHeader/pair1_trigger_']==1
+            events.metadata['isMC']|(events['EventHeader/pair1_trigger_']==1)
         )
 
         nvtxs = ak.count(
@@ -37,10 +37,32 @@ class iDM_Reco(processor.ProcessorABC):
         histograms['nvtxs'] = hist.Hist(Regular(4,0,4,label='N Vertices'))
         histograms['nvtxs'].fill(nvtxs)
         
-        selection.add(
+        event_selection.add(
             'singlevtx',
             nvtxs==1
         )
+        
+        ele_trk_time = events['UnconstrainedV0Vertices_KF/UnconstrainedV0Vertices_KF.electron_.track_.track_time_']
+        pos_trk_time = events['UnconstrainedV0Vertices_KF/UnconstrainedV0Vertices_KF.positron_.track_.track_time_']
+        
+        vtx_selection = PackedSelection()
+        vtx_selection.add(
+            'ele_trk_time',
+            ak.flatten(ele_trk_time[event_selection.all()] < 10)
+        )
+        vtx_selection.add(
+            'pos_trk_time',
+            ak.flatten(pos_trk_time[event_selection.all()] < 10)
+        )
+
+        vtxz = ak.flatten(
+            events['UnconstrainedV0Vertices_KF/UnconstrainedV0Vertices_KF.pos_'] \
+                .fZ[event_selection.all()]
+        )[vtx_selection.all()]
+
+        # fill histograms for sensitivity analysis
+        histograms['vtxz'] = hist.Hist(Regular(40,-5,195,label='Vtx Z [mm]'))
+        histograms['vtxz'].fill(vtxz)
 
         return {
             events.metadata['dataset'] : {
@@ -57,25 +79,27 @@ if __name__ == '__main__':
     ncores = 1
     quiet = True
     dataset = {
-        'rmap-3.00-rdmchi-0.60': ['test.root'],
+        'rmap-3.00-rdmchi-0.60': {'files': ['test.root'], 'metadata': {'isMC': True}},
     }
+    test = True
 
-    # TODO: status is not affecting whether the progress bars are being drawn
-    runner = processor.Runner(
-        executor = processor.FuturesExecutor(
-            workers = ncores, 
-            compression = None, 
-            status = not quiet
-        ),
-        schema = BaseSchema,
-    )
 
     p = iDM_Reco()
+
+    executor = (
+        processor.IterativeExecutor() if test else 
+        processor.FuturesExecutor(workers = ncores, compression = None)
+    )
+
+    runner = processor.Runner(
+        executor = executor,
+        schema = BaseSchema
+    )
 
     out = runner(
         dataset,
         treename = 'HPS_Event',
-        processor_instance = p
+        processor_instance = p,
     )
 
     for sample, data in out.items():
