@@ -85,12 +85,20 @@ class iDM_Reco(processor.ProcessorABC):
     def postprocess(self, accumulator):
         pass
 
+def recursive_repr(d):
+    if isinstance(d, dict):
+        return {
+            recursive_repr(k): recursive_repr(v)
+            for k,v in d.items()
+        }
+    return repr(d)    
 
 if __name__ == '__main__':
     output_name = 'test.pkl'
-    ncores = 1
+    import multiprocessing
+    ncores = multiprocessing.cpu_count()
     quiet = True
-    test = True
+    test = False
 
     base_directory = Path('/export/scratch/users/eichl008/hps/idm/reach/2016/')
     dataset = {
@@ -123,7 +131,8 @@ if __name__ == '__main__':
         processor_instance = p,
     )
 
-    print(json.dumps(out, indent=2))
-
     with open(output_name, 'wb') as outf:
         pickle.dump(out, outf)
+
+    print(json.dumps(recursive_repr(out), indent=2))
+
