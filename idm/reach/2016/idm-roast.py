@@ -22,7 +22,20 @@ class iDM_Reco(processor.ProcessorABC):
         """Process a chunk of reconstructed events
         """
 
-        histograms = {}
+        sample = 'signal'
+        histograms = {
+            name : hist.Hist(ax)
+            for name, ax in [
+              ('nvtxs', Regular(4,0,4,name = 'nvtxs', label='N Vertices')),
+              ('vtxz', Regular(40,-5,195,name = 'vtxz', label='Vertex Z [mm]'))
+            ]
+        }
+
+        plist = os.path.basename(events.metadata['filename'])[:-5].split('_')
+        params = {plist[i]:plist[i+1] for i in range(0,len(plist),2)}
+
+        mchi = int(params['mchi'])
+        ratios = str(events.metadata['dataset'])
         
         event_selection = PackedSelection()
         event_selection.add(
@@ -34,7 +47,7 @@ class iDM_Reco(processor.ProcessorABC):
             events['UnconstrainedV0Vertices_KF/UnconstrainedV0Vertices_KF.fUniqueID'],
             axis=1
         )
-        histograms['nvtxs'] = hist.Hist(Regular(4,0,4,label='N Vertices'))
+        print(mchi, ratios, nvtxs)
         histograms['nvtxs'].fill(nvtxs)
         
         event_selection.add(
@@ -61,12 +74,11 @@ class iDM_Reco(processor.ProcessorABC):
         )[vtx_selection.all()]
 
         # fill histograms for sensitivity analysis
-        histograms['vtxz'] = hist.Hist(Regular(40,-5,195,label='Vtx Z [mm]'))
         histograms['vtxz'].fill(vtxz)
 
         return {
-            events.metadata['dataset'] : {
-                'histograms': histograms
+            ratios : {
+              mchi : histograms
             }
         }
 
@@ -78,10 +90,19 @@ if __name__ == '__main__':
     output_name = 'test.pkl'
     ncores = 1
     quiet = True
-    dataset = {
-        'rmap-3.00-rdmchi-0.60': {'files': ['test.root'], 'metadata': {'isMC': True}},
-    }
     test = True
+
+    base_directory = Path('/export/scratch/users/eichl008/hps/idm/reach/2016/')
+    dataset = {
+        'rmap-3.00-rdmchi-0.60': {
+          'files': [
+            str(f)
+            for f in (base_directory / 'rmap-3.00-rdmchi-0.60' / 'recon' / 'HPS-PhysicsRun2016-Pass2').iterdir()
+            if f.suffix == '.root'
+          ], 
+          'metadata': {'isMC': True}
+        },
+    }
 
 
     p = iDM_Reco()
@@ -93,7 +114,7 @@ if __name__ == '__main__':
 
     runner = processor.Runner(
         executor = executor,
-        schema = BaseSchema
+        schema = BaseSchema,
     )
 
     out = runner(
@@ -102,8 +123,7 @@ if __name__ == '__main__':
         processor_instance = p,
     )
 
-    for sample, data in out.items():
-        print(sample, {k:v for k,v in data.items() if k != 'histograms'})
+    print(json.dumps(out, indent=2))
 
     with open(output_name, 'wb') as outf:
         pickle.dump(out, outf)
