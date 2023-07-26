@@ -1,8 +1,8 @@
 # ~/.hpsmc for containers at UMN
 
 [DEFAULT]
-#hps_home = /export/scratch/users/eichl008/hps
-hps_home=/home/tom/hps
+hps_home = /home/eichl008/hps
+#hps_home=/home/tom/hps
 hps_fieldmaps_dir=$(hps_home)s/.local/share/fieldmap
 
 [MG4]
