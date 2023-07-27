@@ -22,7 +22,7 @@ class iDM_Reco(processor.ProcessorABC):
         """Process a chunk of reconstructed events
         """
 
-        sample = 'signal'
+
         histograms = {
             name : hist.Hist(ax)
             for name, ax in [
@@ -30,12 +30,6 @@ class iDM_Reco(processor.ProcessorABC):
               ('vtxz', Regular(40,-5,195,name = 'vtxz', label='Vertex Z [mm]'))
             ]
         }
-
-        plist = os.path.basename(events.metadata['filename'])[:-5].split('_')
-        params = {plist[i]:plist[i+1] for i in range(0,len(plist),2)}
-
-        mchi = int(params['mchi'])
-        ratios = str(events.metadata['dataset'])
         
         event_selection = PackedSelection()
         event_selection.add(
@@ -47,7 +41,6 @@ class iDM_Reco(processor.ProcessorABC):
             events['UnconstrainedV0Vertices_KF/UnconstrainedV0Vertices_KF.fUniqueID'],
             axis=1
         )
-        print(mchi, ratios, nvtxs)
         histograms['nvtxs'].fill(nvtxs)
         
         event_selection.add(
@@ -76,11 +69,14 @@ class iDM_Reco(processor.ProcessorABC):
         # fill histograms for sensitivity analysis
         histograms['vtxz'].fill(vtxz)
 
-        return {
-            ratios : {
-              mchi : histograms
-            }
-        }
+        plist = os.path.basename(events.metadata['filename'])[:-5].split('_')
+        params = {plist[i]:plist[i+1] for i in range(0,len(plist),2)}
+
+        sample = events.metadata['dataset']
+        if sample not in ['tritrig','wab']:
+            sample = f'{sample}-mchi-{params["mchi"]}'
+
+        return { sample : histograms }
 
     def postprocess(self, accumulator):
         pass
@@ -91,6 +87,8 @@ def recursive_repr(d):
             recursive_repr(k): recursive_repr(v)
             for k,v in d.items()
         }
+    elif isinstance(d, (int,float,str)):
+        return d
     return repr(d)    
 
 if __name__ == '__main__':
@@ -110,8 +108,20 @@ if __name__ == '__main__':
           ], 
           'metadata': {'isMC': True}
         },
+        'tritrig': {
+          'files': [
+            str(f)
+            for f in (base_directory / 'bkgd').iterdir()
+            if f.suffix == '.root'
+          ],
+          'metadata': {'isMC': True}
+        }
     }
 
+    if not test:
+        # BAD - need to figure out how to get coffea to ignore branches
+        import warnings
+        warnings.filterwarnings('ignore')
 
     p = iDM_Reco()
 
