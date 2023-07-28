@@ -27,13 +27,11 @@ __num_user_jobs() {
 # wait until $USER has no jobs in squeue
 swait() {
   # pause to allow squeue to catch up
-  printf "swaiting..."
   num=$(__num_user_jobs)
   while (( num > 0 )); do
     sleep 20
     num=$(__num_user_jobs)
   done
-  printf "done\n"
 }
 
 if [ "$#" -eq 0 ]; then
@@ -76,6 +74,7 @@ do
   if (( id_start + njobs > id_end )); then
     njobs=$(( id_end - id_start ))
   fi
+  printf '%3d jobs starting from index %4d ' ${njobs} ${id_start}
   sbatch --array=0-${njobs} ${sbatch_options} ${script} ${args[@]} ${id_start} || break
   swait
   id_start=$(( id_start + 250 ))

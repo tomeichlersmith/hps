@@ -1,0 +1,237 @@
+#!/bin/bash
+# merge - merge partitions of ROOT files into single ROOT files
+#   since the simulation run time is optimized for relatively
+#   small resulting files, we want to merge subgroups of them
+#   together so that the analysis can be more performant.
+help() {
+  cat<<HELP
+
+  ./merge [options] INDIR [OUTDIR] NPER
+
+  Merge root files by certain group sizes.
+
+ ARGUMENTS:
+  INDIR  : input directory containing ROOT files to merge
+  OUTDIR : output directory to write merged files
+           default to INDIR if not provided
+  NPER   : number of files to merge into a single group
+
+ OPTIONS:
+  -h, --help : print this help message and exit
+  --dry-run  : do a dry run, printing out hadd commands to stdout
+  --in-place : remove un-merged files after successful merge
+
+HELP
+}
+
+# print each argument on its own line with the first line
+# prefixed with "ERROR: ".
+error() {
+  printf >&2 "\033[1;31mERROR: \033[0m\033[31m%s\n" "$1"
+  shift
+  while [ "$#" -gt "0" ]; do
+    printf >&2 "       %s\n" "$1"
+    shift
+  done
+  printf >&2 "\033[0m"
+}
+info() {
+  printf "\033[32;1m INFO: \033[0m\033[32m%s\n" "$1"
+  shift
+  while [ "$#" -gt "0" ]; do
+    printf '       %s\n' "$1"
+    shift
+  done
+  printf "\033[0m"
+}
+
+# list ROOT files in the input directory
+# Arguments
+#  1 - directory to list
+#  2 - file to write list to
+#
+# Output
+#  writes to the temporary file a sorted list of the ROOT files
+#  in the input directory
+#
+# We use `find` instead of the multi-threaded `fd` since
+# this operation will most-likely be limited by the NFS
+# access anyways.
+__list_files() {
+  local dir=$(realpath $1)
+  local list=$2
+  find ${dir} -type f -name "*.root" > ${list}
+  cat ${list} | cut -f 2 -d _ | cut -f 1 -d . > ${list}.runs
+  paste ${list}.runs ${list} | sort -n | cut -f 2 > ${list}.sorted
+  mv ${list}.sorted ${list}
+  rm ${list}.runs
+  return $?
+}
+
+# cut up full list of files into individual groups of files to be merged
+# Arguments
+#  1 - file list to split
+#  2 - number of files to include in each grouping
+#
+# Output
+#  writes files corresponding to groups to be merged of the form
+#  `<arg-1>.NNNN` where NNNN is a four-digit (0-padded) batch number
+__partition() {
+  local file_list=$1
+  local num_files_per_group=$2
+  split \
+    --lines=${num_files_per_group} \
+    --suffix-length=4 \
+    --numeric-suffixes \
+    ${file_list} ${file_list}.
+  return $?
+}
+
+# determine hadd file name
+# Arguments
+#  1 - file list with ROOT files to merge
+#  2 - destination directory for merged file
+#
+# Output
+#  echos name of hadd file
+#
+# Assumptions
+# - all listed files have the same non-run-number parameters
+# - run numbers are sorted before partitioning so the first
+#   run number + number of files correctly specifies which
+#   run numbers are in this merged file
+__merged_filename() {
+  local file_list=$1
+  local destdir=$2
+  local first_file=$(head -1 ${file_list} | xargs basename)  
+  local num_files=$(wc -l ${file_list} | cut -f 1 -d ' ')
+
+  # strip extension
+  first_file=${first_file%.root}
+  # get run number
+  first_run_number=${first_file##*_}
+  # strip run number from file name (to keep the sim parameters in the name)
+  out_filestub="${first_file%_${first_run_number}}"
+  echo "${destdir}/${out_filestub}_nruns_${num_files}_startrun_${first_run_number}.root"
+}
+
+# do a single merge
+# Arguments
+#  1 - file list with ROOT files to merge
+#  2 - destination directory for merged file
+#  dry_run - if set to 1, then only echo the hadd command
+#
+# Output
+#  writes the merged file from the group
+#
+# See Also
+#  __merged_filename for how the output file name is determined
+__single_merge() {
+  local file_list=$1
+  local destdir=$2
+  
+  if [ ! -d ${destdir} ]; then
+    info "need to create ${destdir}"
+    if ! mkdir -p ${destdir}; then
+      error "unable to create ${destdir}"
+      return 1
+    fi
+  fi
+  if [ "${dry_run}" -eq "1" ]; then
+    echo "hadd -ff $(__merged_filename ${file_list} ${destdir}) $(cat ${file_list})"
+    if [ "${in_place}" -eq "1" ]; then
+      echo rm $(cat ${file_list})
+    fi
+    return 0
+  fi
+  if ! hadd \
+    -ff $(__merged_filename ${file_list} ${destdir}) \
+    $(cat ${file_list}) &> ${file_list}.log
+  then
+    error "merging ${file_list}"
+    return 1
+  else
+    info "${file_list} successful merge"
+    if [ "${in_place}" -eq "1" ]; then
+      info "removing $(wc -l ${file_list})"
+      rm $(cat ${file_list}) || return $?
+    fi
+  fi
+  return 0
+}
+
+# lets do the fricken merge
+# Arguments
+#  1 - input directory of files to merge in chunks
+#  2 - output directory of merged files
+#  3 - number of files to put into each chunk
+#
+# Output
+#  merged files
+#
+# This is done single-threaded because it will be IO limited.
+# All of the listing files are written to the current directory
+# so only run this script from a directory you want to be a 
+# scratch directory.
+__main__() {
+  dry_run=0
+  in_place=0
+  positionals=()
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      -h|--help)
+        help
+        return 0
+        ;;
+      --dry-run)
+        dry_run=1
+        ;;
+      --in-place)
+        in_place=1
+        ;;
+      -*)
+        error "unrecognized option '$1'"
+        return 1
+        ;;
+      *)
+        positionals+=("$1")
+        ;;
+    esac
+    shift
+  done
+  # reset CL to be only positionals
+  set -- ${positionals[@]}
+  if [ "$#" -lt 2 ] || [ "$#" -gt 3 ]; then
+    help
+    error "merge requires two or three arguments"
+    return 1
+  fi
+  local input_dir="$(realpath $1)"
+  local output_dir="${input_dir}"
+  local num_per=$2
+  if [ "$#" -eq 3 ]; then
+    output_dir="$(realpath $2)"
+    num_per=$3
+  fi
+  if ! [[ $num_per =~ ^[0-9]+$ ]] ; then
+    error "NPER '${num_per}' is not a number"
+    return 1
+  fi
+
+  local dirname=$(basename ${input_dir%/})
+  local workdir=$(mktemp -d)
+  local list_file="${workdir}/${dirname}.list"
+
+  info "Listing files..."
+  __list_files ${input_dir} ${list_file} || return $?
+  info "Partitioning into groups..."
+  __partition ${list_file} ${num_per} || return $?
+  info "Merging groups..."
+  for grp in ${list_file}.*; do
+    __single_merge ${grp} ${output_dir} ${in_place} || return $?
+  done
+  info "done"
+  info "listing and log files are in ${workdir}"
+}
+
+__main__ $@

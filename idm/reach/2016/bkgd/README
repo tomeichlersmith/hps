@@ -56,3 +56,11 @@ sbatch wrapper script which keeps the number of jobs to the user limit
 of 250 at any one time.
 
   ../sbatch --output=logs/%A-%a.out ../submit-tuplize <N-bkgd> slcio tuples
+
+After the tuplization has been run and we check that no jobs failed
+(rerun or remove the ones that did), we merge the tuples into a smaller
+number of large files that makes it easier to juggle and for coffea to handle.
+
+  ../merge --in-place tuples 200
+
+We want the size of the output files to be O(few GB).
