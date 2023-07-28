@@ -13,6 +13,7 @@ __pycache__
 .ipynb_checkpoints
 .container-install
 .apptainer
+.singularity
 *.sif
 # sbatch output files
 *.txt
@@ -24,6 +25,8 @@ __pycache__
 obj
 # data files
 *.slcio
+# python venvs
+venv
 
 # home-like stuff from using this directory as distrobox home
 .JAS3
