@@ -1,0 +1,20 @@
+{
+    "nevents": 10000,
+    "target_thickness": 0.0004062,
+    "beam_energy": 2300.00,
+    "num_electrons": 2500,
+    "target_z": -4.3,
+    "run_number": 7000,
+    "detector": "HPS-PhysicsRun2016-Pass2",
+    "steering_files": {
+        "readout": "/org/hps/steering/readout/PhysicsRun2016TrigPairs1.lcsim",
+        "recon": "/org/hps/steering/recon/PhysicsRun2016FullReconMC_KF_TrackClusterMatcher.lcsim"
+    },
+    "input_files": {
+      "{{ input_files['events'][0] }}": "idm.slcio"
+    },
+    "output_files": {
+        "idm_readout_recon.slcio" : "recon/HPS-PhysicsRun2016-Pass2/{{ input_files['events'][0] | basename }}.slcio"
+    },
+    "output_dir": "/sdf/group/hps/users/eichl008/hps/idm/reach/2016/output"
+}

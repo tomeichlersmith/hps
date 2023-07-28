@@ -1,0 +1,37 @@
+#!/bin/bash
+#SBATCH --ntasks=1
+#SBATCH --time=24:00:00
+#SBATCH --partition=shared
+#SBATCH --output=output/logs/%A-%a.out
+#SBATCH --mem=8G
+#
+#  run an hps-mc job in the hps-prod container
+# ARGUMENTS
+#  1 - image    - full path to SIF to run
+#  2 - script   - name of hps-mc job script to run
+#  3 - job_json - full path to job json to run
+#  4 - job_cfg  - full path to job cfg to use
+#  5 - job_id   - which job id to run
+
+set -o xtrace
+
+image="$1"
+script="$2"
+job_json="$3"
+job_cfg="$4"
+job_id="${SLURM_ARRAY_TASK_ID:-$5}"
+
+srun \
+  /usr/bin/singularity \
+  run \
+  --home /scratch/$USER \
+  --bind /sdf/group/hps/users \
+  ${image} \
+  hps-mc-job \
+    run \
+    -c /usr/local/share/container.cfg \
+    -c ${job_cfg} \
+    -d /scratch/$USER/batch/${job_id} \
+    ${script} \
+    ${job_json} \
+    -i ${job_id}

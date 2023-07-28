@@ -1,0 +1,16 @@
+{
+    "config_files": {
+        "recon": "kalSimpTuple_cfg.py",
+        "ana": "anaVtxTuple_cfg.py"
+    },
+    "is_data": 0,
+    "year": 2016,
+    "input_files": {
+      "{{ input_files['events'][0] }}": "events.slcio"
+    },
+    "output_files": {
+        "events.root": "tuple/HPS-PhysicsRun2016-Pass2/{{ input_files['events'][0] | basename }}.root",
+        "events_ana.root" : "ana/{{ input_files['events'][0] | basename }}.root"
+    },
+    "output_dir": "output"
+}

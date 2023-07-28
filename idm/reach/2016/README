@@ -1,0 +1,99 @@
+More thorough reach study for 2016 detector.
+
+Table of Contents
+=================
+- batch.cfg : hps-mc config to pass along when running jobs
+- do-nothing.py : hps-mc job which is just the dummy component,
+    see /recovering/ below
+- follow : a script in development for following jobs in slurm
+- merge : a script for merging slcio files by mchi
+- hps-prod-2023-07-10.sif : hps prod image
+- gen-sim-reco-job.json.tmpl : template job config for full
+  gen, sim, reco pipeline
+- reco-job.json.tmpl : template job config for reco jobs
+- reco_job.py : hps-mc job script for reco jobs
+- run.sh : run hps-mc jobs bare metal
+- run-container : run hps-mc jobs in prod image
+- sbatch : submit batches to slurm avoiding user maximum limit
+- <directory> : other directories contain groups of samples,
+  there job definitions, and their output data files
+
+gen-sim-reco
+------------
+Generating a new sample? Make a new workspace to isolate it.
+
+  mkdir WORKSPACE
+
+Create a new variable-definition file for this workspace
+where you define the iDM and reco parameters you wish to
+study.
+
+  cp <some-previous-one> WORKSPACE/gen-sim-reco-vars.json
+  # update it
+  vim WORKSPACE/gen-sim-reco-vars.json
+
+Create the job store for the generation jobs.
+
+  hps-mc-job-template \
+    -j 1 \
+    -a WORKSPACE/gen-sim-reco-vars.json \
+    -r NUM_RUNS_PER_PARAMETER_SET \
+    gen-sim-reco-job.json.tmpl \
+    WORKSPACE/gen-sim-reco-jobs.json
+
+Submit these jobs to the slurm batch system. Here,
+we use a wrapper script so that we only submit the maximum
+we are allowed at any one time. Automatically submitting
+the next batch when the previous one is completely done.
+
+  cd WORKSPACE
+  mkdir -p output/logs
+  ../sbatch ../run-container gen-sim-reco-jobs.json \
+    ../hps-prod-2023-07-10.sif \
+    idm \
+    gen-sim-reco-jobs.json \
+    ../batch.cfg
+
+Notice we use the container to run the gen-sim-reco jobs.
+This is because the MG5 that generated the idm MadEvent
+workspace requires Python3.7 which is only available
+in the container at this time.
+
+reco
+----
+
+hpstr
+-----
+First, we need to get the list of input files.
+
+  find output/recon/<detector> -type f -exec realpath {} ';' \
+    > output/recon/<detector>.list
+
+Then we can generate the job store.
+
+  hps-mc-job-template \
+    -i events <directory>/output/recon/<detector>.list 1 \
+    hpstr.json.tmpl \
+    <directory>/hpstr.json
+
+
+recovering
+----------
+Sometimes jobs fail for lame reasons like a mis-spelling of
+the output file name. In this case, we just need to rerun
+so that the output files are named correctly. We can do this
+by fixing up the job config however is needed and then 
+rerunning with the `do-nothing.py` job.
+
+You may need to remove input file symlinks from the scratch
+directories before running.
+
+  cd /scratch/$USER/batch
+  for d in *; do rm $d/fieldmap; done
+
+Then we rerun the do-nothing job
+
+  for i in {1..NUMJOBS}; do
+    hps-mc-job run -c batch.cfg -d /scratch/$USER/batch/$i \
+      do-nothing.py jobs.json -i $i
+  done

@@ -1,0 +1,28 @@
+{
+    "nevents": {{ nevents }}, 
+    "run_params": "{{ run_params }}",
+    "target_thickness": {{ target_thickness }},
+    "beam_energy": {{ beam_energy }},
+    "num_electrons": {{ num_electrons }},
+    "target_z": {{ target_z }},
+    "Map": {% set map = "%0.2f"%(rmap*mchi) %}{{map|float}},
+    "mchi": {{ mchi }},
+    "dmchi": {% set dmchi = "%0.2f"%(rdmchi*mchi) %}{{dmchi|float}},
+    "run_number": {{ run_number }},
+    "seed": {{job_id + 879482}}, 
+    "detector": "{{ detector }}",
+    "filter_no_cuts": true,
+    "steering_files": {
+        "readout": "{{ steering_readout }}",
+        "recon": "{{ steering_reco }}"
+    },
+    {% set filename = "idm_%s_mchi_%03d_rmap_%0.2f_rdmchi_%.2f_jobid_%03d"%(run_params, mchi, rmap, rdmchi, job_id) %}
+    "output_files": {
+        "idm.lhe" : "lhe/{{ filename }}.lhe",
+        "idm_rot.slcio" : "sim/{{detector}}/{{ filename }}.slcio",
+        "idm_rot_filt.slcio" : "filt/{{detector}}/{{filename}}.slcio",
+        "idm_rot_filt_readout.slcio" : "readout/{{detector}}/{{ filename }}.slcio",
+        "idm_rot_filt_readout_recon.slcio" : "recon/{{detector}}/{{ filename }}.slcio"
+    },
+    "output_dir": "/sdf/group/hps/users/eichl008/hps/idm/reach/2016/output"
+}

@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# print the usage for this tool
+help() {
+  cat <<\HELP
+
+  Submit a slurm job script with an associated job JSON file.
+
+ USAGE:
+  ./s [options] <script> <jobs> [args...]
+
+ ARGUMENTS
+  options  : sbatch options to pass on /each/ submission
+  <script> : sbatch script to run
+  <jobs>   : jobs json we are submitting over
+  args     : optional arguments passed on to script on /each/ submission
+
+HELP
+}
+
+__num_user_jobs() {
+  squeue -r -u $USER | grep -c $USER 
+}
+
+# wait until $USER has no jobs in squeue
+swait() {
+  # pause to allow squeue to catch up
+  printf "swaiting..."
+  num=$(__num_user_jobs)
+  while (( num > 0 )); do
+    sleep 20
+    num=$(__num_user_jobs)
+  done
+  printf "done\n"
+}
+
+if [ "$#" -eq 0 ]; then
+  help
+  exit 0
+fi
+
+sbatch_options=()
+positionals=()
+while [ "$#" -gt 0 ]
+do
+  case $1 in
+    -*)
+      sbatch_options+="$1"
+      ;;
+    *)
+      if [ -f "$1" ]; then
+        positionals+=("$(realpath "$1")")
+      else
+        positionals+=("$1")
+      fi
+      ;;
+  esac
+  shift
+done
+
+set -- ${positionals[@]}
+
+script="${1}"
+job_list="${2}"
+args=(${@:3})
+
+job_ids=($(jq '.[] | .job_id' ${job_list}))
+id_start=0
+id_end=${#job_ids[@]}
+
+swait
+if [ -d /scratch/$USER/batch ] && [ "$(ls -A /scratch/$USER/batch)" ]; then
+  rm -r /scratch/$USER/batch/* || exit $?
+fi
+while (( id_start < id_end ))
+do
+  printf -v array "%s," ${job_ids[@]:${id_start}:250}
+  sbatch --array=${array%,} ${sbatch_options} ${script} ${args[@]} || break
+  swait
+  id_start=$(( id_start + 250 ))
+done
