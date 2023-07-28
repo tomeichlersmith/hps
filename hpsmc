@@ -1,6 +1,7 @@
 [DEFAULT]
 hps_home = /sdf/group/hps/users/eichl008/hps
 hps_java_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/hps/hps-distribution/5.2-SNAPSHOT/hps-distribution-5.2-SNAPSHOT-bin.jar
+lcio_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/lcsim/lcio/2.7.4-SNAPSHOT/lcio-2.7.4-SNAPSHOT-bin.jar
 
 [MG4]
 madgraph_dir = %(hps_home)s/mc/generators/madgraph4/src
@@ -31,10 +32,10 @@ hpstr_install_dir = /sdf/group/hps/users/bravo/src/hpstr/install
 hpstr_base = /sdf/group/hps/users/bravo/src/hpstr
 
 [LCIOCount]
-lcio_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/lcsim/lcio/2.7.4-SNAPSHOT/lcio-2.7.4-SNAPSHOT-bin.jar
 
 [LCIOMerge]
-lcio_bin_jar = /sdf/home/e/eichl008/.m2/repository/org/lcsim/lcio/2.7.4-SNAPSHOT/lcio-2.7.4-SNAPSHOT-bin.jar
+
+[FilterBunches]
 
 [EvioToLcio]
 java_args = -Xmx3g -XX:+UseSerialGC
