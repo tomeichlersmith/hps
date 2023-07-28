@@ -5,6 +5,7 @@
 
 work_root="/sdf/group/hps/users/eichl008/hps/2016-align"
 detname="$1"
+find ${work_root}/${detname}/tracking/ -type f -name "*.bin" > ${detname}/pede/mille-bin.list || return $?
 hps-mc-job run \
   -d ${work_root}/${detname}/pede/scratch \
   -c ${work_root}/pede/run.cfg \

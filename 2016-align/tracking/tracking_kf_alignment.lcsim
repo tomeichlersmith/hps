@@ -91,13 +91,15 @@
         </driver>
 
         <driver name="GBLOutputDriver" type="org.hps.recon.tracking.gbl.GBLOutputDriver">
-          <nHits>6</nHits> <!-- minimum hits -->
+          <nHits>${nHitsCut}</nHits> <!-- minimum hits -->
           <outputPlotsFilename>${outputFile}_gblplots.root</outputPlotsFilename>
           <bsZ>-7.5</bsZ>
           <trackCollectionName>GBLTracks</trackCollectionName>
           <doGBLkinks>true</doGBLkinks> 
           <dataRelationCollection>""</dataRelationCollection>
           <chi2Cut>9999</chi2Cut>
+          <minMom>${minMom}</minMom>
+          <maxMom>${maxMom}</maxMom>
         </driver>
 
         <driver name="CleanupDriver" type="org.lcsim.recon.tracking.digitization.sisim.config.ReadoutCleanupDriver"/>
@@ -138,6 +140,12 @@
           <compositeAlign>${compositeAlign}</compositeAlign>
 
           <momC>${momC}</momC> <!-- momentum constraint [GeV] -->
+          <!--
+               precision of momentum constraint
+               q/p is the fitting parameter and this is precision is (q/p)^2 (approximately)
+               so allowing fluctions of P [MeV] would mean seedPrecision should be ~(1/P)^2 
+            -->
+          <seedPrecision>10000</seedPrecision> <!-- precision of momentum constraint ~ N*sigma [MeV], 10k ~ 10MeV -->
           <constrainedFit>${constrainedFit}</constrainedFit> <!-- apply momentum constraint -->
 
           <constrainedBSFit>${constrainedBSFit}</constrainedBSFit> <!-- apply beam spot constraint -->
@@ -155,6 +163,10 @@
           <maxTrackChisq5hits>${maxTrackChisqFiveHits}</maxTrackChisq5hits>
           <maxTrackChisq6hits>${maxTrackChisqSixHits}</maxTrackChisq6hits>
 
+          <!--
+            EoP plots require /particles/ so that it can deduce which 
+            ECal cluster (to get E) is matched with a specific track (to get P)
+          -->
           <inputCollectionName>KalmanFullTracks</inputCollectionName>
         </driver> 
         
