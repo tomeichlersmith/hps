@@ -1,0 +1,82 @@
+#!/bin/bash
+
+# print the usage for this tool
+help() {
+  cat <<\HELP
+
+  Submit a slurm job script with more than 250 jobs,
+  chunking into 250 job batches to avoid hitting single-user
+  limit on shared.
+
+ USAGE:
+  ./sbatch [options] <script> <jobs> [args...]
+
+ ARGUMENTS
+  options  : sbatch options to pass on /each/ submission
+  <script> : sbatch script to run
+  <jobs>   : total number of jobs to submit
+  args     : optional arguments passed on to script on /each/ submission
+
+HELP
+}
+
+__num_user_jobs() {
+  squeue -r -u $USER | grep -c $USER 
+}
+
+# wait until $USER has no jobs in squeue
+swait() {
+  # pause to allow squeue to catch up
+  printf "swaiting..."
+  num=$(__num_user_jobs)
+  while (( num > 0 )); do
+    sleep 20
+    num=$(__num_user_jobs)
+  done
+  printf "done\n"
+}
+
+if [ "$#" -eq 0 ]; then
+  help
+  exit 0
+fi
+
+sbatch_options=()
+positionals=()
+while [ "$#" -gt 0 ]
+do
+  case $1 in
+    -*)
+      sbatch_options+="$1"
+      ;;
+    *)
+      if [ -f "$1" ]; then
+        positionals+=("$(realpath "$1")")
+      else
+        positionals+=("$1")
+      fi
+      ;;
+  esac
+  shift
+done
+
+set -- ${positionals[@]}
+
+script="${1}"
+njobs="${2}"
+args=(${@:3})
+
+id_start=0
+id_end=${njobs}
+
+swait
+while (( id_start < id_end ))
+do
+  njobs=250
+  if (( id_start + njobs > id_end )); then
+    njobs=$(( id_end - id_start ))
+  fi
+  sbatch --array=0-${njobs} ${sbatch_options} ${script} ${args[@]} ${id_start} || break
+  swait
+  id_start=$(( id_start + 250 ))
+done

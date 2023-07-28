@@ -1,0 +1,6 @@
+#!/bin/bash
+set -o xtrace
+export PATH=${PATH}:~/.local/bin
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:~/.local/lib
+export PYTHONPATH=${PYTHONPATH}:~/.local/lib/python
+hpstr ~/hpstr/processors/config/kalSimpTuple_cfg.py $@

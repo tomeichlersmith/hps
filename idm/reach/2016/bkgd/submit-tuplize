@@ -1,0 +1,38 @@
+#!/bin/bash
+#SBATCH --ntasks=1
+#SBATCH --time=24:00:00
+#SBATCH --partition=shared
+#SBATCH --mem=8G
+#
+#  run an hps-mc job in the hps-prod container
+# ARGUMENTS
+#  1 - directory of slcio files to run over
+#  2 - output directory
+#  3 - starting index of files to run over
+#      this index is then added to SLURM_TASK_ARRAY_ID
+#      (or zero if that env var does not exist)
+
+set -o xtrace
+set -o errexit
+set -o nounset
+
+input_dir="$(realpath $1)"
+output_dir="$(realpath $2)"
+ifile=${3}
+
+offset=${SLURM_ARRAY_TASK_ID:-0}
+ifile=$(( ifile + offset ))
+
+file_list=($(find "${input_dir}" -type f -name "*.slcio"))
+input_file="${file_list[${ifile}]}"
+
+filename="$(basename "${input_file}")"
+output_file="${output_dir%/}/${filename//slcio/root}"
+
+srun \
+  denv \
+  /sdf/group/hps/users/eichl008/hps/idm/reach/2016/bkgd/tuplize \
+    -t 0 \
+    -y 2016 \
+    -i ${input_file} \
+    -o ${output_file}

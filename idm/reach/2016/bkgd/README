@@ -1,0 +1,58 @@
+Bkgd Tuplization
+================
+
+Tuplize the background with hpstr:ptrless.
+
+Table of Contents
+-----------------
+- sbatch : wrapper script for command sbatch to keep number of jobs
+           below the user limit of 250 at any one time
+- submit-tuplize : the script given to sbatch to run the jobs
+- tuplize : the script given to denv inside submit-tuplize to run the jobs
+            inside the denv
+- tritrig/ : directory holding tritrig bkgd tuples
+- wab/ : directory holding the wab bkgd tuples
+
+Setup
+-----
+Compile and install hpstr inside the denv.
+
+  denv
+  cd ~/hpstr
+  git fetch && git checkout dev/ptrless && git pull
+  cmake -B build -S . -DCMAKE_INSTALL_PREFIX=${HOME}/.local
+  cmake --build build --target install
+
+*Note*: Make sure to enter the denv from the full path to
+the directory so that the paths within the denv are accurate
+to the paths outside the denv.
+
+Submit
+------
+The reconstructed bkgd MC I'm using is at
+  
+  /sdf/group/hps/mc/2pt3GeV/HPS-PhysicsRun2016-Pass2/{tritrig,wab}/ecal_trig_res
+
+In the tritrig/wab subdirectory, the slcio directory is a symlink to
+these directories generated and reconstructed by other HPS folks.
+Below <bkgd> is a stand-in for tritrig or wab.
+
+  cd <bkgd>
+  mkdir -p logs tuples
+
+Count the number of input files.
+
+  find slcio -type f -name "*.slcio" | wc -l
+
+As of 2023-07-28, the numbers are
+
+  sample  | number of files
+  tritrig | 9755
+  wab     | 9769
+
+This is a massive number of small files. We may want to merge them
+to make processing more efficient. Anyways, we submit using the special
+sbatch wrapper script which keeps the number of jobs to the user limit
+of 250 at any one time.
+
+  ../sbatch --output=logs/%A-%a.out ../submit-tuplize <N-bkgd> slcio tuples
