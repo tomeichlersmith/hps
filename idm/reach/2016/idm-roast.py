@@ -14,6 +14,18 @@ import hist
 from hist.axis import Regular
 from coffea import processor
 
+
+def recursive_repr(d):
+    if isinstance(d, dict):
+        return {
+            recursive_repr(k): recursive_repr(v)
+            for k,v in d.items()
+        }
+    elif isinstance(d, (int,float,str)):
+        return d
+    return repr(d)    
+
+
 class iDM_Reco(processor.ProcessorABC):
     def __init__(self):
         pass
@@ -69,80 +81,93 @@ class iDM_Reco(processor.ProcessorABC):
         # fill histograms for sensitivity analysis
         histograms['vtxz'].fill(vtxz)
 
-        plist = os.path.basename(events.metadata['filename'])[:-5].split('_')
-        params = {plist[i]:plist[i+1] for i in range(0,len(plist),2)}
+        # convert '_'-separated parameters in filename into a dictionary
+        #   assumes filename is <key0>_<val0>_<key1>_<val1>_...<keyN>_<valN>.root
+        #plist = os.path.basename(events.metadata['filename'])[:-5].split('_')
+        #params = {plist[i]:plist[i+1] for i in range(0,len(plist),2)}
 
-        sample = events.metadata['dataset']
-        if sample not in ['tritrig','wab']:
-            sample = f'{sample}-mchi-{params["mchi"]}'
-
-        return { sample : histograms }
+        return { events.metadata['dataset'] : histograms }
 
     def postprocess(self, accumulator):
         pass
 
-def recursive_repr(d):
-    if isinstance(d, dict):
-        return {
-            recursive_repr(k): recursive_repr(v)
-            for k,v in d.items()
+    def run(
+        output_name : Path, 
+        ncores: Optional[int] = 1, 
+        quiet: Optional[bool] = True, 
+        test: Optional[bool] = False
+    ):
+        base_directory = Path('/sdf/group/hps/users/eichl008/hps/idm/reach/2016/')
+        dataset = {
+            'rmap-3.00-rdmchi-0.60-mchi-030': {
+              'files': [
+                str(f)
+                for f in (
+                  base_directory / 'rmap-3.00-rdmchi-0.60-mchi-030' / 'output' / 
+                  'recon' / 'HPS-PhysicsRun2016-Pass2'
+                ).iterdir()
+                if f.suffix == '.root'
+              ], 
+              'metadata': {'isMC': True}
+            },
+            'tritrig': {
+              'files': [
+                str(f)
+                for f in (base_directory / 'bkgd' / 'tritrig' / 'tuples').iterdir()
+                if f.suffix == '.root'
+              ],
+              'metadata': {'isMC': True}
+            },
+            'wab': {
+              'files': [
+                str(f)
+                for f in (base_directory / 'bkgd' / 'wab' / 'tuples').iterdir()
+                if f.suffix == '.root'
+              ],
+              'metadata': {'isMC': True}
+            }
         }
-    elif isinstance(d, (int,float,str)):
-        return d
-    return repr(d)    
+    
+        if test:
+            for entry in dataset:
+                dataset[entry]['files'] = dataset[entry]['files'][:2]
+        else:
+            # BAD - need to figure out how to get coffea to ignore branches
+            import warnings
+            warnings.filterwarnings('ignore')
+    
+        p = iDM_Reco()
+    
+        executor = (
+            processor.IterativeExecutor() if test else 
+            processor.FuturesExecutor(workers = ncores, compression = None)
+        )
+    
+        runner = processor.Runner(
+            executor = executor,
+            schema = BaseSchema,
+        )
+    
+        out = runner(
+            dataset,
+            treename = 'HPS_Event',
+            processor_instance = p,
+        )
+    
+        with open(output_name, 'wb') as outf:
+            pickle.dump(out, outf)
+    
+        print(json.dumps(recursive_repr(out), indent=2))
+
 
 if __name__ == '__main__':
-    output_name = 'test.pkl'
-    import multiprocessing
-    ncores = multiprocessing.cpu_count()
-    quiet = True
-    test = False
+    import argparse
 
-    base_directory = Path('/export/scratch/users/eichl008/hps/idm/reach/2016/')
-    dataset = {
-        'rmap-3.00-rdmchi-0.60': {
-          'files': [
-            str(f)
-            for f in (base_directory / 'rmap-3.00-rdmchi-0.60' / 'recon' / 'HPS-PhysicsRun2016-Pass2').iterdir()
-            if f.suffix == '.root'
-          ], 
-          'metadata': {'isMC': True}
-        },
-        'tritrig': {
-          'files': [
-            str(f)
-            for f in (base_directory / 'bkgd').iterdir()
-            if f.suffix == '.root'
-          ],
-          'metadata': {'isMC': True}
-        }
-    }
+    parser = argparse.ArgumentParser()
+    parser.add_argument('output_name', type=Path, help='output pickle file to save histograms to')
+    parser.add_argument('--n-cores', '-j', type=int, help='number of cores to use during processing', default=4)
+    parser.add_argument('--test', action='store_true', help='just a test run, decrease number of files')
 
-    if not test:
-        # BAD - need to figure out how to get coffea to ignore branches
-        import warnings
-        warnings.filterwarnings('ignore')
+    args = parser.parse_args()
 
-    p = iDM_Reco()
-
-    executor = (
-        processor.IterativeExecutor() if test else 
-        processor.FuturesExecutor(workers = ncores, compression = None)
-    )
-
-    runner = processor.Runner(
-        executor = executor,
-        schema = BaseSchema,
-    )
-
-    out = runner(
-        dataset,
-        treename = 'HPS_Event',
-        processor_instance = p,
-    )
-
-    with open(output_name, 'wb') as outf:
-        pickle.dump(out, outf)
-
-    print(json.dumps(recursive_repr(out), indent=2))
-
+    iDM_Reco.run(args.output_name, args.n_cores, True, args.test)
