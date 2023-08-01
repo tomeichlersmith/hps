@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from typing import Optional
 
+import numpy as np
 import awkward as ak
 from coffea.nanoevents import NanoEventsFactory, BaseSchema
 from coffea.analysis_tools import Weights
@@ -14,8 +15,7 @@ import hist
 from hist.axis import Regular
 from coffea import processor
 
-import vector
-vector.register_awkward()
+from idmload import VertexReformatter
 
 def recursive_repr(d):
     if isinstance(d, dict):
@@ -28,75 +28,34 @@ def recursive_repr(d):
     return repr(d)    
 
 
-class VertexReformatter:
-    def __init__(self, events, vertex_coll = 'UnconstrainedV0Vertices_KF'):
-        self.vertex_coll = vertex_coll
-        self.events = events
-    
-    def _branch(self, name):
-        return ak.flatten(self.events[f'{self.vertex_coll}/{self.vertex_coll}.{name}'])
-    
-    def _three_vector(self, pre_coord, post_coord):
-        return ak.zip({
-            c : self._branch(f'{pre_coord}{c}{post_coord}')
-            for c in ['x','y','z']
-        }, with_name = 'Vector3D')
-  
-    def track(self, name):
-        trk_dict = {
-            m : self._branch(f'{name}_.track_.{m}_')
-            for m in [
-                'n_hits','track_volume','type','d0','phi0',
-                'omega','tan_lambda','z0','chi2','ndf','track_time',
-                'id','charge','nShared','SharedLy0','SharedLy1'
-            ]
-        }
-        #trk_dict.update({
-        #    m : branch(f'{name}_.track_.{m}_[14]')
-        #    for m in ['isolation','lambda_kinks','phi_kinks']
-        #})
-        trk_dict.update({
-            'p' : self._three_vector(f'{name}_.track_.p','_'),
-            'pos_at_ecal': self._three_vector(f'{name}_.track_.','_at_ecal_')
-        })
-        return ak.zip(trk_dict, with_name = 'Track')
-    
-    def cluster(self, name):
-        clu_dict = {
-            m : self._branch(f'{name}_.cluster_.{m}_')
-            for m in ['seed_hit','x','y','z','energy','time']
-        }
-        return ak.zip(clu_dict, with_name = 'Cluster')
-    
-    def particle(self, name):
-        the_dict = {
-            m : self._branch(f'{name}_.{m}_')
-            for m in ['charge','type','pdg','goodness_pid','energy','mass']
-        }
-        the_dict.update({
-            'p' : self._three_vector(f'{name}_.p','_'),
-            'p_corr' : self._three_vector(f'{name}_.p','_corr_'),
-            'track': self.track(name),
-            'cluster': self.cluster(name)
-        })
-        return ak.zip(the_dict, with_name = 'Particle')
-    
-    def vertex(self):
-        vtx_dict = {
-            m : self._branch(f'{m}_')
-            for m in [
-                'chi2','ndf','pos','p1','p2','p','invM','invMerr',
-                #'covariance', leave out for now since it messes up form
-                'probability','id','type']
-        }
-        vtx_dict.update({
-            p : self.particle(p)
-            for p in ['electron','positron']
-        })
-        return ak.zip(vtx_dict, with_name='Vertex')
+def cutflow(selection: PackedSelection, initial_name = 'no_cuts'):
+    """generate a cutflow histogram from the passed PackedSelection"""
+    h = hist.Hist(
+        hist.axis.StrCategory(
+            [initial_name]+selection.names,
+            name = 'cut'
+        )
+    )
+    for i, cut in enumerate(h.axes[0]):
+        # this doesn't allow the variances to be calculated
+        # the easiest way around this would be to use the fill
+        # method in someway
+        h[cut] = ak.sum(selection.require(**{
+            c : True
+            for j, c in enumerate(selection.names)
+            if j < i
+        }))
+    return h
 
-    def __call__(self):
-        return self.vertex()
+
+def safe_divide(numerator: np.array, denominator: np.array, *, fill_value = np.nan):
+    if isinstance(denominator, ak.Array):
+        denominator = denominator.to_numpy()
+    if isinstance(numerator, ak.Array):
+        numerator = numerator.to_numpy()
+    result = np.full(len(denominator), fill_value, dtype = denominator.dtype)
+    result[denominator > 0] = numerator[denominator > 0] / denominator[denominator > 0]
+    return result
 
 class iDM_Reco(processor.ProcessorABC):
     def __init__(self):
@@ -132,19 +91,36 @@ class iDM_Reco(processor.ProcessorABC):
         )
 
         vertex = VertexReformatter(events[event_selection.all()])()
+
+        cal_time_offset = 43.0 if events.metadata['isMC'] else 56.0
         
         vtx_selection = PackedSelection()
-        vtx_selection.add(
-            'ele_trk_time',
-            vertex.electron.track.track_time < 10
+        vtx_selection.add('ele_trk_time', vertex.electron.track.time < 10)
+        vtx_selection.add('pos_trk_time', vertex.positron.track.time < 10)
+        vtx_selection.add('ele_trk_clu_match', vertex.electron.goodness_pid < 10)
+        vtx_selection.add('pos_trk_clu_match', vertex.positron.goodness_pid < 10)
+        vtx_selection.add('ele_trk_clu_tdiff',
+            abs(vertex.electron.track.time - (vertex.electron.cluster.time - cal_time_offset)) < 4
         )
-        vtx_selection.add(
-            'pos_trk_time',
-            vertex.positron.track.track_time < 10
+        vtx_selection.add('pos_trk_clu_tdiff',
+            abs(vertex.positron.track.time - (vertex.positron.cluster.time - cal_time_offset)) < 4
         )
+        vtx_selection.add('ele_pos_clu_tdiff',
+            abs(vertex.electron.cluster.time - vertex.positron.cluster.time) < 1.45
+        )
+        vtx_selection.add('ele_trk_chi2_ndf', 
+            safe_divide(vertex.electron.track.chi2, vertex.electron.track.ndf, fill_value = 9000) < 6
+        )
+        vtx_selection.add('pos_trk_chi2_ndf',
+            safe_divide(vertex.positron.track.chi2, vertex.positron.track.ndf, fill_value = 9000) < 6
+        )
+        vtx_selection.add('ele_n_shared', vertex.electron.track.nShared < 4)
+        vtx_selection.add('pos_n_shared', vertex.positron.track.nShared < 4)
 
         # fill histograms for sensitivity analysis
         histograms['vtxz'].fill(vertex[vtx_selection.all()].pos.fZ)
+        histograms['event_cutflow'] = cutflow(event_selection, initial_name = 'all_events')
+        histograms['vtx_cutflow'] = cutflow(vtx_selection, initial_name = 'all_vertices')
 
         # convert '_'-separated parameters in filename into a dictionary
         #   assumes filename is <key0>_<val0>_<key1>_<val1>_...<keyN>_<valN>.root
@@ -174,7 +150,7 @@ class iDM_Reco(processor.ProcessorABC):
             'tritrig': {
               'files': [
                 str(f)
-                for f in (base_directory / 'bkgd' / 'tritrig').iterdir()
+                for f in (base_directory / 'bkgd' / 'tritrig' / 'tuples').iterdir()
                 if f.suffix == '.root'
               ],
               'metadata': {'isMC': True}
@@ -182,7 +158,7 @@ class iDM_Reco(processor.ProcessorABC):
             'wab': {
               'files': [
                 str(f)
-                for f in (base_directory / 'bkgd' / 'wab').iterdir()
+                for f in (base_directory / 'bkgd' / 'wab' / 'tuples').iterdir()
                 if f.suffix == '.root'
               ],
               'metadata': {'isMC': True}
