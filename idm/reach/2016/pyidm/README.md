@@ -5,7 +5,10 @@ This is a `pip`-installable python package; however, it will never be published 
 because all of its users are expected to be its developers as well.
 
 ## Dependencies
-Using `pip` to install this package whereever you wish will handle the python packages.
+Using `pip` to install this package will handle the python packages.
+An indirect dependency of this analysis toolchain is a specific method
+for tuplization of HPS data. This tuplization method is done on
+[my fork of hpstr](https://github.com/tomeichlersmith/hpstr/tree/ptrless).
 
 ## Install
 Install an "editable" version of this package so
