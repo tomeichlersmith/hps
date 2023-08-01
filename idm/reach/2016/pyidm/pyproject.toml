@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools>=43.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hps_align"
+version = "0.0.1"
+description = "HPS Alignment Helpers"
+readme = "README.md"
+requires-python = ">=3.6"
+dependencies = []

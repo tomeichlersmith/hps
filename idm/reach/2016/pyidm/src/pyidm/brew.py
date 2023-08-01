@@ -15,7 +15,7 @@ import hist
 from hist.axis import Regular
 from coffea import processor
 
-from idmload import VertexReformatter
+from .roast import VertexReformatter
 
 def recursive_repr(d):
     if isinstance(d, dict):
