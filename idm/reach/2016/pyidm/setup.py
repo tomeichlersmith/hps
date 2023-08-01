@@ -48,7 +48,8 @@ setup(
     ],
     extras_require={  # Optional
         "dev": [
-          "pycodestyle"
+          "pycodestyle",
+          "autopep8"
         ],
     },
     #entry_points={  # Optional
