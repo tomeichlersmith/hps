@@ -14,6 +14,8 @@ import hist
 from hist.axis import Regular
 from coffea import processor
 
+import vector
+vector.register_awkward()
 
 def recursive_repr(d):
     if isinstance(d, dict):
@@ -26,6 +28,76 @@ def recursive_repr(d):
     return repr(d)    
 
 
+class VertexReformatter:
+    def __init__(self, events, vertex_coll = 'UnconstrainedV0Vertices_KF'):
+        self.vertex_coll = vertex_coll
+        self.events = events
+    
+    def _branch(self, name):
+        return ak.flatten(self.events[f'{self.vertex_coll}/{self.vertex_coll}.{name}'])
+    
+    def _three_vector(self, pre_coord, post_coord):
+        return ak.zip({
+            c : self._branch(f'{pre_coord}{c}{post_coord}')
+            for c in ['x','y','z']
+        }, with_name = 'Vector3D')
+  
+    def track(self, name):
+        trk_dict = {
+            m : self._branch(f'{name}_.track_.{m}_')
+            for m in [
+                'n_hits','track_volume','type','d0','phi0',
+                'omega','tan_lambda','z0','chi2','ndf','track_time',
+                'id','charge','nShared','SharedLy0','SharedLy1'
+            ]
+        }
+        #trk_dict.update({
+        #    m : branch(f'{name}_.track_.{m}_[14]')
+        #    for m in ['isolation','lambda_kinks','phi_kinks']
+        #})
+        trk_dict.update({
+            'p' : self._three_vector(f'{name}_.track_.p','_'),
+            'pos_at_ecal': self._three_vector(f'{name}_.track_.','_at_ecal_')
+        })
+        return ak.zip(trk_dict, with_name = 'Track')
+    
+    def cluster(self, name):
+        clu_dict = {
+            m : self._branch(f'{name}_.cluster_.{m}_')
+            for m in ['seed_hit','x','y','z','energy','time']
+        }
+        return ak.zip(clu_dict, with_name = 'Cluster')
+    
+    def particle(self, name):
+        the_dict = {
+            m : self._branch(f'{name}_.{m}_')
+            for m in ['charge','type','pdg','goodness_pid','energy','mass']
+        }
+        the_dict.update({
+            'p' : self._three_vector(f'{name}_.p','_'),
+            'p_corr' : self._three_vector(f'{name}_.p','_corr_'),
+            'track': self.track(name),
+            'cluster': self.cluster(name)
+        })
+        return ak.zip(the_dict, with_name = 'Particle')
+    
+    def vertex(self):
+        vtx_dict = {
+            m : self._branch(f'{m}_')
+            for m in [
+                'chi2','ndf','pos','p1','p2','p','invM','invMerr',
+                #'covariance', leave out for now since it messes up form
+                'probability','id','type']
+        }
+        vtx_dict.update({
+            p : self.particle(p)
+            for p in ['electron','positron']
+        })
+        return ak.zip(vtx_dict, with_name='Vertex')
+
+    def __call__(self):
+        return self.vertex()
+
 class iDM_Reco(processor.ProcessorABC):
     def __init__(self):
         pass
@@ -33,7 +105,6 @@ class iDM_Reco(processor.ProcessorABC):
     def process(self, events):
         """Process a chunk of reconstructed events
         """
-
 
         histograms = {
             name : hist.Hist(ax)
@@ -59,27 +130,21 @@ class iDM_Reco(processor.ProcessorABC):
             'singlevtx',
             nvtxs==1
         )
-        
-        ele_trk_time = events['UnconstrainedV0Vertices_KF/UnconstrainedV0Vertices_KF.electron_.track_.track_time_']
-        pos_trk_time = events['UnconstrainedV0Vertices_KF/UnconstrainedV0Vertices_KF.positron_.track_.track_time_']
+
+        vertex = VertexReformatter(events[event_selection.all()])()
         
         vtx_selection = PackedSelection()
         vtx_selection.add(
             'ele_trk_time',
-            ak.flatten(ele_trk_time[event_selection.all()] < 10)
+            vertex.electron.track.track_time < 10
         )
         vtx_selection.add(
             'pos_trk_time',
-            ak.flatten(pos_trk_time[event_selection.all()] < 10)
+            vertex.positron.track.track_time < 10
         )
 
-        vtxz = ak.flatten(
-            events['UnconstrainedV0Vertices_KF/UnconstrainedV0Vertices_KF.pos_'] \
-                .fZ[event_selection.all()]
-        )[vtx_selection.all()]
-
         # fill histograms for sensitivity analysis
-        histograms['vtxz'].fill(vtxz)
+        histograms['vtxz'].fill(vertex[vtx_selection.all()].pos.fZ)
 
         # convert '_'-separated parameters in filename into a dictionary
         #   assumes filename is <key0>_<val0>_<key1>_<val1>_...<keyN>_<valN>.root
@@ -97,23 +162,19 @@ class iDM_Reco(processor.ProcessorABC):
         quiet: Optional[bool] = True, 
         test: Optional[bool] = False
     ):
-        base_directory = Path('/sdf/group/hps/users/eichl008/hps/idm/reach/2016/')
+        #base_directory = Path('/sdf/group/hps/users/eichl008/hps/idm/reach/2016/')
+        base_directory = Path('/local/cms/user/eichl008/hps/idm')
         dataset = {
             'rmap-3.00-rdmchi-0.60-mchi-030': {
               'files': [
-                str(f)
-                for f in (
-                  base_directory / 'rmap-3.00-rdmchi-0.60-mchi-030' / 'output' / 
-                  'recon' / 'HPS-PhysicsRun2016-Pass2'
-                ).iterdir()
-                if f.suffix == '.root'
+                str(base_directory / 'signal' / 'idm_2pt3_mchi_030_rmap_3.00_rdmchi_0.60_nruns_200_nevents_10k.root')
               ], 
               'metadata': {'isMC': True}
             },
             'tritrig': {
               'files': [
                 str(f)
-                for f in (base_directory / 'bkgd' / 'tritrig' / 'tuples').iterdir()
+                for f in (base_directory / 'bkgd' / 'tritrig').iterdir()
                 if f.suffix == '.root'
               ],
               'metadata': {'isMC': True}
@@ -121,7 +182,7 @@ class iDM_Reco(processor.ProcessorABC):
             'wab': {
               'files': [
                 str(f)
-                for f in (base_directory / 'bkgd' / 'wab' / 'tuples').iterdir()
+                for f in (base_directory / 'bkgd' / 'wab').iterdir()
                 if f.suffix == '.root'
               ],
               'metadata': {'isMC': True}
