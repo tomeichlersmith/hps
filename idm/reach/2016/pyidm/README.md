@@ -15,6 +15,12 @@ you can make changes without having to re-install.
 ```
 python3 -m pip install -e .
 ```
+Usually, this module will also be used with jupyter notebooks
+for event inspection and plotting so it is also suggested to
+install jupyter lab and plotting tools in the same python venv.
+```
+pip install jupyterlab matplotlib hist[plot]
+```
 
 ## Usage
 Now that this package is "installed", you can run it from anywhere!
