@@ -82,6 +82,66 @@ class VertexReformatter:
     def __call__(self):
         return self.vertex()
 
+def mc_particles(events, coll = 'MCParticle'):
+    def _branch(name):
+        return events[f'{coll}/{coll}.{name}']
+    
+    the_dict = {
+        m : _branch(f'{m}_')
+        for m in [
+            'id', 'charge', 'pdg', 'momPDG', 'gen',
+            'sim', 'mass'
+        ]
+    }
+    the_dict.update({
+        'p' : ak.zip({
+            'px' : _branch('px_'),
+            'py' : _branch('py_'),
+            'pz' : _branch('pz_'),
+            'energy' : _branch('energy_'),
+        }, with_name = 'Momentum4D'),
+        'p_ep' : ak.zip({
+            'px' : _branch('px_ep'),
+            'py' : _branch('py_ep'),
+            'pz' : _branch('pz_ep'),
+        }, with_name = 'Momentum3D'),
+        'vtx' : ak.zip({
+            'time': _branch('time_'),
+            'x': _branch('vtx_x_'),
+            'y': _branch('vtx_y_'),
+            'z': _branch('vtx_z_')
+        }, with_name = 'Vector4D'),
+        'ep': ak.zip({
+            'x': _branch('ep_x_'),
+            'y': _branch('ep_y_'),
+            'z': _branch('ep_z_'),
+        }, with_name = 'Vector3D')
+    })
+    return ak.zip(the_dict, with_name = 'MCParticle')
+
+
+def mc_tracker_hits(events, coll = 'TrackerHits'):
+    def _branch(name):
+        return events[f'{coll}/{coll}.{name}_']
+    the_dict = {
+        m : _branch(m)
+        for m in ['layer', 'module', 'edep', 'pdg']
+    }
+    the_dict.update({
+        'pos' : ak.zip({
+            c : _branch(c)
+            for c in ['x','y','z','time']
+        }, with_name = 'Vector4D')
+    })
+    return ak.zip(the_dict, with_name='TrackerHit')
+
+
+def mc_ecal_hits(events, coll = 'EcalHits'):
+    return ak.zip({
+        m : events[f'{coll}/{coll}.{m}_']
+        for m in ['x', 'y', 'z', 'system', 'ix', 'iy', 'energy']
+    }, with_name = 'EcalHit')
+
 
 def from_root(fp, **kwargs):
     """Mimic the load mechanism of coffea so we can test VertexReformatter
