@@ -17,7 +17,7 @@ class VertexReformatter:
         self.events = events
 
     def _branch(self, name):
-        return ak.flatten(self.events[f'{self.vertex_coll}/{self.vertex_coll}.{name}'])
+        return self.events[f'{self.vertex_coll}/{self.vertex_coll}.{name}']
 
     def _three_vector(self, pre_coord, post_coord):
         return ak.zip({
