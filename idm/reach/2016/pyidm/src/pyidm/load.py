@@ -1,7 +1,9 @@
 """load iDM (or iDM-related) events into awkward"""
 
+from dataclasses import dataclass, field
+from collections.abc import Callable
+
 import awkward as ak
-from coffea.nanoevents import NanoEventsFactory, BaseSchema
 
 import vector
 vector.register_awkward()
@@ -17,7 +19,7 @@ class VertexReformatter:
         self.events = events
 
     def _branch(self, name):
-        return self.events[f'{self.vertex_coll}/{self.vertex_coll}.{name}']
+        return self.events[f'{self.vertex_coll}.{name}']
 
     def _three_vector(self, pre_coord, post_coord):
         return ak.zip({
@@ -85,7 +87,7 @@ class VertexReformatter:
 
 def mc_particles(events, coll='MCParticle'):
     def _branch(name):
-        return events[f'{coll}/{coll}.{name}']
+        return events[f'{coll}.{name}']
 
     the_dict = {
         m: _branch(f'{m}_')
@@ -123,7 +125,7 @@ def mc_particles(events, coll='MCParticle'):
 
 def mc_tracker_hits(events, coll='TrackerHits'):
     def _branch(name):
-        return events[f'{coll}/{coll}.{name}_']
+        return events[f'{coll}.{name}_']
     the_dict = {
         m: _branch(m)
         for m in ['layer', 'module', 'edep', 'pdg']
@@ -139,23 +141,79 @@ def mc_tracker_hits(events, coll='TrackerHits'):
 
 def mc_ecal_hits(events, coll='EcalHits'):
     return ak.zip({
-        m: events[f'{coll}/{coll}.{m}_']
+        m: events[f'{coll}.{m}_']
         for m in ['x', 'y', 'z', 'system', 'ix', 'iy', 'energy']
     }, with_name='EcalHit')
-
-
-def from_root(fp, **kwargs):
-    """Mimic the load mechanism of coffea so we can test VertexReformatter
-    and inspect the resulting events in a jupyter notebook
-    """
-    return NanoEventsFactory.from_root(
-        fp, 'HPS_Event',
-        schemaclass=BaseSchema,
-        **kwargs
-    ).events()
 
 
 def vertices(fp, vertex_coll='UnconstrainedV0Vertices_KF', **kwargs):
     events = from_root(fp, **kwargs)
     nvtxs = ak.count(events[f'{vertex_coll}/{vertex_coll}.fUniqueID'], axis=1)
     return VertexReformatter(events[nvtxs == 1], vertex_coll=vertex_coll)()
+
+
+def identity_reformat(a):
+    return a
+
+
+def recursplit(the_dict, fieldname, array):
+    """Recursively split a field by '.' into subfields
+    inserting new dicts along the way eventually inserting
+    the array itself
+
+    Parameters
+    ----------
+    the_dict: dict
+        dictionary we will be reading and writing
+    fieldname: str
+        fieldname to split
+    array: ak.Array
+        array that field is naming
+    """
+    subfields = fieldname.split('.', maxsplit=1)
+    if len(subfields) == 1:
+        if subfields[0] in the_dict:
+            raise Exception('Two fields deduced to the same tree location.')
+        the_dict[subfields[0]] = array
+    else:
+        if subfields[0] not in the_dict:
+            the_dict[subfields[0]] = {}
+        recursplit(the_dict[subfields[0]], subfields[1], array)
+
+
+def hps_reformat(events):
+    hps_dict = {
+        name : events[name] 
+        for name in events.fields 
+        if '.' not in name 
+    }
+    if any(['UnconstrainedV0Vertices_KF' in f for f in events.fields]):
+        hps_dict['vertex'] = VertexReformatter(events)()
+    if any(['MCParticle' in f for f in events.fields]):
+        hps_dict['mc_particle'] = mc_particles(events)
+    #if any(['TrackerHits' in f for f in events.fields]):
+    #    hps_dict['mc_tracker_hits'] = mc_tracker_hits(events)
+    #if any(['EcalHits' in f for f in events.fields]):
+    #    hps_dict['mc_ecal_hits'] = mc_ecal_hits(events)
+    return ak.zip(hps_dict, depth_limit=1)
+
+
+@dataclass
+class FromROOT:
+    treename: str
+    open_kw: dict = field(default_factory=dict)
+    arrays_kw: dict = field(default_factory=dict)
+    reformatter: Callable = field(default=identity_reformat)
+
+    def __call__(self, fp):
+        import uproot
+        with uproot.open(fp, **self.open_kw) as f:
+            events = f[self.treename].arrays(**self.arrays_kw)
+        return self.reformatter(events)
+
+
+    @staticmethod
+    def hps(**kwargs):
+        if 'reformatter' not in kwargs:
+            kwargs['reformatter'] = hps_reformat
+        return FromROOT('HPS_Event', **kwargs)

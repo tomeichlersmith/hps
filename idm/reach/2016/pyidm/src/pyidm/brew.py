@@ -13,7 +13,6 @@ from coffea.analysis_tools import PackedSelection
 from coffea.processor import accumulate
 import hist
 from hist.axis import Regular
-from coffea import processor
 
 from .roast import VertexReformatter
 
