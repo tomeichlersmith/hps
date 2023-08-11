@@ -9,80 +9,77 @@ import vector
 vector.register_awkward()
 
 
-class VertexReformatter:
-    """This class restructures the in-memory awkward event array into
-    a better-structture awkward array with some vector behaviors attached
-    """
+def _three_vector(branch_fn, pre_coord, post_coord = ''):
+    return ak.zip({
+        c: branch_fn(f'{pre_coord}{c}{post_coord}')
+        for c in ['x', 'y', 'z']
+    }, with_name='Vector3D')
 
-    def __init__(self, events, vertex_coll='UnconstrainedV0Vertices_KF'):
-        self.vertex_coll = vertex_coll
-        self.events = events
 
-    def _branch(self, name):
-        return self.events[f'{self.vertex_coll}.{name}']
+def track(events, coll = 'KalmanFullTracks'):
+    def _branch(name):
+        return events[f'{coll}.{name}_']
+    trk_dict = {
+        m: _branch(m)
+        for m in [
+            'n_hits', 'track_volume', 'type', 'd0', 'phi0',
+            'omega', 'tan_lambda', 'z0', 'chi2', 'ndf',
+            'id', 'charge', 'nShared', 'SharedLy0', 'SharedLy1'
+        ]
+    }
+    # trk_dict.update({
+    #    m : branch(f'{name}_.track_.{m}_[14]')
+    #    for m in ['isolation','lambda_kinks','phi_kinks']
+    # })
+    trk_dict.update({
+        'time': _branch('track_time'),
+        'p': _three_vector(_branch, 'p', ''),
+        'pos_at_ecal': _three_vector(_branch, '', '_at_ecal')
+    })
+    return ak.zip(trk_dict, with_name='Track')
 
-    def _three_vector(self, pre_coord, post_coord):
-        return ak.zip({
-            c: self._branch(f'{pre_coord}{c}{post_coord}')
-            for c in ['x', 'y', 'z']
-        }, with_name='Vector3D')
 
-    def track(self, name):
-        trk_dict = {
-            m: self._branch(f'{name}_.track_.{m}_')
-            for m in [
-                'n_hits', 'track_volume', 'type', 'd0', 'phi0',
-                'omega', 'tan_lambda', 'z0', 'chi2', 'ndf',
-                'id', 'charge', 'nShared', 'SharedLy0', 'SharedLy1'
-            ]
-        }
-        # trk_dict.update({
-        #    m : branch(f'{name}_.track_.{m}_[14]')
-        #    for m in ['isolation','lambda_kinks','phi_kinks']
-        # })
-        trk_dict.update({
-            'time': self._branch(f'{name}_.track_.track_time_'),
-            'p': self._three_vector(f'{name}_.track_.p', '_'),
-            'pos_at_ecal': self._three_vector(f'{name}_.track_.', '_at_ecal_')
-        })
-        return ak.zip(trk_dict, with_name='Track')
+def cluster(events, coll = 'RecoEcalClusters'):
+    def _branch(name):
+        return events[f'{coll}.{name}_']
+    return ak.zip({
+        m : _branch(m)
+        for m in ['seed_hit', 'x', 'y', 'z', 'energy', 'time']
+    }, with_name='Cluster')
 
-    def cluster(self, name):
-        clu_dict = {
-            m: self._branch(f'{name}_.cluster_.{m}_')
-            for m in ['seed_hit', 'x', 'y', 'z', 'energy', 'time']
-        }
-        return ak.zip(clu_dict, with_name='Cluster')
 
-    def particle(self, name):
-        the_dict = {
-            m: self._branch(f'{name}_.{m}_')
-            for m in ['charge', 'type', 'pdg', 'goodness_pid', 'energy', 'mass']
-        }
-        the_dict.update({
-            'p': self._three_vector(f'{name}_.p', '_'),
-            'p_corr': self._three_vector(f'{name}_.p', '_corr_'),
-            'track': self.track(name),
-            'cluster': self.cluster(name)
-        })
-        return ak.zip(the_dict, with_name='Particle')
+def reco_particle(events, coll = 'FinalStateParticles'):
+    def _branch(name):
+        return events[f'{coll}.{name}_']
+    the_dict = {
+        m: _branch(m)
+        for m in ['charge', 'type', 'pdg', 'goodness_pid', 'energy', 'mass']
+    }
+    the_dict.update({
+        'p': _three_vector(_branch, 'p'),
+        'p_corr': _three_vector(_branch, 'p', '_corr'),
+        'track': track(events, coll=f'{coll}.track_'),
+        'cluster': cluster(events, coll=f'{coll}.cluster_')
+    })
+    return ak.zip(the_dict, with_name='Particle')
 
-    def vertex(self):
-        vtx_dict = {
-            m: self._branch(f'{m}_')
-            for m in [
-                'chi2', 'ndf', 'pos', 'p1', 'p2', 'p', 'invM', 'invMerr',
-                # 'covariance', leave out for now since it messes up form
-                'probability', 'id', 'type']
-        }
-        vtx_dict.update({
-            p: self.particle(p)
-            for p in ['electron', 'positron']
-        })
-        return ak.zip(vtx_dict, with_name='Vertex')
 
-    def __call__(self):
-        return self.vertex()
+def vertex(events, coll = 'UnconstrainedV0Vertices_KF'):
+    def _branch(name):
+        return events[f'{coll}.{name}_']
+    the_dict = {
+        m: _branch(m)
+        for m in [
+            'chi2', 'ndf', 'pos', 'p1', 'p2', 'p', 'invM', 'invMerr',
+            # 'covariance', leave out for now since it messes up form
+            'probability', 'id', 'type'
+        ]
+    }
+    the_dict.update({
+        name: reco_particle(events, coll=f'{coll}.{name}_')
+        for name in ['electron', 'positron']
+    })
+    return ak.zip(the_dict, with_name = 'Vertex')
 
 
 def mc_particles(events, coll='MCParticle'):
@@ -146,12 +143,6 @@ def mc_ecal_hits(events, coll='EcalHits'):
     }, with_name='EcalHit')
 
 
-def vertices(fp, vertex_coll='UnconstrainedV0Vertices_KF', **kwargs):
-    events = from_root(fp, **kwargs)
-    nvtxs = ak.count(events[f'{vertex_coll}/{vertex_coll}.fUniqueID'], axis=1)
-    return VertexReformatter(events[nvtxs == 1], vertex_coll=vertex_coll)()
-
-
 def identity_reformat(a):
     return a
 
@@ -187,12 +178,9 @@ def hps_mc_reformat(events):
         for name in events.fields 
         if '.' not in name 
     }
-    if any(['MCParticle' in f for f in events.fields]):
-        hps_dict['mc_particle'] = mc_particles(events)
-    if any(['TrackerHits' in f for f in events.fields]):
-        hps_dict['mc_tracker_hits'] = mc_tracker_hits(events)
-    if any(['EcalHits' in f for f in events.fields]):
-        hps_dict['mc_ecal_hits'] = mc_ecal_hits(events)
+    hps_dict['mc_particle'] = mc_particles(events)
+    hps_dict['mc_tracker_hits'] = mc_tracker_hits(events)
+    hps_dict['mc_ecal_hits'] = mc_ecal_hits(events)
     return ak.zip(hps_dict, depth_limit=1)
 
 
@@ -202,10 +190,10 @@ def hps_reco_reformat(events):
         for name in events.fields 
         if '.' not in name 
     }
-    if any(['UnconstrainedV0Vertices_KF' in f for f in events.fields]):
-        hps_dict['vertex'] = VertexReformatter(events)()
-    if any(['MCParticle' in f for f in events.fields]):
-        hps_dict['mc_particle'] = mc_particles(events)
+    hps_dict['vertex'] = vertex(events)
+    hps_dict['track'] = track(events)
+    hps_dict['cluster'] = cluster(events)
+    hps_dict['mc_particle'] = mc_particles(events)
     return ak.zip(hps_dict, depth_limit=1)
 
 
