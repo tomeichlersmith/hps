@@ -1,6 +1,7 @@
 """Multiple File, Single Analysis"""
 
 from multiprocessing import Pool
+from typing import Callable, Iterable, Optional
 
 from .accumulator import accumulate
 

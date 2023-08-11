@@ -12,6 +12,7 @@ except ImportError:
     from typing import runtime_checkable
 
 import numpy
+import pandas
 
 T = TypeVar("T")
 
@@ -54,15 +55,11 @@ def add(a: Accumulatable, b: Accumulatable) -> Accumulatable:
             else:
                 out[key] = (
                     copy.deepcopy(a[key])
-                    if not isinstance(a[key], DaskMethodsMixin)
-                    else copy.copy(a[key])
                 )
         for key in b:
             if key not in lhs:
                 out[key] = (
                     copy.deepcopy(b[key])
-                    if not isinstance(b[key], DaskMethodsMixin)
-                    else copy.copy(b[key])
                 )
         return out
     raise ValueError(
@@ -90,8 +87,6 @@ def iadd(a: Accumulatable, b: Accumulatable) -> Accumulatable:
             if key not in lhs:
                 a[key] = (
                     copy.deepcopy(b[key])
-                    if not isinstance(b[key], DaskMethodsMixin)
-                    else copy.copy(b[key])
                 )
         return a
     raise ValueError(

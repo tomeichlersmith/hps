@@ -181,7 +181,22 @@ def recursplit(the_dict, fieldname, array):
         recursplit(the_dict[subfields[0]], subfields[1], array)
 
 
-def hps_reformat(events):
+def hps_mc_reformat(events):
+    hps_dict = {
+        name : events[name] 
+        for name in events.fields 
+        if '.' not in name 
+    }
+    if any(['MCParticle' in f for f in events.fields]):
+        hps_dict['mc_particle'] = mc_particles(events)
+    if any(['TrackerHits' in f for f in events.fields]):
+        hps_dict['mc_tracker_hits'] = mc_tracker_hits(events)
+    if any(['EcalHits' in f for f in events.fields]):
+        hps_dict['mc_ecal_hits'] = mc_ecal_hits(events)
+    return ak.zip(hps_dict, depth_limit=1)
+
+
+def hps_reco_reformat(events):
     hps_dict = {
         name : events[name] 
         for name in events.fields 
@@ -191,10 +206,6 @@ def hps_reformat(events):
         hps_dict['vertex'] = VertexReformatter(events)()
     if any(['MCParticle' in f for f in events.fields]):
         hps_dict['mc_particle'] = mc_particles(events)
-    #if any(['TrackerHits' in f for f in events.fields]):
-    #    hps_dict['mc_tracker_hits'] = mc_tracker_hits(events)
-    #if any(['EcalHits' in f for f in events.fields]):
-    #    hps_dict['mc_ecal_hits'] = mc_ecal_hits(events)
     return ak.zip(hps_dict, depth_limit=1)
 
 
@@ -213,7 +224,14 @@ class FromROOT:
 
 
     @staticmethod
-    def hps(**kwargs):
+    def hps_mc(**kwargs):
         if 'reformatter' not in kwargs:
-            kwargs['reformatter'] = hps_reformat
+            kwargs['reformatter'] = hps_mc_reformat
+        return FromROOT('HPS_Event', **kwargs)
+
+
+    @staticmethod
+    def hps_reco(**kwargs):
+        if 'reformatter' not in kwargs:
+            kwargs['reformatter'] = hps_reco_reformat
         return FromROOT('HPS_Event', **kwargs)
