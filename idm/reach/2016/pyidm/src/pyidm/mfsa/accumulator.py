@@ -371,3 +371,18 @@ class column_accumulator(AccumulatorABC):
         Returns a numpy array where the first dimension is the column dimension
         """
         return self._value
+
+
+def to_accumulator(df: pandas.DataFrame):
+    """convert a DataFrame into a dict of accumulatable columns"""
+    return {
+        column: column_accumulator(df[column].to_numpy())
+        for column in df.columns
+    }
+
+
+def from_accumulator(df: MutableMapping[str, column_accumulator]):
+    return pandas.DataFrame({
+        column: accumulator.value
+        for column, accumulator in df.items()
+    })

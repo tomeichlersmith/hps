@@ -9,14 +9,14 @@ import vector
 vector.register_awkward()
 
 
-def _three_vector(branch_fn, pre_coord, post_coord = ''):
+def _three_vector(branch_fn, pre_coord, post_coord=''):
     return ak.zip({
         c: branch_fn(f'{pre_coord}{c}{post_coord}')
         for c in ['x', 'y', 'z']
     }, with_name='Vector3D')
 
 
-def track(events, coll = 'KalmanFullTracks'):
+def track(events, coll='KalmanFullTracks'):
     def _branch(name):
         return events[f'{coll}.{name}_']
     trk_dict = {
@@ -39,16 +39,16 @@ def track(events, coll = 'KalmanFullTracks'):
     return ak.zip(trk_dict, with_name='Track')
 
 
-def cluster(events, coll = 'RecoEcalClusters'):
+def cluster(events, coll='RecoEcalClusters'):
     def _branch(name):
         return events[f'{coll}.{name}_']
     return ak.zip({
-        m : _branch(m)
+        m: _branch(m)
         for m in ['seed_hit', 'x', 'y', 'z', 'energy', 'time']
     }, with_name='Cluster')
 
 
-def reco_particle(events, coll = 'FinalStateParticles'):
+def reco_particle(events, coll='FinalStateParticles'):
     def _branch(name):
         return events[f'{coll}.{name}_']
     the_dict = {
@@ -64,7 +64,7 @@ def reco_particle(events, coll = 'FinalStateParticles'):
     return ak.zip(the_dict, with_name='Particle')
 
 
-def vertex(events, coll = 'UnconstrainedV0Vertices_KF'):
+def vertex(events, coll='UnconstrainedV0Vertices_KF'):
     def _branch(name):
         return events[f'{coll}.{name}_']
     the_dict = {
@@ -79,7 +79,7 @@ def vertex(events, coll = 'UnconstrainedV0Vertices_KF'):
         name: reco_particle(events, coll=f'{coll}.{name}_')
         for name in ['electron', 'positron']
     })
-    return ak.zip(the_dict, with_name = 'Vertex')
+    return ak.zip(the_dict, with_name='Vertex')
 
 
 def mc_particles(events, coll='MCParticle'):
@@ -174,9 +174,9 @@ def recursplit(the_dict, fieldname, array):
 
 def hps_mc_reformat(events):
     hps_dict = {
-        name : events[name] 
-        for name in events.fields 
-        if '.' not in name 
+        name: events[name]
+        for name in events.fields
+        if '.' not in name
     }
     hps_dict['mc_particle'] = mc_particles(events)
     hps_dict['mc_tracker_hits'] = mc_tracker_hits(events)
@@ -186,9 +186,9 @@ def hps_mc_reformat(events):
 
 def hps_reco_reformat(events):
     hps_dict = {
-        name : events[name] 
-        for name in events.fields 
-        if '.' not in name 
+        name: events[name]
+        for name in events.fields
+        if '.' not in name
     }
     hps_dict['vertex'] = vertex(events)
     hps_dict['track'] = track(events)
@@ -210,13 +210,11 @@ class FromROOT:
             events = f[self.treename].arrays(**self.arrays_kw)
         return self.reformatter(events)
 
-
     @staticmethod
     def hps_mc(**kwargs):
         if 'reformatter' not in kwargs:
             kwargs['reformatter'] = hps_mc_reformat
         return FromROOT('HPS_Event', **kwargs)
-
 
     @staticmethod
     def hps_reco(**kwargs):

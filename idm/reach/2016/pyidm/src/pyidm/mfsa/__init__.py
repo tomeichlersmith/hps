@@ -2,6 +2,7 @@
 
 from multiprocessing import Pool
 from typing import Callable, Iterable, Optional
+from dataclasses import dataclass
 
 from .accumulator import accumulate
 
@@ -11,8 +12,19 @@ def _quiet_wrapper(pool_iter, **kwargs):
 
 
 def _pretty_wrapper(pool_iter, total=None, **kwargs):
-    from tqdm.autonotebook import tqdm
+    from tqdm.auto import tqdm
     return tqdm(pool_iter, total=total)
+
+
+@dataclass
+class WorkFunction:
+    processor: Callable
+    preprocess: Optional[Callable] = None
+
+    def __call__(self, item):
+        if self.preprocess is not None:
+            item = self.preprocess(item)
+        return self.processor(item)
 
 
 def run(
@@ -53,24 +65,21 @@ def run(
         whether to print a progress bar, default False
     """
 
-    work_function = processor
-    if preprocess is not None:
-        work_function = lambda item: processor(preprocess(item))
-
     wrapper = _quiet_wrapper if quiet else _pretty_wrapper
 
     with Pool(ncores) as p:
         ana_result = accumulate(
             wrapper(
-                p.map(
-                    work_function, work_items, 
+                p.imap_unordered(
+                    WorkFunction(processor=processor, preprocess=preprocess),
+                    work_items,
                     chunksize=1
-                ), 
+                ),
                 total=len(work_items)
             )
         )
-    
+
     if postprocess is not None:
         postprocess(ana_result)
-    
+
     return ana_result
