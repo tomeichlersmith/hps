@@ -1,5 +1,9 @@
 """Calculate dark photon production and chi2 decay rate"""
 
+from pathlib import Path
+
+data_dir = (Path(__file__).parent / 'data')
+
 import pandas as pd
 import numpy as np
 import awkward as ak
@@ -53,11 +57,11 @@ def dNdm(mass, binwidth=30.0):
 
 dNdm.__raw_data = {
     'tritrig': {
-        'file': '../../simp-rate/final_hadd_tritrigv2-beamv6_2500kBunches_HPS-PhysicsRun2016-Pass2_v4_5_0_pairs1_976_KF_CR.root',
+        'file': data_dir / 'production' / 'final_hadd_tritrigv2-beamv6_2500kBunches_HPS-PhysicsRun2016-Pass2_v4_5_0_pairs1_976_KF_CR.root',
         'scale': 1.416e9*lumi/(50000*9853)
     },
     'wab': {
-        'file': '../../simp-rate/final_hadd_wabv3-beamv6_2500kBunches_HPS-PhysicsRun2016-Pass2_v4_5_0_pairs1_KF_ana_CR.root',
+        'file': data_dir / 'production' / 'final_hadd_wabv3-beamv6_2500kBunches_HPS-PhysicsRun2016-Pass2_v4_5_0_pairs1_KF_ana_CR.root',
         'scale': 0.1985e12*lumi/(100000*9966)
     }
 }
@@ -85,7 +89,7 @@ def rate(mchi, rdmchi, rmap):
     return opts.chi2_width_per_epsilon.mean()
 
 
-rate.__lut__ = pd.concat([pd.read_csv('umn-signal-width.csv'), pd.read_csv('umn-signal-dense-width.csv')])
+rate.__lut__ = pd.concat([pd.read_csv(fp) for fp in (data_dir / 'width').iterdir()])
 
 
 def ctau(rate):
