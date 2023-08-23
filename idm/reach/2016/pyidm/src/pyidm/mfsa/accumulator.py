@@ -381,7 +381,7 @@ def to_accumulator(df: pandas.DataFrame):
     }
 
 
-def from_accumulator(df: MutableMapping[str, column_accumulator]):
+def from_accumulator(df: MutableMapping):
     return pandas.DataFrame({
         column: accumulator.value
         for column, accumulator in df.items()

@@ -42,7 +42,6 @@ setup(
     packages=find_packages(where="src"),  # Required
     python_requires=">=3.6, <4",
     install_requires=[
-        "coffea==0.7.20",
         "vector==0.9.0",
         "hist==2.4.0"
     ],
