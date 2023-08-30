@@ -7,8 +7,8 @@ from . import mfsa
 
 def listdata(filelimit=None, include_bkgd=False):
     signal_data = [
-        Path('/local/cms/user/eichl008/hps/idm/umn-signal/merged'),
-        Path('/local/cms/user/eichl008/hps/idm/umn-signal-dense/merged'),
+        Path('/local/cms/user/eichl008/hps/idm/umn-signal/merged-with-Vc'),
+        Path('/local/cms/user/eichl008/hps/idm/umn-signal-dense/merged-with-Vc'),
     ]
     bkgd_data = [
         Path('/local/cms/user/eichl008/hps/idm/bkgd/wab/tuples'),
