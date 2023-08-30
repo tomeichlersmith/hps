@@ -195,19 +195,26 @@ def process(args):
     has_cvtx = (
         n_cvtx>0
     )
-
-    cvtx = events.conv_vertex
     
     ele_tracks_in_opp_half = (ak.count(
-        events[has_cvtx].track[(
-            (events[has_cvtx].track.charge<0)
-            &(ak.flatten(cvtx.electron.track.id)!=events[has_cvtx].track.id)
-            &(ak.flatten(np.sign(cvtx.pos.fY))!=np.sign(events[has_cvtx].track.tan_lambda))
+        events.track[(
+            (events.track.charge<0)
+            &(
+                ak.fill_none(
+                    ak.firsts(events.conv_vertex.electron.track.id,axis=1),
+                    0
+                )!=events.track.id
+            )&(
+                ak.fill_none(
+                    ak.firsts(np.sign(events.conv_vertex.pos.fY),axis=1),
+                    0
+                )!=np.sign(events.track.tan_lambda)
+            )
         )].id,
         axis=1
     )>0)
 
-    cvtx_events = events[has_cvtx][ele_tracks_in_opp_half]
+    mod_selection = has_cvtx&ele_tracks_in_opp_half
     
     h.cvtx = hist.Hist(
         hist.axis.StrCategory(
@@ -220,21 +227,21 @@ def process(args):
         )
     )
     h.cvtx.fill('all',ak.flatten(events.conv_vertex.pos.fZ,axis=None))
-    h.cvtx.fill('selected',ak.flatten(cvtx_events.conv_vertex.pos.fZ,axis=None))
+    h.cvtx.fill('selected',ak.flatten(events[mod_selection].conv_vertex.pos.fZ,axis=None))
 
-    df['mod_num_pass'] = ak.count(cvtx_events.conv_vertex.chi2)
+    df['mod_num_pass'] = ak.sum(mod_selection)
 
     def mod_reweight_cut(a_ctau):
         chi2 = ak.flatten(
-           cvtx_events.mc_particle[
-                cvtx_events.mc_particle.pdg == 1000023
+           events[mod_selection].mc_particle[
+                events[mod_selection].mc_particle.pdg == 1000023
             ]
         )
         reweights = rate.weight_by_z(chi2.ep.z, chi2.p.energy/chi2.p.mass * a_ctau)
         return ak.sum(
             reweights
         ), ak.sum(
-           reweights[ak.flatten(cvtx_events.conv_vertex.pos.fZ) > 10]
+           reweights[ak.flatten(events[mod_selection].conv_vertex.pos.fZ) > 10]
         )
     
     df[['mod_reweightsum', 'mod_reweightsum_pass']] = df.apply(
