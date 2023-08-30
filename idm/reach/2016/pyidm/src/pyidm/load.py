@@ -191,6 +191,7 @@ def hps_reco_reformat(events):
         if '.' not in name
     }
     hps_dict['vertex'] = vertex(events)
+    hps_dict['conv_vertex'] = vertex(events, coll='UnconstrainedVcVertices_KF')
     hps_dict['track'] = track(events)
     hps_dict['cluster'] = cluster(events)
     hps_dict['mc_particle'] = mc_particles(events)
