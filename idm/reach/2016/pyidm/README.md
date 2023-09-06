@@ -27,12 +27,22 @@ pip install jupyterlab matplotlib hist[plot]
 
 ## Usage
 Now that this package is "installed", you can run it from anywhere!
-In general, I have separated the package into two components following
-the `coffea` naming trend.
-1. *roast*: this submodule is the first step and contains helper functions
-  for loading tuplized HPS data into memory in its awkward form. This is
-  helpful to use directly in a jupyter notebook to inspect the events in
-  more detail and is used by the second component.
-2. *brew*: this submodule contains a coffea processor that can be used
-  to make selections and fill analysis histograms. It uses _roast_ to reformat
-  the `awkward` data in memory into its more helpful form.
+```
+pyidm --help
+```
+
+## Profiling
+I've used [memory-profiler](https://github.com/pythonprofilers/memory_profiler) to profile
+the memory which is the most limiting factor of this analysis style.
+```
+pip install -U memory_profiler
+```
+Then run by linking the `pyidm` executable with a `.py` extension so `mprof` will run
+it as a python script.
+```
+ln -s $(which pyidm) prof.py
+mprof run --multiprocess --python prof.py <args>
+mprof plot -o mem-usage-by-child-process.png
+mprof run --python prof.py -j 1 <args>
+mprof plot -o mem-usage-by-py-function.png
+```
