@@ -5,7 +5,6 @@ from pathlib import Path
 from .load import load
 from . import signal, vtx
 from . import mfsa
-from .prof import profile
 
 
 def listdata(filelimit=None, include_bkgd=False):
@@ -27,6 +26,16 @@ def listdata(filelimit=None, include_bkgd=False):
         dir_to_files = lambda fp: islice(fp.iterdir(), filelimit)
 
     return [f for f in chain(*list(map(dir_to_files, data))) if f.suffix == '.root' and not f.stem.startswith('sim_')]
+
+
+try:
+    if profile:
+        #able to call profile function so we are all good
+        pass
+except NameError:
+    # no profile decorator, define a identity wrapper
+    def profile(f):
+        return f
 
 
 @profile
