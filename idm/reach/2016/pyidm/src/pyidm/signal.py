@@ -53,7 +53,7 @@ def process(args):
             label='Vertex Z [mm]'
         )
     )
-    h.vtx.fill(vtx.pos.fZ)
+    h.vtx.fill(vtx.pos.z)
 
     h.n_trks = hist.Hist(
         hist.axis.StrCategory(
@@ -136,7 +136,7 @@ def process(args):
             ]
         )[vtx_sel]
         reweights = rate.weight_by_z(chi2.ep.z, chi2.p.energy/chi2.p.mass * a_ctau)
-        return ak.sum(reweights), ak.sum(reweights[vtx[vtx_sel].pos.fZ > 10])
+        return ak.sum(reweights), ak.sum(reweights[vtx[vtx_sel].pos.z > 10])
     
     df[['std_reweightsum', 'std_reweightsum_pass']] = df.apply(
         lambda row: std_reweight_cut(row['ctau']), 
@@ -172,7 +172,7 @@ def process(args):
                 )!=events.track.id
             )&(
                 ak.fill_none(
-                    ak.firsts(np.sign(events.conv_vertex.pos.fY),axis=1),
+                    ak.firsts(np.sign(events.conv_vertex.pos.y),axis=1),
                     0
                 )!=np.sign(events.track.tan_lambda)
             )
@@ -192,8 +192,8 @@ def process(args):
             label='Vertex Z [mm]'
         )
     )
-    h.cvtx.fill('all',ak.flatten(events.conv_vertex.pos.fZ,axis=None))
-    h.cvtx.fill('selected',ak.flatten(events[mod_selection].conv_vertex.pos.fZ,axis=None))
+    h.cvtx.fill('all',ak.flatten(events.conv_vertex.pos.z,axis=None))
+    h.cvtx.fill('selected',ak.flatten(events[mod_selection].conv_vertex.pos.z,axis=None))
 
     df['mod_num_pass'] = ak.sum(mod_selection)
 
@@ -207,7 +207,7 @@ def process(args):
         return ak.sum(
             reweights
         ), ak.sum(
-           reweights[ak.flatten(events[mod_selection].conv_vertex.pos.fZ) > 10]
+           reweights[ak.flatten(events[mod_selection].conv_vertex.pos.z) > 10]
         )
     
     df[['mod_reweightsum', 'mod_reweightsum_pass']] = df.apply(

@@ -49,7 +49,7 @@ def process(args):
             label='Vertex Z [mm]'
         )
     )
-    h.vtx.fill(vtx.pos.fZ)
+    h.vtx.fill(vtx.pos.z)
 
     h.n_trks = hist.Hist(
         hist.axis.StrCategory(
@@ -139,7 +139,7 @@ def process(args):
                 )!=events.track.id
             )&(
                 ak.fill_none(
-                    ak.firsts(np.sign(events.conv_vertex.pos.fY),axis=1),
+                    ak.firsts(np.sign(events.conv_vertex.pos.y),axis=1),
                     0
                 )!=np.sign(events.track.tan_lambda)
             )
@@ -149,43 +149,27 @@ def process(args):
 
     mod_selection = has_cvtx&ele_tracks_in_opp_half
     cvtx = ak.flatten(events[mod_selection].conv_vertex)
+    cvtx_z = cvtx.pos.z.to_numpy()
     
-    vtxz_axis = hist.axis.Regular(
-        50, -100, 400,
-        name='vtxz',
-        label='Vertex Z [mm]'
+    h.cvtx = hist.Hist.new.Reg(50,-100,400,label='Vertex Z [mm]').Double()
+    h.cvtx.fill(cvtx_z)
+    h.cvtx_vs_invM = (
+        hist.Hist.new
+        .Reg(100,0,0.5,label='Vertex Invariant Mass [GeV]')
+        .Reg(50,-100,400,label='Vertex Z [mm]')
+        .Double()
     )
-    h.cvtx_vs_invM = hist.Hist(
-        hist.axis.Regular(
-            100, 0, 0.5,
-            name='vtx_mass',
-            label='Vertex Invariant Mass [GeV]'
-        ), vtxz_axis
-    )
-    h.cvtx_vs_invM.fill(vtx_mass = cvtx.invM, vtxz = cvtx.pos.fZ)
-    h.cvtx_vs_dtanLambda = hist.Hist(
-        hist.axis.Regular(
-            100, -0.03, 0.03,
-            name='vtx_dtanLambda',
-            label='$\\Delta\\tan(\\lambda)$'
-        ), vtxz_axis
-    )
+    h.cvtx_vs_invM.fill(cvtx.invM, cvtx_z)
+    h.cvtx_vs_dtanLambda = hist.Hist.new.Reg(100,-0.03,0.03, label='$\\Delta\\tan(\\lambda)$').Reg(50,-100,400,label='Vertex Z [mm]').Double()
     h.cvtx_vs_dtanLambda.fill(
-        vtx_dtanLambda = abs(cvtx.electron.track.tan_lambda-cvtx.positron.track.tan_lambda),
-        vtxz = cvtx.pos.fZ
+        abs(cvtx.electron.track.tan_lambda-cvtx.positron.track.tan_lambda),
+        cvtx_z
     )
 
-    cvtx_pmag = np.sqrt(cvtx.p.fX**2 + cvtx.p.fY**2 + cvtx.p.fZ**2)
-    h.cvtx_vs_y0 = hist.Hist(
-        hist.axis.Regular(
-            100, -3.0, 3.0,
-            name='y_at_origin',
-            label='Vertex $y_0$'
-        ), vtxz_axis
-    )
+    h.cvtx_vs_y0 = hist.Hist.new.Reg(100,-3.0,3.0, label='Vertex $y_0$').Reg(50,-100,400,label='Vertex Z [mm]').Double()
     h.cvtx_vs_y0.fill(
-        y_at_origin = cvtx.pos.fY + (cvtx.p.fY / cvtx_pmag)*(-cvtx.pos.fZ),
-        vtxz = cvtx.pos.fZ
+        cvtx.pos.y + safe_divide(cvtx.p.y, cvtx.p.mag)*(-cvtx_z),
+        cvtx_z
     )
 
     key = (params['mchi'], params['rdmchi'], params['rmap']) if 'idm' in params else params['name']

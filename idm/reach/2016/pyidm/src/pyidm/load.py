@@ -72,7 +72,7 @@ def vertex(events, coll='UnconstrainedV0Vertices_KF'):
     the_dict = {
         m: _branch(m)
         for m in [
-            'chi2', 'ndf', 'pos', 'p1', 'p2', 'p', 'invM', 'invMerr',
+            'chi2', 'ndf', 'invM', 'invMerr',
             # 'covariance', leave out for now since it messes up form
             'probability', 'id', 'type'
         ]
@@ -80,6 +80,10 @@ def vertex(events, coll='UnconstrainedV0Vertices_KF'):
     the_dict.update({
         name: reco_particle(events, coll=f'{coll}.{name}_')
         for name in ['electron', 'positron']
+    })
+    the_dict.update({
+        vec : ak.zip({c : getattr(_branch(vec),'f'+c.upper()) for c in ['x','y','z']}, with_name='Vector3D')
+        for vec in [ 'pos', 'p1', 'p2', 'p' ]
     })
     return ak.zip(the_dict, with_name='Vertex')
 
