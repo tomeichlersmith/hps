@@ -6,6 +6,15 @@ from collections.abc import MutableMapping, MutableSet
 from typing import Iterable, Optional, TypeVar, Union
 
 try:
+    if profile:
+        #able to call profile function so we are all good
+        pass
+except NameError:
+    # no profile decorator, define a identity wrapper
+    def profile(f):
+        return f
+
+try:
     from typing import Protocol, runtime_checkable  # type: ignore
 except ImportError:
     from typing_extensions import Protocol  # type: ignore
@@ -94,6 +103,7 @@ def iadd(a: Accumulatable, b: Accumulatable) -> Accumulatable:
     )
 
 
+@profile
 def accumulate(
     items: Iterable[Optional[Accumulatable]], accum: Optional[Accumulatable] = None
 ) -> Optional[Accumulatable]:

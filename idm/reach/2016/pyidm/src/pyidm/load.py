@@ -2,12 +2,14 @@
 
 from dataclasses import dataclass, field
 from collections.abc import Callable
+from pathlib import Path
 
 import awkward as ak
 
 import vector
 vector.register_awkward()
 
+from . import rate
 
 def _three_vector(branch_fn, pre_coord, post_coord=''):
     return ak.zip({
@@ -193,7 +195,7 @@ def hps_reco_reformat(events):
     hps_dict['vertex'] = vertex(events)
     hps_dict['conv_vertex'] = vertex(events, coll='UnconstrainedVcVertices_KF')
     hps_dict['track'] = track(events)
-    hps_dict['cluster'] = cluster(events)
+    #hps_dict['cluster'] = cluster(events)
     hps_dict['mc_particle'] = mc_particles(events)
     return ak.zip(hps_dict, depth_limit=1)
 
@@ -221,4 +223,54 @@ class FromROOT:
     def hps_reco(**kwargs):
         if 'reformatter' not in kwargs:
             kwargs['reformatter'] = hps_reco_reformat
+        if 'arrays_kw' not in kwargs:
+            kwargs['arrays_kw'] = dict(
+                filter_name=[
+                    'MCParticle*',
+                    'UnconstrainedV0Vertices_KF*',
+                    'UnconstrainedVcVertices_KF*',
+                    'KalmanFullTracks*',
+                ],
+                array_cache=None
+            )
+        if 'open_kw' not in kwargs:
+            kwargs['open_kw'] = dict(
+                object_cache = None,
+                array_cache = None
+            )
         return FromROOT('HPS_Event', **kwargs)
+
+
+def _load_signal(fp: Path, **kwargs):
+    plist = fp.stem.split('_')[:-1]
+    params = {plist[i]: plist[i+1] for i in range(0, len(plist), 2)}
+    for k in ['mchi', 'rmap', 'rdmchi']:
+        params[k] = float(params[k])
+    params['nruns'] = int(params['nruns']) if 'nruns' in params else 1
+    nevents = params['nevents'] if 'nevents' in params else '10k'
+    if nevents[-1] == 'k':
+        nevents = 1000*int(nevents[:-1])
+    elif nevents[-1] == 'M':
+        nevents = 1000000*int(nevents[:-1])
+    else:
+        nevents = int(nevents)
+    params['nevents'] = nevents
+    params['chi2_width_per_eps2'] = rate.rate(params['mchi'], params['rdmchi'], params['rmap'])
+    params['ap_prod_rate_per_eps2'] = rate.darkphoton_production(params['rmap']*params['mchi'])
+    return params, FromROOT.hps_reco(**kwargs)(fp)
+
+
+def _load_bkgd(fp: Path, **kwargs):
+    plist = list(filter(lambda p: not '-' in p, fp.stem.split('_')))
+    names = list(filter(lambda p: '-' in p, fp.stem.split('_')))
+    params = {plist[i]: plist[i+1] for i in range(0, len(plist), 2)}
+    params['name'] = ''.join(names)
+    params['nruns'] = int(params['nruns'])
+    return params, FromROOT.hps_reco(**kwargs)(fp)
+
+
+def load(fp: Path, **kwargs):
+    if 'idm' in fp.stem:
+        return _load_signal(fp, **kwargs)
+    return _load_bkgd(fp, **kwargs)
+

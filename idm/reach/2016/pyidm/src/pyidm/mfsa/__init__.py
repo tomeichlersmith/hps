@@ -1,10 +1,25 @@
 """Multiple File, Single Analysis"""
 
+import gc
 from multiprocessing import Pool
 from typing import Callable, Iterable, Optional
 from dataclasses import dataclass
+from functools import partial
 
 from .accumulator import accumulate
+
+import sys
+from types import ModuleType, FunctionType
+from gc import get_referents
+
+try:
+    if profile:
+        #able to call profile function so we are all good
+        pass
+except NameError:
+    # no profile decorator, define a identity wrapper
+    def profile(f):
+        return f
 
 
 def _quiet_wrapper(pool_iter, **kwargs):
@@ -16,17 +31,37 @@ def _pretty_wrapper(pool_iter, total=None, **kwargs):
     return tqdm(pool_iter, total=total)
 
 
+import time
+
+
 @dataclass
 class WorkFunction:
     processor: Callable
     preprocess: Optional[Callable] = None
 
+    @profile
     def __call__(self, item):
         if self.preprocess is not None:
             item = self.preprocess(item)
-        return self.processor(item)
+        out = self.processor(item)
+        del item
+        gc.collect()
+        return out
 
 
+    @profile
+    def with_pause(self, item):
+        """This function wraps the actual work with 1s sleeps on either side.
+        It is helpful for debugging any kind of performance issues so that you
+        can visually see where different items start and end processing.
+        """
+        time.sleep(1)
+        out = self.__call__(item)
+        time.sleep(1)
+        return out
+
+
+@profile
 def run(
     processor: Callable,
     work_items: Iterable,
@@ -67,17 +102,22 @@ def run(
 
     wrapper = _quiet_wrapper if quiet else _pretty_wrapper
 
-    with Pool(ncores) as p:
-        ana_result = accumulate(
-            wrapper(
-                p.imap_unordered(
-                    WorkFunction(processor=processor, preprocess=preprocess),
-                    work_items,
-                    chunksize=1
-                ),
-                total=len(work_items)
+    work_function = WorkFunction(processor = processor, preprocess = preprocess)
+
+    if ncores == 1:
+        ana_result = accumulate((work_function(item) for item in wrapper(work_items, total=len(work_items))))
+    else:
+        with Pool(ncores) as p:
+            ana_result = accumulate(
+                wrapper(
+                    p.imap_unordered(
+                        work_function,
+                        work_items,
+                        chunksize=1
+                    ),
+                    total=len(work_items)
+                )
             )
-        )
 
     if postprocess is not None:
         postprocess(ana_result)

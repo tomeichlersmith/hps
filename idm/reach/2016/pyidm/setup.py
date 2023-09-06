@@ -51,9 +51,9 @@ setup(
           "autopep8"
         ],
     },
-    #entry_points={  # Optional
-    #    "console_scripts": [
-    #        "sample=sample:main",
-    #    ],
-    #},
+    entry_points={  # Optional
+        "console_scripts": [
+            "pyidm=pyidm.__main__:main",
+        ],
+    },
 )
