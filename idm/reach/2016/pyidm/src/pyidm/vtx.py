@@ -149,8 +149,8 @@ def process(args):
 
     mod_selection = has_cvtx&ele_tracks_in_opp_half
     cvtx = ak.flatten(events[mod_selection].conv_vertex)
-    cvtx_z = cvtx.pos.z.to_numpy()
-    
+    cvtx_z = ak.nan_to_num(cvtx.pos.z).to_numpy()
+
     h.cvtx = hist.Hist.new.Reg(50,-100,400,label='Vertex Z [mm]').Double()
     h.cvtx.fill(cvtx_z)
     h.cvtx_vs_invM = (
@@ -160,17 +160,41 @@ def process(args):
         .Double()
     )
     h.cvtx_vs_invM.fill(cvtx.invM, cvtx_z)
-    h.cvtx_vs_dtanLambda = hist.Hist.new.Reg(100,-0.03,0.03, label='$\\Delta\\tan(\\lambda)$').Reg(50,-100,400,label='Vertex Z [mm]').Double()
+    h.cvtx_vs_dtanLambda = hist.Hist.new.Reg(100,-0.03,0.03, label='$\\tan(\\lambda_{e^-})-\\tan(\\lambda_{e^+})$').Reg(50,-100,400,label='Vertex Z [mm]').Double()
     h.cvtx_vs_dtanLambda.fill(
-        abs(cvtx.electron.track.tan_lambda-cvtx.positron.track.tan_lambda),
+        cvtx.electron.track.tan_lambda-cvtx.positron.track.tan_lambda,
         cvtx_z
     )
 
     h.cvtx_vs_y0 = hist.Hist.new.Reg(100,-3.0,3.0, label='Vertex $y_0$').Reg(50,-100,400,label='Vertex Z [mm]').Double()
+
+    # need to recalculate vtx p cuz fuk
+    vtx_p = cvtx.electron.track.p + cvtx.positron.track.p
+
     h.cvtx_vs_y0.fill(
-        cvtx.pos.y + safe_divide(cvtx.p.y, cvtx.p.mag)*(-cvtx_z),
+        (cvtx.pos.y + safe_divide(vtx_p.y, vtx_p.mag)*(-cvtx_z)).to_numpy(),
         cvtx_z
     )
+
+    h.cvtx_vs_psum = (
+        hist.Hist.new
+        .Reg(100,-1,2.5,label='$|p_{e^-}|+|p_{e^+}|$ [GeV]')
+        .Reg(50,-100,400,label='Vertex Z [mm]')
+        .Double()
+    )
+    h.cvtx_vs_psum.fill(cvtx.electron.track.p.mag + cvtx.positron.track.p.mag, cvtx_z)
+
+    h.cvtx_vs_angle = (
+        hist.Hist.new
+        .Reg(100,0,np.pi/8,label='$\\theta_{open}$ [rad]')
+        .Reg(50,-100,400,label='Vertex Z [mm]')
+        .Double()
+    )
+    h.cvtx_vs_angle.fill(cvtx.electron.track.p.deltaangle(cvtx.positron.track.p), cvtx_z)
+
+    for histogram in vars(h).values():
+        if np.any(np.isnan(h.cvtx_vs_psum.view())):
+            raise ValueError('NaN Values in histograms')
 
     key = (params['mchi'], params['rdmchi'], params['rmap']) if 'idm' in params else params['name']
     return { key : vars(h) }
