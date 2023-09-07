@@ -2,6 +2,8 @@ import pickle
 from itertools import chain, islice
 from pathlib import Path
 
+import numpy as np
+
 from .load import load
 from . import signal, vtx
 from . import mfsa
@@ -65,6 +67,11 @@ def main():
         postprocess=post,
         ncores = args.n_cores
     )
+
+    for histograms in out.values():
+        for name, histogram in histograms.items():
+            if np.any(np.isnan(histogram.view())):
+                print(f'WARN: {len(histogram.axes)}D Histogram {name} has NaN Values')
 
     with open(args.output, 'wb') as outf:
         pickle.dump(out, outf)
