@@ -270,6 +270,7 @@ def _load_bkgd(fp: Path, **kwargs):
     params = {plist[i]: plist[i+1] for i in range(0, len(plist), 2)}
     params['name'] = ''.join(names)
     params['nruns'] = int(params['nruns'])
+    params['scale'] = rate.dNdm.__raw_data['wab' if 'wab' in fp.stem else 'tritrig']['scale']
     return params, FromROOT.hps_reco(**kwargs)(fp)
 
 
