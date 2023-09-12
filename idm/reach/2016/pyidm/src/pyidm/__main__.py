@@ -2,6 +2,7 @@ import pickle
 from itertools import chain, islice
 from pathlib import Path
 
+import hist
 import numpy as np
 
 from .load import load
@@ -11,8 +12,9 @@ from . import mfsa
 
 def listdata(filelimit=None, include_bkgd=False):
     signal_data = [
-        Path('/local/cms/user/eichl008/hps/idm/umn-signal/merged-with-Vc'),
-        Path('/local/cms/user/eichl008/hps/idm/umn-signal-dense/merged-with-Vc'),
+#        Path('/local/cms/user/eichl008/hps/idm/umn-signal/merged-with-Vc'),
+#        Path('/local/cms/user/eichl008/hps/idm/umn-signal-dense/merged-with-Vc'),
+        Path('/local/cms/user/eichl008/hps/idm/signal-2019/tuples'),
     ]
     bkgd_data = [
         Path('/local/cms/user/eichl008/hps/idm/bkgd/wab/tuples-with-Vc'),
@@ -70,7 +72,7 @@ def main():
 
     for histograms in out.values():
         for name, histogram in histograms.items():
-            if np.any(np.isnan(histogram.view())):
+            if isinstance(histogram, hist.BaseHist) and np.any(np.isnan(histogram.view())):
                 print(f'WARN: {len(histogram.axes)}D Histogram {name} has NaN Values')
 
     with open(args.output, 'wb') as outf:
