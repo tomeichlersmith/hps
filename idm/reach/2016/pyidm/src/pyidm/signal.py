@@ -193,7 +193,9 @@ def process(args):
         )
     )
     h.cvtx.fill('all',ak.flatten(events.conv_vertex.pos.z,axis=None))
-    h.cvtx.fill('selected',ak.flatten(events[mod_selection].conv_vertex.pos.z,axis=None))
+
+    cvtx = ak.firsts(events[mod_selection].conv_vertex)
+    h.cvtx.fill('selected',cvtx.pos.z)
 
     df['mod_num_pass'] = ak.sum(mod_selection)
 
@@ -207,7 +209,7 @@ def process(args):
         return ak.sum(
             reweights
         ), ak.sum(
-           reweights[ak.flatten(events[mod_selection].conv_vertex.pos.z) > 10]
+           reweights[cvtx.pos.z > 10]
         )
     
     df[['mod_reweightsum', 'mod_reweightsum_pass']] = df.apply(
@@ -217,16 +219,14 @@ def process(args):
     )
 
     return {
-        'signal': {
-            'roacc': to_accumulator(df),
-            (params['mchi'], params['rdmchi'], params['rmap']): vars(h)
-        }
+        'roacc': to_accumulator(df),
+        (params['mchi'], params['rdmchi'], params['rmap']): vars(h)
     }
 
 
 def groupby_signal_params(out):
     """unpack, merge, and recalculate the readout-acceptance table in the signal category"""
-    df = from_accumulator(out['signal']['roacc']).groupby(
+    df = from_accumulator(out['roacc']).groupby(
         ['eps2', 'mchi', 'rdmchi', 'rmap']
     ).agg(
         {
@@ -245,4 +245,4 @@ def groupby_signal_params(out):
         df[f'{ana}_event_selection_eff'] = df[f'{ana}_num_pass']/df.num_thrown
         df[f'{ana}_full_eff'] = df[f'{ana}_z_cut_eff']*df[f'{ana}_event_selection_eff']
         df[f'{ana}_full_rate'] = df[f'{ana}_full_eff']*df.prod_rate
-    out['signal']['roacc'] = df
+    out['roacc'] = df
