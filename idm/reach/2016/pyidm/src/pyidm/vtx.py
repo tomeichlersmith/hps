@@ -128,9 +128,8 @@ def process(args):
     has_cvtx = (
         n_cvtx>0
     )
-    
-    ele_tracks_in_opp_half = (ak.count(
-        events.track[(
+
+    ele_opp_half = events.track[(
             (events.track.charge<0)
             &(
                 ak.fill_none(
@@ -139,16 +138,17 @@ def process(args):
                 )!=events.track.id
             )&(
                 ak.fill_none(
-                    ak.firsts(np.sign(events.conv_vertex.pos.y),axis=1),
+                    ak.firsts(np.sign(events.conv_vertex.electron.track.tan_lambda),axis=1),
                     0
                 )!=np.sign(events.track.tan_lambda)
             )
-        )].id,
-        axis=1
-    )>0)
+        )]
+    
+    ele_tracks_in_opp_half = (ak.count(ele_opp_half.id, axis=1)>0)
 
     mod_selection = has_cvtx&ele_tracks_in_opp_half
-    cvtx = ak.flatten(events[mod_selection].conv_vertex)
+    # "THE" cvtx in an event is the one with the lowest z position
+    cvtx = ak.firsts(events[mod_selection].conv_vertex[ak.argsort(events[mod_selection].conv_vertex.pos.z)])
     cvtx_z = ak.nan_to_num(cvtx.pos.z).to_numpy()
 
     h.cvtx = hist.Hist.new.Reg(50,-100,400,label='Vertex Z [mm]').Double()
@@ -183,6 +183,33 @@ def process(args):
         .Double()
     )
     h.cvtx_vs_psum.fill(cvtx.electron.track.p.mag + cvtx.positron.track.p.mag, cvtx_z)
+
+    ele_opp_half = events[mod_selection].track[(
+            (events[mod_selection].track.charge<0)
+            &(
+                ak.fill_none(
+                    ak.firsts(events[mod_selection].conv_vertex.electron.track.id,axis=1),
+                    0
+                )!=events[mod_selection].track.id
+            )&(
+                ak.fill_none(
+                    ak.firsts(np.sign(events[mod_selection].conv_vertex.electron.track.tan_lambda),axis=1),
+                    0
+                )!=np.sign(events[mod_selection].track.tan_lambda)
+            )
+        )]
+
+    # highest momentum electron in the opposite half is the "leading" electron
+    leading_opp_ele_p = ak.firsts(ele_opp_half[ak.argsort(ele_opp_half.p.mag, ascending=False)].p)
+    tripsum = leading_opp_ele_p.mag+cvtx.electron.track.p.mag+cvtx.positron.track.p.mag
+
+    h.cvtx_vs_tripsum = (
+        hist.Hist.new
+        .Reg(100,-1,2.5,label='Trident $\\sum |p|$ [GeV]')
+        .Reg(50,-100,400,label='Vertex Z [mm]')
+        .Double()
+    )
+    h.cvtx_vs_tripsum.fill(tripsum, cvtx_z)
 
     h.cvtx_vs_angle = (
         hist.Hist.new
