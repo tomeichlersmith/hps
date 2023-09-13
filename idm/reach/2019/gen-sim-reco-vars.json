@@ -1,0 +1,13 @@
+{
+    "nevents": [10000],
+    "run_params": ["4pt55"],
+    "target_z": [-7.5],
+    "ctau": [200.0],
+    "rmap": [2.0, 2.5, 3.0], 
+    "rdmchi": [0.4, 0.5, 0.6],
+    "mchi": [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130],
+    "run_number": [10030],
+    "detector": ["HPS-PhysicsRun2019-v2-4pt5"],
+    "steering_readout": ["/org/hps/steering/readout/PhysicsRun2019TrigSingles.lcsim"],
+    "steering_reco": ["/org/hps/steering/recon/PhysicsRun2019MCRecon.lcsim"]
+}
