@@ -106,6 +106,7 @@ def process(args):
     df['mchi'] = params['mchi']
     df['rmap'] = params['rmap']
     df['rdmchi'] = params['rdmchi']
+    df['readout'] = len(events)
 
     # we do the same re-weighting procedure for each analysis selection
 
@@ -231,6 +232,7 @@ def groupby_signal_params(out):
     ).agg(
         {
             'num_thrown': np.sum,
+            'readout': np.sum,
             'prod_rate': np.mean,
             'std_num_pass': np.sum,
             'std_reweightsum': np.sum,
