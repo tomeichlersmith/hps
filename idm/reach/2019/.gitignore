@@ -1,0 +1,5 @@
+# files output by pyidm analyzers
+*.pkl
+# plots
+**.png
+**.pdf
