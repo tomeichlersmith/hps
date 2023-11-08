@@ -1,7 +1,7 @@
 {
     "detector": "{{ detector }}",
     "run_number" : 7800,
-    "steering" : "kf",
+    "steering" : "st",
     "input_files": {
         "{{ job.input_files['events'][0] }}": "events.slcio"
     },
@@ -15,7 +15,8 @@
     },
     "output_dir": "/sdf/group/hps/users/eichl008/hps/2016-align/{{ detector }}/no-constraint-tracking",
     "steering_files" : {
-      "kf": "/sdf/group/hps/users/eichl008/hps/2016-align/tracking/tracking_kf_alignment.lcsim"
+      "kf": "/sdf/group/hps/users/eichl008/hps/2016-align/tracking/tracking_kf_alignment.lcsim",
+      "st": "/sdf/group/hps/users/eichl008/hps/2016-align/tracking/tracking_st_alignment.lcsim"
     }
 }
 
