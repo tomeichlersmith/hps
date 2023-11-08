@@ -30,6 +30,8 @@ study.
 
   cp <some-previous-one> WORKSPACE/gen-sim-reco-vars.json
   # update it
+  # - MG parameter list
+  # - output directory
   vim WORKSPACE/gen-sim-reco-vars.json
 
 Create the job store for the generation jobs.

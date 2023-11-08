@@ -3,35 +3,34 @@
 set -o errexit
 set -o nounset
 
-group_by_mchi() {
-  local workdir=$1
-  local dir=$2
-  find $dir -name "*.slcio" | sort > ${workdir}/full.list
-  mchis=($(cat ${workdir}/full.list | cut -f 4 -d / | cut -f 4 -d _ | uniq))
-  for mchi in ${mchis[@]}; do
-    grep "mchi_${mchi}" ${workdir}/full.list > ${workdir}/mchi_${mchi}.list
-  done
-}
-
 merge_group() {
   local grp=$1
   target=$(head -1 ${grp})
-  target=${target//_jobid_*.slcio/.slcio}
-  echo ${target}
-  lcio_merge_files ${target} $(cat ${grp})
-  rm $(cat ${grp})
+  target=${target//_jobid_*.slcio/}
+  target="${target}_nruns_$(wc -l ${grp} | cut -f 1 -d ' ')_nevents_10k.slcio"
+  echo "${grp} -> ${target}"
+  if [ -z "${MERGE_DRYRUN+x}" ]; then
+    lcio_merge_files ${target} $(cat ${grp})
+    rm $(cat ${grp})
+  fi
 }
 
 if [ "$#" -eq 0 ]; then
   cat <<HELP
 
-  merge slcio files in groups of mchi
+  merge slcio files in the directories input
 
  USAGE:
-  ./merge INDIR
+  ./merge INDIR [INDIR1 ...]
 
  ARGUMENTS:
   INDIR : input directory with files to merge
+
+ ENVIRONMENT:
+  Use the environment variable MERGE_DRYRUN to tell this
+  script not to actually do anything and just write out
+  the lists it would merge together into single files
+  (and the names of those files).
 HELP
   exit 0
 fi
@@ -41,9 +40,13 @@ if ! [ -d "$1" ]; then
   exit 1
 fi
 
-workdir=$(mktemp -d)
-group_by_mchi ${workdir} $1
-for grp in ${workdir}/mchi_*.list; do
+workdir=$(mktemp -d -p $PWD)
+while [ "$#" -gt 0 ]; do
+  grp=${workdir}/$(basename ${1%/}).list
+  find $(realpath $1) -type f -name '*.slcio' | sort > ${workdir}/$(basename ${1%/}).list
   merge_group ${grp}
+  shift
 done
-rm -r ${workdir}
+if [ -z "${MERGE_DRYRUN+x}" ]; then
+  rm -r ${workdir}
+fi
