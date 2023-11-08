@@ -1,0 +1,49 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+
+count_events() {
+  base="$(realpath "$1")"
+  mchi=$(printf "%03d" "$2")
+  printf "mchi = %d\n" "$2"
+  printf " %7s %d\n" "gen" "$(grep -R '</event>' "${base}/lhe/mchi_${mchi}" | wc -l)"
+  for step in sim filt readout recon; do
+    printf " %7s " "$step"
+    file_dir="${base}/${step}/HPS-PhysicsRun2016-Pass2/mchi_${mchi}"
+    file_list="${workdir}/mchi_${mchi}_step_${step}.list"
+    find ${file_dir} -type f -name '*.slcio' -size +0 | sort > ${file_list}
+    lcio_event_counter $(cat ${file_list}) > ${file_list//.list/.count}
+    printf "%d\n" $(tail -1 ${file_list//.list/.count})
+  done
+}
+
+if [ "$#" -eq 0 ]; then
+  cat <<HELP
+
+  count events in each step of hps-mc generation
+
+ USAGE:
+  ./hps-mc-cutflow <base> <mchi> [<mchi1> ...]
+
+ ARGUMENTS:
+  base : base directory in which all different mchi output are stored
+  mchi : mchi value to calculate cutflow for
+HELP
+  exit 0
+fi
+
+if [ "$#" -lt 2 ]; then
+  echo "ERROR: Need at least two arguments BASE MCHI"
+  exit 1
+fi
+
+base="$1"
+shift
+
+workdir=$(mktemp -d -p $PWD)
+while [ "$#" -gt 0 ]; do
+  count_events $base $1
+  shift
+done
+rm -r ${workdir}
