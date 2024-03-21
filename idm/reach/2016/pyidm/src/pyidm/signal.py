@@ -123,9 +123,9 @@ def process(args):
         & (abs(vtx.electron.cluster.time - vtx.positron.cluster.time) < 1.45)
         & (safe_divide(vtx.electron.track.chi2, vtx.electron.track.ndf, fill_value=9000) < 15)
         & (safe_divide(vtx.positron.track.chi2, vtx.positron.track.ndf, fill_value=9000) < 15)
-        & (vtx.electron.track.p.mag < 1.750)
-        & (vtx.electron.track.p.mag > 0.400)
-        & (vtx.positron.track.p.mag > 0.400)
+#        & (vtx.electron.track.p.mag < 1.750)
+#        & (vtx.electron.track.p.mag > 0.400)
+#        & (vtx.positron.track.p.mag > 0.400)
     )
     
     df['std_num_pass'] = ak.count(vtx[vtx_sel].chi2)
